@@ -267,20 +267,20 @@ export function Tabs({ tabs, value, onChange, className }: { tabs: { value: stri
 }
 
 export function Shimmer({ className }: { className?: string }) {
-  return <div className={cn("shimmer-skeleton rounded-md", className)} />;
+  return <div className={cn("shimmer-skeleton rounded-xl", className)} />;
 }
 
 export function StatSkeleton() {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-5">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="card-surface p-4 rounded-xl border border-border/60 space-y-3">
+        <div key={i} className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-3 shadow-xs">
           <div className="flex justify-between items-center">
-            <div className="h-3.5 w-24 shimmer-skeleton rounded" />
-            <div className="h-4 w-4 shimmer-skeleton rounded-full" />
+            <div className="h-3.5 w-24 shimmer-skeleton rounded-md" />
+            <div className="h-7 w-7 shimmer-skeleton rounded-xl" />
           </div>
-          <div className="h-7 w-28 shimmer-skeleton rounded-md" />
-          <div className="h-3 w-36 shimmer-skeleton rounded" />
+          <div className="h-8 w-28 shimmer-skeleton rounded-xl" />
+          <div className="h-3 w-36 shimmer-skeleton rounded-md" />
         </div>
       ))}
     </div>
@@ -289,27 +289,27 @@ export function StatSkeleton() {
 
 export function TableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="card-surface rounded-xl border border-border/60 overflow-hidden">
-      <div className="p-3 border-b border-border/60 flex items-center justify-between gap-3">
-        <div className="h-9 w-64 shimmer-skeleton rounded-lg" />
+    <div className="card-surface rounded-2xl bg-white border border-slate-100 shadow-xs overflow-hidden">
+      <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-3 bg-slate-50/40">
+        <div className="h-9.5 w-64 shimmer-skeleton rounded-xl" />
         <div className="flex gap-2">
-          <div className="h-9 w-24 shimmer-skeleton rounded-lg" />
-          <div className="h-9 w-28 shimmer-skeleton rounded-lg" />
+          <div className="h-9.5 w-24 shimmer-skeleton rounded-xl" />
+          <div className="h-9.5 w-28 shimmer-skeleton rounded-xl" />
         </div>
       </div>
-      <div className="divide-y divide-border/40 p-2 space-y-2">
+      <div className="divide-y divide-slate-50 p-3 space-y-2">
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex items-center justify-between p-3 gap-4">
             <div className="flex items-center gap-3 flex-1">
-              <div className="h-9 w-9 rounded-full shimmer-skeleton flex-shrink-0" />
+              <div className="h-9 w-9 rounded-xl shimmer-skeleton flex-shrink-0" />
               <div className="space-y-1.5 flex-1 max-w-sm">
-                <div className="h-4 w-3/4 shimmer-skeleton rounded" />
-                <div className="h-3 w-1/2 shimmer-skeleton rounded" />
+                <div className="h-4 w-3/4 shimmer-skeleton rounded-md" />
+                <div className="h-3 w-1/2 shimmer-skeleton rounded-md" />
               </div>
             </div>
             <div className="h-5 w-20 shimmer-skeleton rounded-full hidden sm:block" />
-            <div className="h-4 w-24 shimmer-skeleton rounded hidden md:block" />
-            <div className="h-8 w-20 shimmer-skeleton rounded-md" />
+            <div className="h-4 w-24 shimmer-skeleton rounded-md hidden md:block" />
+            <div className="h-8 w-20 shimmer-skeleton rounded-xl" />
           </div>
         ))}
       </div>
@@ -319,42 +319,104 @@ export function TableSkeleton({ rows = 6 }: { rows?: number }) {
 
 export function CardSkeleton() {
   return (
-    <div className="card-surface rounded-xl border border-border/60 p-5 space-y-4">
-      <div className="flex justify-between items-center border-b border-border/50 pb-3">
-        <div className="h-5 w-40 shimmer-skeleton rounded" />
-        <div className="h-4 w-16 shimmer-skeleton rounded-full" />
+    <div className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4 shadow-xs">
+      <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div className="h-5 w-40 shimmer-skeleton rounded-lg" />
+        <div className="h-5 w-16 shimmer-skeleton rounded-full" />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="h-10 shimmer-skeleton rounded-lg" />
-        <div className="h-10 shimmer-skeleton rounded-lg" />
-        <div className="h-10 shimmer-skeleton rounded-lg" />
-        <div className="h-10 shimmer-skeleton rounded-lg" />
+        <div className="h-10 shimmer-skeleton rounded-xl" />
+        <div className="h-10 shimmer-skeleton rounded-xl" />
+        <div className="h-10 shimmer-skeleton rounded-xl" />
+        <div className="h-10 shimmer-skeleton rounded-xl" />
       </div>
-      <div className="h-24 shimmer-skeleton rounded-lg mt-2" />
+      <div className="h-24 shimmer-skeleton rounded-xl mt-2" />
     </div>
   );
 }
 
-export function PageSkeleton() {
+export function PageSkeleton({ pathname }: { pathname?: string }) {
+  const isForm = pathname?.includes("/new") || pathname?.includes("/edit");
+  const isDashboard = pathname === "/" || pathname === "/ez-dashboard";
+
   return (
-    <div className="space-y-5 animate-in fade-in duration-300">
+    <div className="space-y-6 animate-in fade-in duration-200">
       {/* Header Skeleton */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
-          <div className="h-6 w-48 shimmer-skeleton rounded-md" />
-          <div className="h-3.5 w-72 shimmer-skeleton rounded" />
+          <div className="h-7 w-56 shimmer-skeleton rounded-xl" />
+          <div className="h-4 w-72 shimmer-skeleton rounded-lg" />
         </div>
-        <div className="flex gap-2">
-          <div className="h-9 w-28 shimmer-skeleton rounded-lg" />
-          <div className="h-9 w-32 shimmer-skeleton rounded-lg" />
+        <div className="flex gap-2.5">
+          <div className="h-9.5 w-28 shimmer-skeleton rounded-xl" />
+          <div className="h-9.5 w-32 shimmer-skeleton rounded-xl" />
         </div>
       </div>
 
-      {/* Stat Cards Skeleton */}
-      <StatSkeleton />
+      {isForm ? (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-6">
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
+          <div>
+            <CardSkeleton />
+          </div>
+        </div>
+      ) : isDashboard ? (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-3">
+                <div className="flex justify-between items-center">
+                  <div className="h-4 w-24 shimmer-skeleton rounded-lg" />
+                  <div className="h-8 w-8 shimmer-skeleton rounded-xl" />
+                </div>
+                <div className="h-8 w-32 shimmer-skeleton rounded-xl" />
+                <div className="h-3 w-40 shimmer-skeleton rounded-md" />
+                <div className="h-5 w-full shimmer-skeleton rounded-lg mt-2" />
+              </div>
+            ))}
+          </div>
 
-      {/* Table Skeleton */}
-      <TableSkeleton rows={5} />
+          <div className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <div className="h-5 w-48 shimmer-skeleton rounded-lg" />
+              <div className="h-5 w-24 shimmer-skeleton rounded-lg" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-slate-100 p-4 space-y-3 bg-slate-50/50">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 shimmer-skeleton rounded-full" />
+                    <div className="space-y-1.5 flex-1">
+                      <div className="h-4 w-20 shimmer-skeleton rounded" />
+                      <div className="h-5 w-24 shimmer-skeleton rounded" />
+                    </div>
+                  </div>
+                  <div className="h-4 w-full shimmer-skeleton rounded mt-2" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-5 xl:grid-cols-3">
+            <div className="xl:col-span-2 card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4">
+              <div className="h-5 w-40 shimmer-skeleton rounded-lg" />
+              <div className="h-64 w-full shimmer-skeleton rounded-xl" />
+            </div>
+            <div className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4">
+              <div className="h-5 w-36 shimmer-skeleton rounded-lg" />
+              <div className="h-64 w-full shimmer-skeleton rounded-xl" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <StatSkeleton />
+          <TableSkeleton rows={6} />
+        </>
+      )}
     </div>
   );
 }

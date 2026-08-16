@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Bell, ChevronDown, ChevronLeft, ChevronRight, Command, LogOut, Menu, Plus, Search, Sparkles, User, X,
+  Bell, Check, CheckCheck, ChevronDown, ChevronLeft, ChevronRight, Command, LogOut, Menu, Plus, Search, Sparkles, Trash2, User, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { NAV } from "@/lib/nav";
@@ -12,16 +12,16 @@ import type { Role } from "@/lib/types";
 import { Badge, Btn, Modal, PageSkeleton, Select } from "@/components/kit";
 import { cn } from "@/lib/utils";
 
-const ROLES: { role: Role; label: string; defaultRoute: string }[] = [
-  { role: "Admin", label: "Administrator", defaultRoute: "/" },
-  { role: "Hotel Manager", label: "Hotel Manager", defaultRoute: "/" },
-  { role: "Receptionist", label: "Front Desk / Reception", defaultRoute: "/front-desk" },
-  { role: "Restaurant Manager", label: "F&B / POS Manager", defaultRoute: "/pos" },
-  { role: "Waiter", label: "Captain / Waiter", defaultRoute: "/pos" },
-  { role: "Chef", label: "Kitchen Display (KDS)", defaultRoute: "/restaurant/kds" },
-  { role: "Housekeeping", label: "Housekeeping Board", defaultRoute: "/housekeeping" },
-  { role: "Accountant", label: "Finance & Accounts", defaultRoute: "/finance/ledger" },
-  { role: "HR", label: "HR / Staff Directory", defaultRoute: "/hr/staff" },
+const ROLES: { role: Role; label: string; defaultRoute: string; icon: string; desc: string; badge: string }[] = [
+  { role: "Admin", label: "Administrator", defaultRoute: "/", icon: "👑", desc: "Full PMS, POS & ERP Control", badge: "Operations Overview" },
+  { role: "Hotel Manager", label: "Hotel Manager", defaultRoute: "/", icon: "🏨", desc: "Executive KPI & Property Overview", badge: "Executive Board" },
+  { role: "Receptionist", label: "Front Desk / Reception", defaultRoute: "/ez-dashboard", icon: "🛎️", desc: "EZ Room Matrix, Check-ins & Bookings", badge: "EZ Room Board" },
+  { role: "Restaurant Manager", label: "F&B / POS Manager", defaultRoute: "/restaurant/billing", icon: "🍽️", desc: "Cashier Desk, Orders & Menu", badge: "Billing Desk" },
+  { role: "Waiter", label: "Captain / Waiter", defaultRoute: "/pos", icon: "📱", desc: "Point of Sale & Table Orders", badge: "POS Terminal" },
+  { role: "Chef", label: "Kitchen Display (KDS)", defaultRoute: "/restaurant/kds", icon: "👨‍🍳", desc: "Kitchen Orders & Food Prep Screen", badge: "KDS Screen" },
+  { role: "Housekeeping", label: "Housekeeping Board", defaultRoute: "/housekeeping", icon: "🧹", desc: "Room Cleaning, Dirty Matrix & Tasks", badge: "HK Board" },
+  { role: "Accountant", label: "Finance & Accounts", defaultRoute: "/finance/ledger", icon: "💰", desc: "Income & Expense Ledger, P&L", badge: "Finance Ledger" },
+  { role: "HR", label: "HR / Staff Directory", defaultRoute: "/hr/staff", icon: "👥", desc: "Staff Directory, Payroll & Attendance", badge: "Staff Directory" },
 ];
 
 const QUICK_ACTIONS = [
@@ -52,7 +52,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [q, setQ] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [dismissedNotifs, setDismissedNotifs] = useState<string[]>([]);
+  const [allRead, setAllRead] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotifOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -64,9 +81,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, []);
-  useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   const role = db.settings.role;
+  const currentRoleMeta = ROLES.find((r) => r.role === role) || ROLES[0]!;
   const groups = useMemo(() => {
     const access = ROLE_ACCESS[role];
     return NAV.filter((g) => access === "*" || access.includes(g.key));
@@ -75,7 +96,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const handleRoleChange = (newRole: Role) => {
     setRole(newRole);
     const target = ROLES.find((r) => r.role === newRole);
-    toast.success(`Switched workspace to ${newRole}`);
+    toast.success(`Switched workspace to ${target?.label ?? newRole}`);
     setUserDropdownOpen(false);
     if (target?.defaultRoute) {
       nav({ to: target.defaultRoute as never });
@@ -84,12 +105,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const results = useMemo(() => (palette ? globalSearch(db, q) : []), [db, q, palette]);
   const m = dashboardMetrics(db);
-  const notifications = [
-    { tone: "warning", text: `${m.dirty} room(s) awaiting housekeeping` },
-    { tone: "info", text: `${m.arrivals} arrivals and ${m.departures} departures today` },
-    { tone: "danger", text: `${m.pendingBills} in-house folio(s) with pending balance` },
-    { tone: "success", text: `${db.orders.filter((o) => o.kds === "ready").length} order(s) ready for pickup in kitchen` },
+
+  const baseNotifications = [
+    { id: "hk", tone: "warning", title: "Housekeeping", text: `${m.dirty} room(s) awaiting housekeeping`, to: "/housekeeping", active: m.dirty > 0 },
+    { id: "front", tone: "info", title: "Front Desk", text: `${m.arrivals} arrivals and ${m.departures} departures today`, to: "/front-desk", active: m.arrivals > 0 || m.departures > 0 },
+    { id: "folios", tone: "danger", title: "Folios & Billing", text: `${m.pendingBills} in-house folio(s) with pending balance`, to: "/folios", active: m.pendingBills > 0 },
+    { id: "kds", tone: "success", title: "Kitchen Display", text: `${db.orders.filter((o) => o.kds === "ready").length} order(s) ready for pickup in kitchen`, to: "/restaurant/kds", active: db.orders.filter((o) => o.kds === "ready").length > 0 },
   ];
+
+  const activeNotifications = baseNotifications.filter(
+    (n) => n.active && !dismissedNotifs.includes(n.id)
+  );
+  const unreadCount = allRead ? 0 : activeNotifications.length;
+
+  const handleMarkAllRead = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAllRead(true);
+    toast.success("All notifications marked as read");
+  };
+
+  const handleClearAll = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDismissedNotifs(baseNotifications.map((n) => n.id));
+    setAllRead(true);
+    toast.success("All notifications cleared");
+  };
+
+  const handleDismissOne = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDismissedNotifs((prev) => [...prev, id]);
+  };
+
+  const handleNotificationClick = (to: string) => {
+    setNotifOpen(false);
+    nav({ to: to as never });
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col">
@@ -129,8 +179,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
+        {/* Current Active Role Pill in Sidebar */}
+        {!collapsed && (
+          <div className="px-3 pt-3 pb-1">
+            <button
+              onClick={() => setUserDropdownOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60 hover:bg-slate-800 hover:border-purple-500/50 transition-all text-left group"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="text-base">{currentRoleMeta.icon}</span>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block truncate">Active Role</span>
+                  <span className="text-xs font-bold text-white block truncate">{currentRoleMeta.label}</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400 group-hover:text-white bg-slate-700/50 px-1.5 py-0.5 rounded">Switch</span>
+            </button>
+          </div>
+        )}
+
         {/* Navigation Groups */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
           {groups.map((g) => (
             <NavGroupBlock key={g.key} group={g} pathname={pathname} collapsed={collapsed} />
           ))}
@@ -182,29 +251,101 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
 
             {/* Notification Bell */}
-            <div className="relative">
+            <div className="relative" ref={notifRef}>
               <button
-                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer"
                 aria-label="Notifications"
                 onClick={() => setNotifOpen((v) => !v)}
               >
                 <Bell className="h-4.5 w-4.5" />
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
+                {unreadCount > 0 && (
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
+                )}
               </button>
               {notifOpen ? (
-                <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-slate-100 bg-white p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 px-1">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Notifications</p>
-                    <Badge tone="primary">4 New</Badge>
+                <div className="absolute right-0 top-12 z-30 w-88 rounded-2xl border border-slate-100 bg-white p-3.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 px-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Notifications</p>
+                      <Badge tone={unreadCount > 0 ? "primary" : "neutral"}>
+                        {unreadCount > 0 ? `${unreadCount} New` : "0 New"}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={handleMarkAllRead}
+                          className="flex items-center gap-1 text-[11px] font-bold text-purple-700 hover:text-purple-900 hover:bg-purple-50 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                          title="Mark all as read"
+                        >
+                          <CheckCheck className="h-3.5 w-3.5" />
+                          <span>Mark all read</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setNotifOpen(false)}
+                        className="h-6 w-6 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
+                        aria-label="Close notifications"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="divide-y divide-slate-50 mt-1">
-                    {notifications.map((n, i) => (
-                      <div key={i} className="flex items-start gap-2.5 p-2 rounded-xl text-xs hover:bg-slate-50 transition-colors">
-                        <Badge tone={n.tone}>•</Badge>
-                        <span className="text-slate-700 font-medium">{n.text}</span>
+
+                  <div className="divide-y divide-slate-50 mt-1 max-h-80 overflow-y-auto pr-0.5">
+                    {activeNotifications.length > 0 ? (
+                      activeNotifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotificationClick(n.to)}
+                          className="group relative flex items-start justify-between gap-2.5 p-2.5 rounded-xl text-xs hover:bg-purple-50/50 transition-all cursor-pointer"
+                        >
+                          <div className="flex items-start gap-2.5 min-w-0">
+                            <div className="mt-0.5 shrink-0">
+                              <Badge tone={n.tone}>•</Badge>
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[10.5px] font-bold uppercase tracking-wider text-purple-700 block truncate">
+                                {n.title}
+                              </span>
+                              <span className="text-slate-700 font-medium block leading-snug">
+                                {n.text}
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={(e) => handleDismissOne(n.id, e)}
+                            className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-all shrink-0 cursor-pointer"
+                            title="Dismiss notification"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="py-8 text-center space-y-2">
+                        <div className="flex h-10 w-10 mx-auto items-center justify-center rounded-full bg-purple-50 text-purple-600 text-lg">
+                          ✨
+                        </div>
+                        <p className="text-xs font-bold text-slate-800">All caught up!</p>
+                        <p className="text-[11px] text-slate-400">No unread notifications at the moment.</p>
                       </div>
-                    ))}
+                    )}
                   </div>
+
+                  {activeNotifications.length > 0 && (
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between px-1 mt-1">
+                      <button
+                        onClick={handleClearAll}
+                        className="text-[11px] font-semibold text-slate-400 hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1"
+                      >
+                        <Trash2 className="h-3 w-3" /> Clear all
+                      </button>
+                      <span className="text-[10px] text-slate-400">Click an alert to view</span>
+                    </div>
+                  )}
                 </div>
               ) : null}
             </div>
@@ -221,14 +362,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Btn>
 
             {/* User Profile & Role Switcher */}
-            <div className="relative">
+            <div className="relative" ref={userDropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen((v) => !v)}
-                className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition-colors text-left"
+                className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition-colors text-left cursor-pointer"
               >
                 <div className="relative">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-xs">
-                    {db.settings.user.slice(0, 1).toUpperCase()}
+                    {currentRoleMeta.icon}
                   </div>
                   <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
                 </div>
@@ -237,33 +378,69 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     {db.settings.user}
                     <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                   </div>
-                  <div className="text-[11px] font-medium text-slate-500">{role}</div>
+                  <div className="text-[11px] font-semibold text-purple-700">{currentRoleMeta.label}</div>
                 </div>
               </button>
 
               {userDropdownOpen && (
-                <div className="absolute right-0 top-12 z-30 w-64 rounded-2xl border border-slate-100 bg-white p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-                  <div className="pb-2.5 border-b border-slate-100 px-1">
-                    <p className="text-xs font-bold text-slate-900">{db.settings.user}</p>
-                    <p className="text-[11px] text-slate-500">{role} View</p>
+                <div className="absolute right-0 top-12 z-30 w-84 rounded-2xl border border-slate-100 bg-white p-3.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="pb-3 border-b border-slate-100 px-1 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-extrabold text-slate-900">{db.settings.user}</p>
+                      <p className="text-[11px] font-semibold text-purple-700">{currentRoleMeta.label} View</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10.5px] font-bold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
+                        Active
+                      </span>
+                      <button
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="h-6 w-6 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="pt-2">
-                    <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 px-1 mb-1.5">Switch Workspace Role</p>
-                    <div className="space-y-1 max-h-60 overflow-y-auto">
-                      {ROLES.map((r) => (
-                        <button
-                          key={r.role}
-                          onClick={() => handleRoleChange(r.role)}
-                          className={cn(
-                            "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition-colors",
-                            role === r.role ? "bg-purple-50 text-purple-700 font-bold" : "text-slate-600 hover:bg-slate-50",
-                          )}
-                        >
-                          <span>{r.label}</span>
-                          {role === r.role && <span className="h-1.5 w-1.5 rounded-full bg-purple-600" />}
-                        </button>
-                      ))}
+                  <div className="pt-2.5">
+                    <div className="flex items-center justify-between px-1 mb-2">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Switch Workspace Role</p>
+                      <span className="text-[10px] text-slate-400">Opens separate dashboard</span>
+                    </div>
+
+                    <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
+                      {ROLES.map((r) => {
+                        const isActive = role === r.role;
+                        return (
+                          <button
+                            key={r.role}
+                            onClick={() => handleRoleChange(r.role)}
+                            className={cn(
+                              "w-full flex items-center justify-between p-2 rounded-xl text-left transition-all group cursor-pointer",
+                              isActive
+                                ? "bg-purple-50/80 border border-purple-200 text-purple-900 shadow-2xs font-bold"
+                                : "hover:bg-slate-50 border border-transparent text-slate-700",
+                            )}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="text-lg">{r.icon}</span>
+                              <div className="min-w-0">
+                                <span className={cn("text-xs block font-bold truncate", isActive ? "text-purple-900" : "text-slate-900")}>
+                                  {r.label}
+                                </span>
+                                <span className="text-[10.5px] text-slate-400 block truncate">{r.desc}</span>
+                              </div>
+                            </div>
+
+                            <span className={cn(
+                              "text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0 ml-2",
+                              isActive ? "bg-purple-600 text-white" : "bg-slate-100 text-slate-600 group-hover:bg-purple-100 group-hover:text-purple-700",
+                            )}>
+                              {r.badge}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -273,8 +450,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-7 max-w-[1600px] mx-auto w-full">
-          {mounted ? children : <PageSkeleton />}
+        <main className="p-4 sm:p-6 lg:p-7 max-w-[1600px] mx-auto w-full min-h-[calc(100vh-4rem)]">
+          {!mounted ? (
+            <PageSkeleton pathname={pathname} />
+          ) : (
+            <div key={pathname} className="animate-in fade-in duration-150">
+              {children}
+            </div>
+          )}
         </main>
       </div>
 

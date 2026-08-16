@@ -773,13 +773,13 @@ export function sourceAnalytics(data: DB) {
 export const ROLE_ACCESS: Record<Role, string[] | "*"> = {
   Admin: "*",
   "Hotel Manager": "*",
-  Receptionist: ["dashboard", "front-office", "rooms", "crm", "restaurant"],
+  Receptionist: ["dashboard", "front-office", "rooms", "crm", "restaurant", "banquet", "laundry"],
   "Restaurant Manager": ["dashboard", "restaurant", "inventory", "reports"],
-  Waiter: ["restaurant"],
-  Chef: ["restaurant", "inventory"],
-  Housekeeping: ["rooms", "laundry"],
-  Accountant: ["dashboard", "finance", "reports", "front-office"],
-  HR: ["hr", "dashboard"],
+  Waiter: ["dashboard", "restaurant"],
+  Chef: ["dashboard", "restaurant", "inventory"],
+  Housekeeping: ["dashboard", "rooms", "laundry"],
+  Accountant: ["dashboard", "finance", "reports", "front-office", "inventory"],
+  HR: ["dashboard", "hr", "reports"],
 };
 
 export function setRole(role: Role) {

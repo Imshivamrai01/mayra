@@ -161,22 +161,24 @@
   background: linear-gradient(
     90deg,
     #f1f5f9 0%,
-    #ede9fe 35%,
+    #e2e8f0 20%,
+    #ede9fe 40%,
     #ffffff 50%,
-    #ede9fe 65%,
+    #ede9fe 60%,
+    #e2e8f0 80%,
     #f1f5f9 100%
   );
   background-size: 250% 100%;
-  animation: shimmerSweep 1.5s infinite linear;
+  animation: shimmerSweep 1.2s infinite linear;
   border-radius: 0.75rem;
 }
 
 @keyframes shimmerSweep {
   0% {
-    background-position: -200% 0;
+    background-position: -250% 0;
   }
   100% {
-    background-position: 200% 0;
+    background-position: 250% 0;
   }
 }
 
