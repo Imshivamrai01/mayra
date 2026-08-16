@@ -139,7 +139,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               ) : null}
             </div>
-            <Btn size="sm" variant="primary" icon={Plus} onClick={() => nav({ to: "/reservations", search: { new: "1" } as never })}>
+            <Btn size="sm" variant="primary" icon={Plus} onClick={() => nav({ to: "/reservations" as never })}>
               <span className="hidden sm:inline">New Booking</span>
             </Btn>
             <div className="hidden items-center gap-2 border-l border-border pl-2 md:flex">
@@ -151,7 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 aria-label="Switch demo role"
                 className="h-8 w-36 text-xs"
                 value={role}
-                onChange={(e) => { setRole(e.target.value as Role); toast.success(`Switched to ${e.target.value} view`); nav({ to: "/" }); }}
+                onChange={(e) => { setRole(e.target.value as Role); toast.success(`Switched to ${e.target.value} view`); nav({ to: "/" as never }); }}
                 options={ROLES.map((r) => ({ value: r, label: r }))}
               />
             </div>
@@ -177,7 +177,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {QUICK_ACTIONS.map((a) => (
                 <button
                   key={a.label}
-                  onClick={() => { setPalette(false); nav({ to: a.to.split("?")[0]!, search: a.to.includes("new=1") ? ({ new: "1" } as never) : undefined }); }}
+                  onClick={() => { setPalette(false); nav({ to: a.to.split("?")[0]! as never }); }}
                   className="rounded-md border border-border px-3 py-2 text-left text-sm hover:border-primary/50 hover:bg-secondary"
                 >
                   {a.label}
@@ -190,7 +190,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {results.length ? results.map((r, i) => (
               <button
                 key={i}
-                onClick={() => { setPalette(false); setQ(""); nav({ to: r.to.split("?")[0]! }); }}
+                onClick={() => { setPalette(false); setQ(""); nav({ to: r.to.split("?")[0]! as never }); }}
                 className="flex w-full items-center gap-3 px-1 py-2 text-left hover:bg-secondary"
               >
                 <Badge tone="primary">{r.type}</Badge>
@@ -217,7 +217,7 @@ function NavGroupBlock({ group, pathname }: { group: (typeof NAV)[number]; pathn
   if (group.items.length === 1) {
     return (
       <Link
-        to={group.items[0]!.to}
+        to={group.items[0]!.to as never}
         className={cn(
           "mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors",
           active ? "bg-sidebar-accent text-sidebar-foreground" : "text-sidebar-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
@@ -246,7 +246,7 @@ function NavGroupBlock({ group, pathname }: { group: (typeof NAV)[number]; pathn
             const isActive = pathname === i.to || (i.to !== "/" && pathname.startsWith(i.to + "/"));
             return (
               <Link
-                key={i.to} to={i.to}
+                key={i.to} to={i.to as never}
                 className={cn(
                   "block rounded-md px-2.5 py-1.5 text-[12.5px] transition-colors",
                   isActive ? "bg-sidebar-accent font-medium text-sidebar-foreground" : "text-sidebar-muted hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
