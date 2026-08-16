@@ -349,12 +349,12 @@ export function buildSeed(): DB {
     });
   });
 
-  const tables = Array.from({ length: 12 }, (_, i) => ({
+  const tables: DB["tables"] = Array.from({ length: 12 }, (_, i) => ({
     id: `t-${i + 1}`,
     name: `T${String(i + 1).padStart(2, "0")}`,
     seats: i % 3 === 0 ? 6 : 4,
     area: i < 6 ? "Main Dining" : i < 9 ? "Terrace" : "Private",
-    status: "available" as const,
+    status: "available",
   }));
 
   const vendors: DB["vendors"] = [
