@@ -112,12 +112,13 @@ export function buildSeed(): DB {
   }
 
   const ratePlans = [
-    { id: "rp-ep", code: "EP", name: "European Plan", description: "Room Only", mealRate: 0, active: true },
+    { id: "rp-ep", code: "EP", name: "European Plan", description: "Room Only (No Meals)", mealRate: 0, active: true },
     { id: "rp-cp", code: "CP", name: "Continental Plan", description: "Room + Breakfast", mealRate: 450, active: true },
-    { id: "rp-map", code: "MAP", name: "Modified American Plan", description: "Room + Breakfast + Lunch or Dinner", mealRate: 950, active: true },
-    { id: "rp-ap", code: "AP", name: "American Plan", description: "Room + All Meals", mealRate: 1400, active: true },
-    { id: "rp-ai", code: "AI", name: "All Inclusive", description: "All meals + selected beverages", mealRate: 1900, active: true },
+    { id: "rp-map", code: "MAP", name: "Modified American Plan", description: "Room + Breakfast + Lunch OR Dinner", mealRate: 950, active: true },
+    { id: "rp-ap", code: "AP", name: "American Plan", description: "Room + Breakfast + Lunch + Dinner", mealRate: 1400, active: true },
+    { id: "rp-ai", code: "AI", name: "All Inclusive", description: "Room + All Meals + Drinks & Inclusions", mealRate: 1900, active: true },
   ];
+
 
   // Guests
   const guests: Guest[] = [];

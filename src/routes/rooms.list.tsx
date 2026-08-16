@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { Badge, Btn, Card, ConfirmDialog, DataTable, Field, Input, KV, PageHeader, Select, Tabs } from "@/components/kit";
+import { Badge, Btn, Card, ConfirmDialog, DataTable, Field, Input, KV, Modal, PageHeader, Select, Tabs } from "@/components/kit";
 import { update, uid, useDB } from "@/lib/store";
 import type { Room, RoomStatus, RoomType } from "@/lib/types";
 import { toast } from "sonner";
@@ -44,46 +44,47 @@ function RoomList() {
   const floors = [...new Set(db.rooms.map((r) => r.floor))].sort();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 pb-12">
       <PageHeader
-        title="Room List"
-        subtitle={`${db.rooms.length} rooms configured`}
+        title="Room Inventory Directory"
+        subtitle={`${db.rooms.length} rooms configured across ${floors.length} floors`}
         actions={<Btn variant="primary" size="sm" icon={Plus} onClick={() => setAddOpen(true)}>Add Room</Btn>}
       />
       <DataTable
         rows={db.rooms}
         searchKeys={["number", (r) => db.roomTypes.find((t) => t.id === r.typeId)?.name ?? ""]}
         columns={[
-          { key: "number", label: "Room", render: (r) => <span className="font-semibold">Room {r.number}</span> },
-          { key: "floor", label: "Floor", render: (r) => `Floor ${r.floor}` },
-          { key: "typeId", label: "Type", render: (r) => db.roomTypes.find((t) => t.id === r.typeId)?.name ?? "—" },
+          { key: "number", label: "Room", render: (r) => <span className="font-bold text-slate-900">Room {r.number}</span> },
+          { key: "floor", label: "Floor", render: (r) => <span className="font-semibold text-slate-600">Floor {r.floor}</span> },
+          { key: "typeId", label: "Type", render: (r) => <span className="font-semibold text-slate-800">{db.roomTypes.find((t) => t.id === r.typeId)?.name ?? "—"}</span> },
           { key: "status", label: "Status", render: (r) => <Badge tone={STATUS_TONE[r.status]}>{r.status}</Badge> },
           { key: "actions", label: "", sortable: false, render: (r) => (
             <div className="flex gap-1">
               <Btn size="sm" variant="ghost" icon={Edit} onClick={(e) => { e.stopPropagation(); setEditRoom(r); setForm({ number: r.number, floor: String(r.floor), typeId: r.typeId }); setAddOpen(true); }} />
-              <Btn size="sm" variant="ghost" icon={Trash2} onClick={(e) => { e.stopPropagation(); setDeleteRoom(r); }} className="text-danger" />
+              <Btn size="sm" variant="ghost" icon={Trash2} onClick={(e) => { e.stopPropagation(); setDeleteRoom(r); }} className="text-rose-600 hover:bg-rose-50" />
             </div>
           )},
         ]}
         pageSize={20}
       />
 
-      {addOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4">
-          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-pop)]">
-            <h4 className="mb-4 font-semibold">{editRoom ? "Edit Room" : "Add Room"}</h4>
-            <div className="space-y-3">
-              <Field label="Room Number"><Input value={form.number} onChange={(e) => setForm((f) => ({ ...f, number: e.target.value }))} placeholder="e.g. 204" /></Field>
-              <Field label="Floor"><Input type="number" min="0" max="10" value={form.floor} onChange={(e) => setForm((f) => ({ ...f, floor: e.target.value }))} /></Field>
-              <Field label="Room Type"><Select value={form.typeId} onChange={(e) => setForm((f) => ({ ...f, typeId: e.target.value }))} options={db.roomTypes.map((t) => ({ value: t.id, label: t.name }))} /></Field>
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Btn onClick={() => { setAddOpen(false); setEditRoom(null); }}>Cancel</Btn>
-              <Btn variant="primary" onClick={saveRoom}>{editRoom ? "Update" : "Add Room"}</Btn>
-            </div>
-          </div>
+      <Modal
+        open={addOpen}
+        onClose={() => { setAddOpen(false); setEditRoom(null); }}
+        title={editRoom ? "Edit Room Details" : "Add New Room"}
+        footer={
+          <>
+            <Btn onClick={() => { setAddOpen(false); setEditRoom(null); }}>Cancel</Btn>
+            <Btn variant="primary" onClick={saveRoom}>{editRoom ? "Update Room" : "Add Room"}</Btn>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="Room Number"><Input value={form.number} onChange={(e) => setForm((f) => ({ ...f, number: e.target.value }))} placeholder="e.g. 204" /></Field>
+          <Field label="Floor"><Input type="number" min="0" max="10" value={form.floor} onChange={(e) => setForm((f) => ({ ...f, floor: e.target.value }))} /></Field>
+          <Field label="Room Type"><Select value={form.typeId} onChange={(e) => setForm((f) => ({ ...f, typeId: e.target.value }))} options={db.roomTypes.map((t) => ({ value: t.id, label: t.name }))} /></Field>
         </div>
-      )}
+      </Modal>
 
       <ConfirmDialog
         open={!!deleteRoom} onClose={() => setDeleteRoom(null)}
@@ -93,3 +94,4 @@ function RoomList() {
     </div>
   );
 }
+

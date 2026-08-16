@@ -6,8 +6,9 @@ import {
   Building, AlertTriangle, ShieldCheck, Tag, Receipt
 } from "lucide-react";
 import {
-  Badge, Btn, Card, Field, Input, PageHeader, Select, StatCard, SuccessModal, Table
+  Badge, Btn, Card, Field, Input, Modal, PageHeader, Select, StatCard, SuccessModal, Table
 } from "@/components/kit";
+
 import {
   bookingService, fmtDate, guestOf, money, paymentService, roomLabel,
   roomTypeOf, today, useDB, folioTotals, BOOKING_STATUS_META
@@ -436,83 +437,82 @@ function ReservationDetailPage() {
       </div>
 
       {/* Record Payment Modal */}
-      {payOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl border border-border bg-card p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-semibold text-base">Record Payment · {booking.id}</h3>
-              <button onClick={() => setPayOpen(false)} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
-            <div className="space-y-3">
-              <Field label="Amount to Pay (₹)">
-                <Input type="number" value={payAmt} onChange={(e) => setPayAmt(e.target.value)} placeholder="0.00" />
-              </Field>
-              <Field label="Payment Mode">
-                <Select
-                  value={payMode}
-                  onChange={(e) => setPayMode(e.target.value)}
-                  options={["Cash", "UPI", "Card", "Bank Transfer"].map((m) => ({ value: m, label: m }))}
-                />
-              </Field>
-              <Field label="Transaction / Cheque / Auth Ref">
-                <Input value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="e.g. UPI-99823901" />
-              </Field>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-border pt-3">
-              <Btn onClick={() => setPayOpen(false)}>Cancel</Btn>
-              <Btn variant="primary" onClick={handleAddPayment}>Confirm & Post Payment</Btn>
-            </div>
-          </div>
+      <Modal
+        open={payOpen}
+        onClose={() => setPayOpen(false)}
+        title={`Record Payment · ${booking.id}`}
+        footer={
+          <>
+            <Btn onClick={() => setPayOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={handleAddPayment}>Confirm & Post Payment</Btn>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="Amount to Pay (₹)">
+            <Input type="number" value={payAmt} onChange={(e) => setPayAmt(e.target.value)} placeholder="0.00" />
+          </Field>
+          <Field label="Payment Mode">
+            <Select
+              value={payMode}
+              onChange={(e) => setPayMode(e.target.value)}
+              options={["Cash", "UPI", "Card", "Bank Transfer"].map((m) => ({ value: m, label: m }))}
+            />
+          </Field>
+          <Field label="Transaction / Cheque / Auth Ref">
+            <Input value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="e.g. UPI-99823901" />
+          </Field>
         </div>
-      )}
+      </Modal>
 
       {/* Add Charge Modal */}
-      {chargeOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl border border-border bg-card p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-semibold text-base">Add Charge to Folio</h3>
-              <button onClick={() => setChargeOpen(false)} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
-            <div className="space-y-3">
-              <Field label="Department">
-                <Select
-                  value={chargeKind}
-                  onChange={(e) => setChargeKind(e.target.value as never)}
-                  options={["Room Service", "Restaurant", "Laundry", "Banquet", "Other"].map((k) => ({ value: k, label: k }))}
-                />
-              </Field>
-              <Field label="Description">
-                <Input value={chargeDesc} onChange={(e) => setChargeDesc(e.target.value)} placeholder="e.g. Dinner in Room 301, Express Laundry" />
-              </Field>
-              <Field label="Charge Amount (₹)">
-                <Input type="number" value={chargeAmt} onChange={(e) => setChargeAmt(e.target.value)} placeholder="0.00" />
-              </Field>
-            </div>
-            <div className="flex justify-end gap-2 border-t border-border pt-3">
-              <Btn onClick={() => setChargeOpen(false)}>Cancel</Btn>
-              <Btn variant="primary" onClick={handleAddCharge}>Add to Folio</Btn>
-            </div>
-          </div>
+      <Modal
+        open={chargeOpen}
+        onClose={() => setChargeOpen(false)}
+        title="Add Charge to Folio"
+        footer={
+          <>
+            <Btn onClick={() => setChargeOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={handleAddCharge}>Add to Folio</Btn>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="Department">
+            <Select
+              value={chargeKind}
+              onChange={(e) => setChargeKind(e.target.value as never)}
+              options={["Room Service", "Restaurant", "Laundry", "Banquet", "Other"].map((k) => ({ value: k, label: k }))}
+            />
+          </Field>
+          <Field label="Description">
+            <Input value={chargeDesc} onChange={(e) => setChargeDesc(e.target.value)} placeholder="e.g. Dinner in Room 301, Express Laundry" />
+          </Field>
+          <Field label="Charge Amount (₹)">
+            <Input type="number" value={chargeAmt} onChange={(e) => setChargeAmt(e.target.value)} placeholder="0.00" />
+          </Field>
         </div>
-      )}
+      </Modal>
 
       {/* Document Print Modal */}
-      {printDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl rounded-xl border border-border bg-card p-6 shadow-2xl my-8 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3 no-print">
-              <div className="flex items-center gap-2">
-                <Printer className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-base">
-                  {printDoc === "invoice" ? (isNonGst ? "Bill of Supply Preview" : "Tax Invoice Preview") : "Guest Registration Card (GRC)"}
-                </h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <Btn variant="primary" size="sm" icon={Printer} onClick={() => window.print()}>Print Now</Btn>
-                <Btn size="sm" onClick={() => setPrintDoc(null)}>Close</Btn>
-              </div>
-            </div>
+      <Modal
+        open={Boolean(printDoc)}
+        onClose={() => setPrintDoc(null)}
+        wide
+        title={
+          <div className="flex items-center gap-2">
+            <Printer className="h-4 w-4 text-purple-700" />
+            <span>{printDoc === "invoice" ? (isNonGst ? "Bill of Supply Preview" : "Tax Invoice Preview") : "Guest Registration Card (GRC)"}</span>
+          </div>
+        }
+        footer={
+          <>
+            <Btn size="sm" onClick={() => setPrintDoc(null)}>Close</Btn>
+            <Btn variant="primary" size="sm" icon={Printer} onClick={() => window.print()}>Print Document</Btn>
+          </>
+        }
+      >
+
 
             {/* Printable Document Sheet */}
             <div className="rounded border border-border/80 p-6 bg-white text-black text-xs space-y-4">
@@ -599,9 +599,8 @@ function ReservationDetailPage() {
                 <div className="border-t border-gray-400 pt-1">Authorized Signatory (MAYRA Hotel)</div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+      </Modal>
+
 
       {/* Action Success Celebration Modal */}
       {successAction && (

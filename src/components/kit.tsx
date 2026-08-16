@@ -11,23 +11,23 @@ export function Btn({
   icon?: React.ComponentType<{ className?: string }>;
 }) {
   const variants: Record<string, string> = {
-    default: "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-xs",
-    outline: "bg-transparent border border-slate-200 text-slate-700 hover:bg-slate-50",
-    primary: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm hover:from-purple-700 hover:to-indigo-700 active:scale-[0.98] border border-transparent font-semibold",
-    ghost: "bg-transparent text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent",
-    danger: "bg-rose-600 text-white hover:bg-rose-700 border border-transparent font-medium",
-    success: "bg-emerald-600 text-white hover:bg-emerald-700 border border-transparent font-medium",
+    default: "bg-white border border-slate-200/90 text-slate-800 hover:bg-slate-50 shadow-2xs font-semibold",
+    outline: "bg-transparent border border-slate-200/90 text-slate-700 hover:bg-slate-50 font-semibold",
+    primary: "bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 text-white shadow-xs hover:from-purple-800 hover:to-indigo-800 active:scale-[0.98] border border-transparent font-bold",
+    ghost: "bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent font-medium",
+    danger: "bg-rose-600 text-white hover:bg-rose-700 border border-transparent font-bold shadow-xs",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700 border border-transparent font-bold shadow-xs",
   };
   const sizes: Record<string, string> = {
     sm: "h-8 px-3 text-xs gap-1.5 rounded-lg",
-    md: "h-9.5 px-4 text-sm gap-2 rounded-xl",
-    lg: "h-11 px-6 text-sm gap-2 rounded-xl",
+    md: "h-9.5 px-3.5 text-xs sm:text-sm gap-2 rounded-xl",
+    lg: "h-11 px-5 text-sm gap-2 rounded-xl",
   };
   return (
     <button
       {...props}
       className={cn(
-        "inline-flex items-center justify-center font-medium transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/40",
+        "inline-flex items-center justify-center transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/40 cursor-pointer select-none",
         variants[variant], sizes[size], className,
       )}
     >
@@ -38,17 +38,17 @@ export function Btn({
 }
 
 export const TONES: Record<string, string> = {
-  success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  danger: "bg-rose-50 text-rose-700 border-rose-200",
-  warning: "bg-amber-50 text-amber-800 border-amber-200",
-  info: "bg-blue-50 text-blue-700 border-blue-200",
-  primary: "bg-purple-50 text-purple-700 border-purple-200",
-  muted: "bg-slate-100 text-slate-600 border-slate-200",
+  success: "bg-emerald-50 text-emerald-800 border-emerald-200/90",
+  danger: "bg-rose-50 text-rose-800 border-rose-200/90",
+  warning: "bg-amber-50 text-amber-900 border-amber-200/90",
+  info: "bg-blue-50 text-blue-800 border-blue-200/90",
+  primary: "bg-purple-50 text-purple-800 border-purple-200/90",
+  muted: "bg-slate-100 text-slate-700 border-slate-200/90",
 };
 
 export function Badge({ tone = "muted", children, className }: { tone?: string; children: ReactNode; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold whitespace-nowrap", TONES[tone] ?? TONES["muted"], className)}>
+    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10.5px] font-bold whitespace-nowrap", TONES[tone] ?? TONES["muted"], className)}>
       {children}
     </span>
   );
@@ -63,11 +63,12 @@ export function Dot({ tone = "muted" }: { tone?: string }) {
 }
 
 export function Card({ children, className, title, action, dense }: { children: ReactNode; className?: string; title?: ReactNode; action?: ReactNode; dense?: boolean }) {
+  const hasOverflow = className && /overflow-(hidden|visible|auto|scroll)/.test(className);
   return (
-    <section className={cn("card-surface rounded-2xl bg-white border border-slate-100 shadow-xs", className)}>
+    <section className={cn("card-surface rounded-2xl bg-white border border-[#eaedf3] shadow-2xs", !hasOverflow && "overflow-hidden", className)}>
       {title ? (
-        <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-          <h3 className="text-sm font-bold text-slate-900 tracking-tight">{title}</h3>
+        <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-3.5 bg-gradient-to-b from-white to-[#fcfdfe]">
+          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">{title}</h3>
           {action}
         </header>
       ) : null}
@@ -76,12 +77,13 @@ export function Card({ children, className, title, action, dense }: { children: 
   );
 }
 
+
 export function PageHeader({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: ReactNode; children?: ReactNode }) {
   return (
     <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">{title}</h1>
-        {subtitle ? <p className="mt-1 text-[13px] font-medium text-slate-500">{subtitle}</p> : null}
+        <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2 font-sans">{title}</h1>
+        {subtitle ? <p className="mt-0.5 text-xs font-semibold text-slate-500">{subtitle}</p> : null}
         {children}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
@@ -100,27 +102,27 @@ export function StatCard({
     <Comp
       onClick={onClick}
       className={cn(
-        "card-surface rounded-2xl bg-white border border-slate-100 p-5 text-left transition-all duration-200 hover:shadow-md hover:border-slate-200",
+        "card-surface rounded-2xl bg-white border border-slate-200/70 p-4.5 text-left transition-all duration-200 hover:shadow-md hover:border-purple-200",
         onClick && "cursor-pointer",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{label}</span>
+        <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">{label}</span>
         {Icon ? (
-          <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+          <div className="p-2 rounded-xl bg-purple-50 text-purple-700 border border-purple-100">
             <Icon className="h-4 w-4" />
           </div>
         ) : null}
       </div>
-      <div className="mt-3 flex items-baseline gap-2">
-        <span className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">{value}</span>
+      <div className="mt-2.5 flex items-baseline gap-2">
+        <span className="text-2xl font-black tracking-tight text-slate-900 tabular-nums">{value}</span>
         {typeof trend === "number" ? (
-          <span className={cn("text-xs font-bold", trend >= 0 ? "text-emerald-600" : "text-rose-600")}>
+          <span className={cn("text-[11px] font-extrabold", trend >= 0 ? "text-emerald-600" : "text-rose-600")}>
             {trend >= 0 ? "▲" : "▼"} {Math.abs(trend).toFixed(1)}%
           </span>
         ) : null}
       </div>
-      {sub ? <div className="mt-1 text-xs text-slate-500 font-medium">{sub}</div> : null}
+      {sub ? <div className="mt-1 text-[11.5px] text-slate-500 font-semibold">{sub}</div> : null}
     </Comp>
   );
 }
@@ -134,16 +136,16 @@ export function Modal({ open, onClose, title, children, footer, wide }: { open: 
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/30 p-4 backdrop-blur-[2px] animate-in fade-in duration-150">
-      <div className={cn("mt-10 w-full rounded-xl border border-border bg-card shadow-[var(--shadow-pop)] animate-in zoom-in-95 duration-150", wide ? "max-w-4xl" : "max-w-lg")}>
-        <header className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h3 className="text-sm font-semibold">{title}</h3>
-          <button aria-label="Close dialog" onClick={onClose} className="rounded-md p-1 text-muted-foreground hover:bg-secondary">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-[3px] animate-in fade-in duration-150">
+      <div className={cn("mt-10 w-full rounded-2xl border border-slate-200/90 bg-white shadow-2xl animate-in zoom-in-95 duration-150 overflow-hidden", wide ? "max-w-4xl" : "max-w-lg")}>
+        <header className="flex items-center justify-between border-b border-slate-100 px-5 py-3.5 bg-slate-50/50">
+          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">{title}</h3>
+          <button aria-label="Close dialog" onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </header>
-        <div className="max-h-[70vh] overflow-y-auto p-4">{children}</div>
-        {footer ? <footer className="flex justify-end gap-2 border-t border-border px-4 py-3">{footer}</footer> : null}
+        <div className="max-h-[72vh] overflow-y-auto p-5">{children}</div>
+        {footer ? <footer className="flex justify-end gap-2.5 border-t border-slate-100 px-5 py-3.5 bg-slate-50/30">{footer}</footer> : null}
       </div>
     </div>
   );
@@ -157,20 +159,20 @@ export function Drawer({ open, onClose, title, subtitle, children, footer, width
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-foreground/30 backdrop-blur-[2px] animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-[3px] animate-in fade-in duration-150">
       <div className="flex-1" onClick={onClose} />
-      <aside className={cn("flex h-full w-full flex-col border-l border-border bg-card shadow-[var(--shadow-pop)] animate-in slide-in-from-right duration-200", width)}>
-        <header className="flex items-start justify-between gap-3 border-b border-border px-4 py-3">
+      <aside className={cn("flex h-full w-full flex-col border-l border-slate-200 bg-white shadow-2xl animate-in slide-in-from-right duration-200", width)}>
+        <header className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 bg-slate-50/50">
           <div>
-            <h3 className="text-sm font-semibold">{title}</h3>
-            {subtitle ? <p className="text-xs text-muted-foreground">{subtitle}</p> : null}
+            <h3 className="text-sm font-extrabold text-slate-900">{title}</h3>
+            {subtitle ? <p className="text-xs text-slate-500 font-medium">{subtitle}</p> : null}
           </div>
-          <button aria-label="Close panel" onClick={onClose} className="rounded-md p-1 text-muted-foreground hover:bg-secondary">
+          <button aria-label="Close panel" onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto p-4">{children}</div>
-        {footer ? <footer className="flex flex-wrap justify-end gap-2 border-t border-border px-4 py-3">{footer}</footer> : null}
+        <div className="flex-1 overflow-y-auto p-5">{children}</div>
+        {footer ? <footer className="flex flex-wrap justify-end gap-2.5 border-t border-slate-100 px-5 py-3.5 bg-slate-50/30">{footer}</footer> : null}
       </aside>
     </div>
   );
@@ -187,7 +189,7 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
         </>
       }
     >
-      <p className="text-sm text-muted-foreground">{message}</p>
+      <p className="text-xs font-semibold text-slate-600">{message}</p>
     </Modal>
   );
 }
@@ -196,17 +198,17 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
 export function Field({ label, children, hint, required, className }: { label: string; children: ReactNode; hint?: string; required?: boolean; className?: string }) {
   return (
     <label className={cn("block", className)}>
-      <span className="mb-1 block text-xs font-medium text-muted-foreground">
-        {label} {required ? <span className="text-danger">*</span> : null}
+      <span className="mb-1 block text-xs font-bold text-slate-700">
+        {label} {required ? <span className="text-rose-600">*</span> : null}
       </span>
       {children}
-      {hint ? <span className="mt-1 block text-[11px] text-muted-foreground">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-[11px] font-medium text-slate-400">{hint}</span> : null}
     </label>
   );
 }
 
 const fieldCls =
-  "h-9.5 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition-all placeholder:text-slate-400 text-slate-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-100";
+  "h-9.5 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm outline-none transition-all placeholder:text-slate-400 text-slate-900 focus:border-purple-600 focus:ring-2 focus:ring-purple-100 shadow-2xs";
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cn(fieldCls, props.className)} />;
@@ -230,7 +232,7 @@ export function Select({ options, ...props }: React.SelectHTMLAttributes<HTMLSel
 export function SearchInput({ value, onChange, placeholder = "Search…", className }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
   return (
     <div className={cn("relative", className)}>
-      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+      <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
       <input
         aria-label={placeholder} value={value} placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
@@ -247,15 +249,15 @@ export function Tabs({ tabs, value, onChange, className }: { tabs: { value: stri
         <button
           key={t.value} onClick={() => onChange(t.value)}
           className={cn(
-            "-mb-px border-b-2 px-3.5 py-2.5 text-sm font-semibold transition-all duration-150 cursor-pointer",
-            value === t.value ? "border-purple-600 text-purple-700 font-bold" : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300",
+            "-mb-px border-b-2 px-3.5 py-2.5 text-xs font-bold transition-all duration-150 cursor-pointer",
+            value === t.value ? "border-purple-600 text-purple-900 font-extrabold" : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300",
           )}
         >
           {t.label}
           {typeof t.count === "number" ? (
             <span className={cn(
-              "ml-1.5 rounded-full px-2 py-0.5 text-[11px] tabular-nums font-bold",
-              value === t.value ? "bg-purple-100 text-purple-800" : "bg-slate-100 text-slate-600",
+              "ml-1.5 rounded-full px-2 py-0.5 text-[10.5px] tabular-nums font-extrabold",
+              value === t.value ? "bg-purple-100 text-purple-900" : "bg-slate-100 text-slate-600",
             )}>
               {t.count}
             </span>
@@ -274,7 +276,7 @@ export function StatSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-3 shadow-xs">
+        <div key={i} className="card-surface rounded-2xl bg-white border border-slate-200/70 p-5 space-y-3 shadow-2xs">
           <div className="flex justify-between items-center">
             <div className="h-3.5 w-24 shimmer-skeleton rounded-md" />
             <div className="h-7 w-7 shimmer-skeleton rounded-xl" />
@@ -286,6 +288,7 @@ export function StatSkeleton() {
     </div>
   );
 }
+
 
 export function TableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
@@ -597,48 +600,48 @@ export function DataTable<T>({
   const slice = filtered.slice((current - 1) * pageSize, current * pageSize);
 
   return (
-    <div className="card-surface rounded-2xl bg-white border border-slate-100 shadow-xs overflow-hidden">
+    <div className="card-surface rounded-2xl bg-white border border-[#eaedf3] shadow-2xs overflow-hidden">
       {(searchKeys || toolbar) && (
-        <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-4">
+        <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-4 bg-gradient-to-b from-white to-[#fcfdfe]">
           {searchKeys ? <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1); }} className="w-full sm:w-72" /> : null}
           <div className="flex flex-1 flex-wrap items-center gap-2">{toolbar}</div>
-          <span className="text-xs font-semibold text-slate-400 tabular-nums">{filtered.length} record(s)</span>
+          <span className="text-xs font-bold text-slate-400 tabular-nums">{filtered.length} record(s)</span>
         </div>
       )}
       <div className="overflow-x-auto w-full">
         <table className={cn("w-full border-collapse", dense ? "text-xs" : "text-sm")}>
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/80">
+            <tr className="border-b border-slate-200/80 bg-slate-50/80">
               {columns.map((c) => (
                 <th
                   key={c.key}
                   style={c.width ? { width: c.width } : undefined}
                   onClick={() => c.sortable !== false && setSort((s) => (s?.key === c.key ? { key: c.key, dir: s.dir === 1 ? -1 : 1 } : { key: c.key, dir: 1 }))}
                   className={cn(
-                    dense ? "px-3 py-2.5 text-[10.5px]" : "px-4 py-3 text-[11px]",
-                    "font-bold uppercase tracking-wider text-slate-400 select-none whitespace-nowrap",
+                    dense ? "px-3.5 py-2.5 text-[10px]" : "px-4 py-3 text-[10.5px]",
+                    "font-extrabold uppercase tracking-wider text-slate-400 select-none whitespace-nowrap",
                     c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "text-left",
-                    c.sortable !== false && "cursor-pointer hover:text-purple-600 transition-colors",
+                    c.sortable !== false && "cursor-pointer hover:text-purple-700 transition-colors",
                   )}
                 >
                   {c.label}
-                  {sort?.key === c.key ? <span className="ml-1 text-purple-600 font-extrabold">{sort.dir === 1 ? "↑" : "↓"}</span> : null}
+                  {sort?.key === c.key ? <span className="ml-1 text-purple-700 font-extrabold">{sort.dir === 1 ? "↑" : "↓"}</span> : null}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-slate-100/90">
             {slice.map((row, i) => (
               <tr
                 key={rowKey ? rowKey(row, i) : ((row as { id?: string }).id ?? i)}
                 onClick={() => onRowClick?.(row)}
-                className={cn("transition-colors hover:bg-purple-50/30", onRowClick && "cursor-pointer")}
+                className={cn("transition-colors hover:bg-purple-50/40", onRowClick && "cursor-pointer")}
               >
                 {columns.map((c) => (
                   <td
                     key={c.key}
                     className={cn(
-                      dense ? "px-3 py-2 text-xs" : "px-4 py-3",
+                      dense ? "px-3.5 py-2 text-xs" : "px-4 py-3",
                       c.align === "right" ? "text-right tabular-nums" : c.align === "center" ? "text-center" : "text-left",
                       "whitespace-nowrap font-medium text-slate-700",
                     )}
@@ -653,8 +656,8 @@ export function DataTable<T>({
         {!slice.length ? (empty ?? <EmptyState title="No records found" message="Try changing the search text or filters." action={q ? <Btn size="sm" onClick={() => setQ("")}>Clear search</Btn> : undefined} />) : null}
       </div>
       {pages > 1 ? (
-        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-3 bg-slate-50/40">
-          <span className="text-xs font-semibold text-slate-500">Page {current} of {pages}</span>
+        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-3 bg-slate-50/30">
+          <span className="text-xs font-bold text-slate-500">Page {current} of {pages}</span>
           <div className="flex gap-1.5">
             <Btn size="sm" onClick={() => setPage(Math.max(1, current - 1))} disabled={current === 1} aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></Btn>
             <Btn size="sm" onClick={() => setPage(Math.min(pages, current + 1))} disabled={current === pages} aria-label="Next page"><ChevronRight className="h-4 w-4" /></Btn>
@@ -662,6 +665,7 @@ export function DataTable<T>({
         </div>
       ) : null}
     </div>
+
   );
 }
 

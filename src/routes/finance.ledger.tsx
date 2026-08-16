@@ -1,12 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
-import { Badge, Btn, Card, DataTable, Field, Input, KV, PageHeader, Select, StatCard, Tabs } from "@/components/kit";
+import { TrendingUp, TrendingDown, DollarSign, Download } from "lucide-react";
+import { Badge, Btn, Card, DataTable, Field, Input, KV, Modal, PageHeader, Select, StatCard, Tabs, exportCSV } from "@/components/kit";
 import { financeService, money, today, uid, update, useDB } from "@/lib/store";
 import type { Ledger } from "@/lib/types";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
-import { exportCSV } from "@/components/kit";
 
 export const Route = createFileRoute("/finance/ledger")({
   head: () => ({ meta: [{ title: "Ledger — MAYRA Hotel ERP" }] }),
@@ -44,19 +42,19 @@ function LedgerPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 pb-12">
       <PageHeader
-        title="Ledger"
-        subtitle="Income & expense tracking"
+        title="Finance & Accounts Ledger"
+        subtitle="Double-entry financial journal, income vs expenditure & cash flow ledger"
         actions={
           <>
-            <Btn size="sm" icon={Download} onClick={() => exportCSV("ledger.csv", db.ledger.map((l) => ({ date: l.date, type: l.type, category: l.category, description: l.description, amount: l.amount })))}>Export</Btn>
-            <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}>Add Entry</Btn>
+            <Btn size="sm" icon={Download} onClick={() => exportCSV("ledger.csv", db.ledger.map((l) => ({ date: l.date, type: l.type, category: l.category, description: l.description, amount: l.amount })))}>Export CSV</Btn>
+            <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}>Add Ledger Entry</Btn>
           </>
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3.5 sm:grid-cols-3">
         <StatCard label="Total Income" value={money(totalIncome)} tone="success" icon={TrendingUp} />
         <StatCard label="Total Expense" value={money(totalExpense)} tone="danger" icon={TrendingDown} />
         <StatCard label="Net Profit" value={money(totalIncome - totalExpense)} tone={totalIncome >= totalExpense ? "primary" : "danger"} icon={DollarSign} />
@@ -70,41 +68,49 @@ function LedgerPage() {
         columns={[
           { key: "date", label: "Date" },
           { key: "type", label: "Type", render: (l) => <Badge tone={l.type === "income" ? "success" : "danger"}>{l.type}</Badge> },
-          { key: "category", label: "Category", render: (l) => <span className="text-xs">{l.category}</span> },
+          { key: "category", label: "Category", render: (l) => <span className="text-xs font-bold text-slate-700">{l.category}</span> },
           { key: "description", label: "Description" },
-          { key: "reference", label: "Reference", render: (l) => <span className="font-mono text-xs">{l.reference ?? "—"}</span> },
-          { key: "amount", label: "Amount", align: "right", render: (l) => <span className={l.type === "income" ? "text-success font-medium" : "text-danger"}>{l.type === "expense" ? "- " : ""}{money(l.amount)}</span> },
+          { key: "reference", label: "Reference", render: (l) => <span className="font-mono text-xs text-purple-700 font-bold">{l.reference ?? "—"}</span> },
+          { key: "amount", label: "Amount", align: "right", render: (l) => <span className={l.type === "income" ? "text-emerald-700 font-bold tabular-nums" : "text-rose-600 font-bold tabular-nums"}>{l.type === "expense" ? "- " : ""}{money(l.amount)}</span> },
         ]}
         pageSize={20}
       />
 
-      {addOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4">
-          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-pop)]">
-            <h4 className="mb-4 font-semibold">Add Ledger Entry</h4>
-            <div className="space-y-3">
-              <Field label="Type">
-                <div className="flex gap-2">
-                  {(["income", "expense"] as const).map((t) => (
-                    <button key={t} onClick={() => { set("type", t); set("category", t === "income" ? INCOME_CATS[0]! : EXPENSE_CATS[0]!); }} className={`flex-1 rounded-md border py-2 text-sm font-medium capitalize transition-colors ${form.type === t ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-secondary"}`}>{t}</button>
-                  ))}
-                </div>
-              </Field>
-              <Field label="Category">
-                <Select value={form.category} onChange={(e) => set("category", e.target.value)} options={(form.type === "income" ? INCOME_CATS : EXPENSE_CATS).map((c) => ({ value: c, label: c }))} />
-              </Field>
-              <Field label="Description"><Input value={form.description} onChange={(e) => set("description", e.target.value)} /></Field>
-              <Field label="Amount (₹)"><Input type="number" min="0" value={form.amount} onChange={(e) => set("amount", e.target.value)} /></Field>
-              <Field label="Date"><Input type="date" value={form.date} onChange={(e) => set("date", e.target.value)} /></Field>
-              <Field label="Reference"><Input value={form.reference} onChange={(e) => set("reference", e.target.value)} placeholder="Invoice no, bill no etc." /></Field>
+      <Modal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="Add Ledger Entry"
+        footer={
+          <>
+            <Btn onClick={() => setAddOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={addEntry}>Add Entry</Btn>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="Type">
+            <div className="flex gap-2">
+              {(["income", "expense"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => { set("type", t); set("category", t === "income" ? INCOME_CATS[0]! : EXPENSE_CATS[0]!); }}
+                  className={`flex-1 rounded-xl border py-2.5 text-xs font-bold capitalize transition-all cursor-pointer ${form.type === t ? "border-purple-600 bg-purple-50 text-purple-900 shadow-2xs" : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"}`}
+                >
+                  {t}
+                </button>
+              ))}
             </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Btn onClick={() => setAddOpen(false)}>Cancel</Btn>
-              <Btn variant="primary" onClick={addEntry}>Add Entry</Btn>
-            </div>
-          </div>
+          </Field>
+          <Field label="Category">
+            <Select value={form.category} onChange={(e) => set("category", e.target.value)} options={(form.type === "income" ? INCOME_CATS : EXPENSE_CATS).map((c) => ({ value: c, label: c }))} />
+          </Field>
+          <Field label="Description"><Input value={form.description} onChange={(e) => set("description", e.target.value)} /></Field>
+          <Field label="Amount (₹)"><Input type="number" min="0" value={form.amount} onChange={(e) => set("amount", e.target.value)} /></Field>
+          <Field label="Date"><Input type="date" value={form.date} onChange={(e) => set("date", e.target.value)} /></Field>
+          <Field label="Reference"><Input value={form.reference} onChange={(e) => set("reference", e.target.value)} placeholder="Invoice no, bill no etc." /></Field>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
+

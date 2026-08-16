@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { ShoppingCart, Plus, Minus, X, Send, Printer, CreditCard, ChefHat, Sparkles } from "lucide-react";
-import { Badge, Btn, Field, Input, PageHeader, SearchInput, Select, Tabs, SuccessModal } from "@/components/kit";
+import { Badge, Btn, Field, Input, Modal, PageHeader, SearchInput, Select, Tabs, SuccessModal } from "@/components/kit";
 import { inventoryService, money, orderTotals, posService, today, useDB } from "@/lib/store";
 import type { MenuItem, OrderItem, OrderMode, POSOrder } from "@/lib/types";
 import { toast } from "sonner";
@@ -12,25 +12,26 @@ export const Route = createFileRoute("/pos")({
 });
 
 const MODES: OrderMode[] = ["Dine In", "Takeaway", "Room Charge", "Banquet", "Complimentary"];
-const VEG_COLOR = "border-success text-success";
-const NVEG_COLOR = "border-danger text-danger";
+const VEG_COLOR = "border-emerald-500 bg-emerald-50 text-emerald-700";
+const NVEG_COLOR = "border-rose-500 bg-rose-50 text-rose-700";
 
 function MenuItemCard({ item, onAdd }: { item: MenuItem; onAdd: () => void }) {
   return (
     <button
       onClick={onAdd}
-      className="flex w-full items-start gap-2 rounded-lg border border-border bg-card p-3 text-left transition-all hover:border-primary/40 hover:shadow-sm"
+      className="flex w-full items-start gap-2.5 rounded-2xl border border-slate-200/80 bg-white p-3 text-left transition-all hover:border-purple-300 hover:shadow-md hover:bg-purple-50/20 active:scale-[0.98] cursor-pointer"
     >
-      <span className={`mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-sm border text-[9px] font-bold ${item.veg ? VEG_COLOR : NVEG_COLOR}`}>
+      <span className={`mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border text-[9px] font-black ${item.veg ? VEG_COLOR : NVEG_COLOR}`}>
         {item.veg ? "V" : "N"}
       </span>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium leading-tight">{item.name}</div>
-        <div className="text-xs text-muted-foreground mt-0.5">₹{item.price}</div>
+        <div className="text-xs sm:text-sm font-bold text-slate-900 leading-tight line-clamp-1">{item.name}</div>
+        <div className="text-xs font-black text-purple-700 mt-1">₹{item.price}</div>
       </div>
     </button>
   );
 }
+
 
 function CartItem({ item, onQty, onRemove }: { item: OrderItem; onQty: (delta: number) => void; onRemove: () => void }) {
   return (
@@ -230,19 +231,19 @@ function POSPage() {
       </div>
 
       {/* Right: Cart */}
-      <div className="flex w-72 flex-shrink-0 flex-col rounded-lg border border-border bg-card shadow-sm">
-        <div className="flex items-center justify-between border-b border-border px-3 py-2.5">
-          <div className="flex items-center gap-1.5">
-            <ShoppingCart className="h-4 w-4" />
-            <span className="text-sm font-semibold">Cart</span>
+      <div className="flex w-80 flex-shrink-0 flex-col rounded-2xl border border-slate-200/90 bg-white shadow-2xs overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 bg-slate-50/50">
+          <div className="flex items-center gap-2">
+            <ShoppingCart className="h-4 w-4 text-purple-700" />
+            <span className="text-xs font-black uppercase tracking-wider text-slate-900">Live Cart</span>
             {items.length > 0 && <Badge tone="primary">{items.reduce((s, i) => s + i.qty, 0)}</Badge>}
           </div>
-          {items.length > 0 && <button onClick={() => setItems([])} className="text-xs text-danger hover:underline">Clear</button>}
+          {items.length > 0 && <button onClick={() => setItems([])} className="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer">Clear</button>}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 py-2">
+        <div className="flex-1 overflow-y-auto px-4 py-3">
           {items.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Add items to order</div>
+            <div className="flex h-full items-center justify-center text-xs font-bold text-slate-400">Add items to order</div>
           ) : (
             <div>
               {items.map((item) => (
@@ -252,50 +253,58 @@ function POSPage() {
           )}
         </div>
 
-        <div className="border-t border-border p-3 space-y-2">
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span>{money(totals.subtotal)}</span></div>
+        <div className="border-t border-slate-100 p-4 space-y-2.5 bg-slate-50/30">
+          <div className="flex justify-between text-xs font-semibold text-slate-600"><span>Subtotal</span><span>{money(totals.subtotal)}</span></div>
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm text-muted-foreground">Discount</span>
-            <input type="number" min="0" value={discount} onChange={(e) => setDiscount(+e.target.value)} className="h-7 w-20 rounded border border-border px-2 text-right text-xs focus:border-primary outline-none" />
+            <span className="text-xs font-semibold text-slate-600">Discount</span>
+            <input type="number" min="0" value={discount} onChange={(e) => setDiscount(+e.target.value)} className="h-7 w-20 rounded-lg border border-slate-200 bg-white px-2 text-right text-xs font-bold text-slate-800 focus:border-purple-600 outline-none" />
           </div>
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Tax (5%)</span><span>{money(totals.tax)}</span></div>
-          <div className="flex justify-between font-semibold"><span>Total</span><span className="text-base">{money(totals.total)}</span></div>
+          <div className="flex justify-between text-xs font-semibold text-slate-600"><span>Tax (5%)</span><span>{money(totals.tax)}</span></div>
+          <div className="flex justify-between font-black text-slate-900 border-t border-slate-200/80 pt-2 text-sm"><span>Total</span><span className="text-base text-purple-700">{money(totals.total)}</span></div>
           <div className="space-y-2 pt-1">
-            <Btn className="w-full" size="sm" icon={ChefHat} onClick={sendKOT} disabled={!items.length}>Send KOT</Btn>
+            <Btn className="w-full" size="sm" icon={ChefHat} onClick={sendKOT} disabled={!items.length}>Send KOT to Kitchen</Btn>
             <Btn className="w-full" variant="primary" size="sm" icon={CreditCard} onClick={() => { if (!items.length) { toast.error("Cart empty"); return; } if (mode === "Room Charge") { settle(); } else setPayOpen(true); }} disabled={!items.length}>
-              {mode === "Room Charge" ? "Post to Room" : "Settle Bill"}
+              {mode === "Room Charge" ? "Post to Room Folio" : "Settle Bill"}
             </Btn>
           </div>
         </div>
       </div>
 
       {/* Payment modal */}
-      {payOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4">
-          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-pop)]">
-            <h4 className="mb-4 font-semibold">Settle Bill · {money(totals.total)}</h4>
-            <div className="space-y-3">
-              <div className="text-sm space-y-1">
-                <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{money(totals.subtotal)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span>- {money(totals.discount)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>{money(totals.tax)}</span></div>
-                <div className="flex justify-between font-semibold border-t border-border pt-1"><span>Grand Total</span><span className="text-base">{money(totals.total)}</span></div>
-              </div>
-              <Field label="Payment Mode">
-                <div className="grid grid-cols-2 gap-2">
-                  {["Cash", "UPI", "Card", "Bank Transfer"].map((m) => (
-                    <button key={m} onClick={() => setPayMode(m)} className={`rounded-md border py-2 text-sm font-medium transition-colors ${payMode === m ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-secondary"}`}>{m}</button>
-                  ))}
-                </div>
-              </Field>
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Btn onClick={() => setPayOpen(false)}>Cancel</Btn>
-              <Btn variant="primary" onClick={settle}>Confirm Payment</Btn>
-            </div>
+      <Modal
+        open={payOpen}
+        onClose={() => setPayOpen(false)}
+        title={`Settle Bill · ${money(totals.total)}`}
+        footer={
+          <>
+            <Btn onClick={() => setPayOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={settle}>Confirm & Settle</Btn>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div className="text-xs space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 font-semibold text-slate-700">
+            <div className="flex justify-between"><span>Subtotal</span><span>{money(totals.subtotal)}</span></div>
+            <div className="flex justify-between text-emerald-700"><span>Discount</span><span>- {money(totals.discount)}</span></div>
+            <div className="flex justify-between"><span>Tax (5%)</span><span>{money(totals.tax)}</span></div>
+            <div className="flex justify-between font-black text-slate-900 border-t border-slate-200 pt-1.5 text-sm"><span>Grand Total</span><span className="text-purple-700">{money(totals.total)}</span></div>
           </div>
+          <Field label="Payment Mode">
+            <div className="grid grid-cols-2 gap-2">
+              {["Cash", "UPI", "Card", "Bank Transfer"].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setPayMode(m)}
+                  className={`rounded-xl border py-2.5 text-xs font-bold transition-all cursor-pointer ${payMode === m ? "border-purple-600 bg-purple-50 text-purple-900 shadow-2xs" : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"}`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </Field>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
+

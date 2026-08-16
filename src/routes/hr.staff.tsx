@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Badge, Btn, DataTable, Field, Input, KV, PageHeader, Select, StatCard, Tabs } from "@/components/kit";
+import { Badge, Btn, DataTable, Drawer, Field, Input, KV, PageHeader, Select, StatCard, Tabs } from "@/components/kit";
 import { money, today, uid, update, useDB } from "@/lib/store";
 import type { Employee } from "@/lib/types";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/hr/staff")({
   head: () => ({ meta: [{ title: "Staff — MAYRA Hotel ERP" }] }),
@@ -134,20 +135,16 @@ function StaffPage() {
         pageSize={20}
       />
 
-      {addOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-foreground/30 backdrop-blur-[2px]">
-          <div className="flex-1" onClick={() => { setAddOpen(false); setEditEmp(undefined); }} />
-          <aside className="flex h-full w-full max-w-lg flex-col border-l border-border bg-card shadow-[var(--shadow-pop)]">
-            <header className="flex items-center justify-between border-b border-border px-4 py-3">
-              <h3 className="text-sm font-semibold">{editEmp ? "Edit Employee" : "Add Employee"}</h3>
-              <button onClick={() => { setAddOpen(false); setEditEmp(undefined); }} className="rounded-md p-1 hover:bg-secondary">✕</button>
-            </header>
-            <div className="flex-1 overflow-y-auto p-4">
-              <EmployeeForm onClose={() => { setAddOpen(false); setEditEmp(undefined); }} employee={editEmp} />
-            </div>
-          </aside>
-        </div>
-      )}
+      <Drawer
+        open={addOpen}
+        onClose={() => { setAddOpen(false); setEditEmp(undefined); }}
+        title={editEmp ? "Edit Employee" : "Add Employee"}
+        subtitle="Staff directory records and payroll configuration"
+        width="max-w-lg"
+      >
+        <EmployeeForm onClose={() => { setAddOpen(false); setEditEmp(undefined); }} employee={editEmp} />
+      </Drawer>
     </div>
   );
 }
+

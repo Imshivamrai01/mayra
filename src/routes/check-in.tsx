@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle, LogIn } from "lucide-react";
-import { Badge, Btn, Card, Drawer, Field, Input, KV, PageHeader, Select, Tabs, SuccessModal } from "@/components/kit";
+import { Badge, Btn, Card, Drawer, Field, Input, KV, Modal, PageHeader, Select, Tabs, SuccessModal } from "@/components/kit";
 import { bookingService, fmtDate, guestOf, money, today, useDB, calcBooking, paymentService, folioTotals, roomLabel } from "@/lib/store";
 import type { Booking } from "@/lib/types";
 import { toast } from "sonner";
@@ -58,108 +58,108 @@ function CheckInPage() {
   const selTotals = selected ? folioTotals(selected, db) : null;
 
   return (
-    <div className="space-y-4">
-      <PageHeader title="Check-in" subtitle="Process guest arrivals" />
+    <div className="space-y-5 pb-12">
+      <PageHeader title="Express Check-in" subtitle="Verify identity, allocate key card, and process guest arrivals" />
 
       <Tabs tabs={TABS} value={tab} onChange={setTab} />
 
-      <div className="space-y-2">
-        {list.length === 0 && <div className="py-10 text-center text-sm text-muted-foreground">No bookings in this category</div>}
+      <div className="space-y-2.5">
+        {list.length === 0 && <div className="py-12 text-center text-xs font-semibold text-slate-400">No bookings in this lane</div>}
         {list.map((b) => {
           const g = guestOf(b, db);
           const rooms = roomLabel(b.roomIds, db);
           const t = folioTotals(b, db);
           return (
-            <div key={b.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 hover:border-primary/30">
+            <div key={b.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-3.5 hover:border-purple-300 hover:shadow-xs transition-all">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">{g?.name ?? "—"}</span>
-                  {g?.vip && <Badge tone="primary">VIP</Badge>}
+                  <span className="font-bold text-slate-900 text-sm">{g?.name ?? "—"}</span>
+                  {g?.vip && <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">★ VIP</span>}
                   <Badge tone={STATUS_TONE[b.status] ?? "muted"}>{b.status}</Badge>
                 </div>
-                <div className="mt-0.5 text-xs text-muted-foreground">
-                  {b.id} · Room {rooms || "—"} · {b.nights}N · {fmtDate(b.checkIn)} → {fmtDate(b.checkOut)} · {b.source}
+                <div className="mt-1 text-xs font-semibold text-slate-500">
+                  <span className="font-mono text-purple-700 font-bold">{b.id}</span> · Room <span className="font-bold text-slate-900">{rooms || "—"}</span> · {b.nights}N · {fmtDate(b.checkIn)} → {fmtDate(b.checkOut)} · <span className="text-slate-400">{b.source}</span>
                 </div>
-                {t.balance > 0 && <div className="mt-0.5 text-xs text-danger">Balance: {money(t.balance)}</div>}
+                {t.balance > 0 && <div className="mt-1 text-xs text-rose-600 font-bold">Balance: {money(t.balance)}</div>}
               </div>
               {tab !== "done" && (
                 <Btn variant="primary" size="sm" icon={LogIn} onClick={() => { setSelected(b); setStep(1); setAdvance(String(Math.round(t.balance * 0.3))); }}>
-                  Check-in
+                  Express Check-in
                 </Btn>
               )}
               {tab === "done" && (
-                <Badge tone="success"><CheckCircle className="h-3 w-3" /> Checked In</Badge>
+                <Badge tone="success"><CheckCircle className="h-3.5 w-3.5" /> Checked In</Badge>
               )}
             </div>
           );
         })}
       </div>
 
-      {selected && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/30 p-4 backdrop-blur-[2px]">
-          <div className="mt-10 w-full max-w-lg rounded-xl border border-border bg-card shadow-[var(--shadow-pop)]">
-            <header className="flex items-center justify-between border-b border-border px-4 py-3">
-              <h3 className="text-sm font-semibold">Check-in — Step {step} of 3</h3>
-              <button onClick={() => { setSelected(null); setStep(1); }} className="rounded-md p-1 hover:bg-secondary">✕</button>
-            </header>
-            <div className="p-4 space-y-4">
-              {step === 1 && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Step 1: Verify Guest Details</p>
-                  <div className="rounded-lg bg-secondary/50 p-3 space-y-1">
-                    <KV label="Guest Name" value={selGuest?.name ?? "—"} />
-                    <KV label="Mobile" value={selGuest?.mobile ?? "—"} />
-                    <KV label="ID Proof" value={`${selGuest?.idType}: ${selGuest?.idNumber}`} />
-                    <KV label="Address" value={`${selGuest?.city}, ${selGuest?.state}`} />
-                  </div>
-                </div>
-              )}
-              {step === 2 && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Step 2: Verify Room</p>
-                  <div className="rounded-lg bg-secondary/50 p-3 space-y-1">
-                    <KV label="Room(s)" value={roomLabel(selected.roomIds, db) || "—"} />
-                    <KV label="Room Type" value={db.roomTypes.find((t) => t.id === selected.roomTypeId)?.name ?? "—"} />
-                    <KV label="Package" value={db.ratePlans.find((p) => p.id === selected.ratePlanId)?.code ?? "—"} />
-                    <KV label="Check-in" value={fmtDate(selected.checkIn)} />
-                    <KV label="Check-out" value={fmtDate(selected.checkOut)} />
-                    <KV label="Nights" value={selected.nights} />
-                    <KV label="Rate / Night" value={money(selected.rateNight)} />
-                  </div>
-                </div>
-              )}
-              {step === 3 && selTotals && (
-                <div className="space-y-3">
-                  <p className="text-sm font-medium">Step 3: Collect Advance</p>
-                  <div className="rounded-lg bg-secondary/50 p-3 space-y-1 text-sm">
-                    <KV label="Total Bill" value={money(selTotals.total)} />
-                    <KV label="Already Paid" value={money(selTotals.paid)} />
-                    <KV label="Balance Due" value={<span className="text-danger font-semibold">{money(selTotals.balance)}</span>} />
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field label="Advance to Collect (₹)">
-                      <Input type="number" min="0" value={advance} onChange={(e) => setAdvance(e.target.value)} />
-                    </Field>
-                    <Field label="Payment Mode">
-                      <Select value={payMode} onChange={(e) => setPayMode(e.target.value)} options={["Cash", "UPI", "Card", "Bank Transfer"].map((s) => ({ value: s, label: s }))} />
-                    </Field>
-                  </div>
-                </div>
-              )}
-            </div>
-            <footer className="flex justify-between gap-2 border-t border-border px-4 py-3">
-              <Btn onClick={() => step > 1 ? setStep(s => s - 1) : setSelected(null)}>
-                {step > 1 ? "Back" : "Cancel"}
-              </Btn>
-              {step < 3 ? (
-                <Btn variant="primary" onClick={() => setStep(s => s + 1)}>Next →</Btn>
-              ) : (
-                <Btn variant="primary" icon={CheckCircle} onClick={doCheckIn}>Confirm Check-in</Btn>
-              )}
-            </footer>
+      <Modal
+        open={Boolean(selected)}
+        onClose={() => { setSelected(null); setStep(1); }}
+        title={`Check-in Wizard · Step ${step} of 3`}
+        footer={
+          <div className="flex w-full justify-between items-center">
+            <Btn onClick={() => step > 1 ? setStep(s => s - 1) : setSelected(null)}>
+              {step > 1 ? "← Back" : "Cancel"}
+            </Btn>
+            {step < 3 ? (
+              <Btn variant="primary" onClick={() => setStep(s => s + 1)}>Next Step →</Btn>
+            ) : (
+              <Btn variant="primary" icon={CheckCircle} onClick={doCheckIn}>Confirm Check-in</Btn>
+            )}
           </div>
+        }
+      >
+        <div className="space-y-4">
+          {step === 1 && (
+            <div className="space-y-3">
+              <p className="text-xs font-black uppercase tracking-wider text-purple-900">Step 1: Verify Guest Identity & KYC</p>
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-3.5 space-y-1.5 text-xs">
+                <KV label="Guest Name" value={selGuest?.name ?? "—"} />
+                <KV label="Mobile" value={selGuest?.mobile ?? "—"} />
+                <KV label="ID Proof" value={`${selGuest?.idType || "KYC"}: ${selGuest?.idNumber || "—"}`} />
+                <KV label="Address" value={`${selGuest?.city || ""}, ${selGuest?.state || "India"}`} />
+              </div>
+            </div>
+          )}
+          {step === 2 && (
+            <div className="space-y-3">
+              <p className="text-xs font-black uppercase tracking-wider text-purple-900">Step 2: Room & Rate Plan Verification</p>
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-3.5 space-y-1.5 text-xs">
+                <KV label="Assigned Room" value={selected ? (roomLabel(selected.roomIds, db) || "—") : "—"} />
+                <KV label="Room Category" value={db.roomTypes.find((t) => t.id === selected?.roomTypeId)?.name ?? "—"} />
+                <KV label="Meal / Rate Plan" value={(() => { const p = db.ratePlans.find((rp) => rp.id === selected?.ratePlanId); return p ? `${p.code} — ${p.name} (${p.description})` : "—"; })()} />
+
+                <KV label="Check-in Date" value={selected ? fmtDate(selected.checkIn) : "—"} />
+                <KV label="Check-out Date" value={selected ? fmtDate(selected.checkOut) : "—"} />
+                <KV label="Total Stay Duration" value={`${selected?.nights} Night(s)`} />
+                <KV label="Rate / Night" value={selected ? money(selected.rateNight) : "—"} />
+              </div>
+            </div>
+          )}
+          {step === 3 && selTotals && (
+            <div className="space-y-3">
+              <p className="text-xs font-black uppercase tracking-wider text-purple-900">Step 3: Collect Advance Payment</p>
+              <div className="rounded-xl bg-slate-50 border border-slate-100 p-3.5 space-y-1.5 text-xs font-semibold text-slate-700">
+                <KV label="Total Estimated Folio" value={money(selTotals.total)} />
+                <KV label="Advance Already Paid" value={money(selTotals.paid)} />
+                <KV label="Outstanding Balance" value={<span className="text-rose-600 font-bold">{money(selTotals.balance)}</span>} />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 pt-2">
+                <Field label="Advance to Collect (₹)">
+                  <Input type="number" min="0" value={advance} onChange={(e) => setAdvance(e.target.value)} />
+                </Field>
+                <Field label="Payment Mode">
+                  <Select value={payMode} onChange={(e) => setPayMode(e.target.value)} options={["Cash", "UPI", "Card", "Bank Transfer"].map((s) => ({ value: s, label: s }))} />
+                </Field>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </Modal>
+
 
       {checkedInSuccess && (
         <SuccessModal

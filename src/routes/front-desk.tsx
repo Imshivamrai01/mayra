@@ -21,23 +21,24 @@ function BookingRow({ b, actions }: { b: Booking; actions?: React.ReactNode }) {
   const rooms = b.roomIds.map((id) => db.rooms.find((r) => r.id === id)?.number ?? "—").join(", ");
   const t = folioTotals(b, db);
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-3.5 hover:border-purple-300 hover:shadow-xs transition-all">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">{g?.name ?? "—"}</span>
-          {g?.vip && <Badge tone="primary">VIP</Badge>}
+          <span className="font-bold text-slate-900 text-sm">{g?.name ?? "—"}</span>
+          {g?.vip && <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">★ VIP</span>}
           <Badge tone={STATUS_TONE[b.status] ?? "muted"}>{b.status}</Badge>
         </div>
-        <div className="mt-0.5 text-xs text-muted-foreground">
-          {b.id} · Room {rooms} · {b.nights}N · {fmtDate(b.checkIn)} → {fmtDate(b.checkOut)}
+        <div className="mt-1 text-xs font-semibold text-slate-500">
+          <span className="font-mono text-purple-700 font-bold">{b.id}</span> · Room <span className="text-slate-900 font-bold">{rooms}</span> · {b.nights}N · {fmtDate(b.checkIn)} → {fmtDate(b.checkOut)}
           {b.checkInTime && <span> · CI: {fmtTime(b.checkInTime)}</span>}
         </div>
-        {t.balance > 0 && <div className="mt-0.5 text-xs text-danger font-medium">Balance: {money(t.balance)}</div>}
+        {t.balance > 0 && <div className="mt-1 text-xs text-rose-600 font-bold">Balance: {money(t.balance)}</div>}
       </div>
       {actions}
     </div>
   );
 }
+
 
 function FrontDesk() {
   const db = useDB();

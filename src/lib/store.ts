@@ -26,6 +26,14 @@ function persist() {
   }
 }
 
+export const STANDARD_RATE_PLANS = [
+  { id: "rp-ep", code: "EP", name: "European Plan", description: "Room Only (No Meals)", mealRate: 0, active: true },
+  { id: "rp-cp", code: "CP", name: "Continental Plan", description: "Room + Breakfast", mealRate: 450, active: true },
+  { id: "rp-map", code: "MAP", name: "Modified American Plan", description: "Room + Breakfast + Lunch OR Dinner", mealRate: 950, active: true },
+  { id: "rp-ap", code: "AP", name: "American Plan", description: "Room + Breakfast + Lunch + Dinner", mealRate: 1400, active: true },
+  { id: "rp-ai", code: "AI", name: "All Inclusive", description: "Room + All Meals + Drinks & Inclusions", mealRate: 1900, active: true },
+];
+
 export function hydrate() {
   if (hydrated || typeof window === "undefined") return;
   hydrated = true;
@@ -33,13 +41,24 @@ export function hydrate() {
     const raw = window.localStorage.getItem(KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as DB;
-      if (parsed && parsed.version === 1) db = parsed;
+      if (parsed && parsed.version === 1) {
+        if (!parsed.ratePlans || parsed.ratePlans.length < 5) {
+          parsed.ratePlans = STANDARD_RATE_PLANS;
+        } else {
+          parsed.ratePlans = STANDARD_RATE_PLANS.map((std) => {
+            const existing = parsed.ratePlans.find((p) => p.code === std.code || p.id === std.id);
+            return existing ? { ...existing, description: std.description, name: std.name } : std;
+          });
+        }
+        db = parsed;
+      }
     } else persist();
   } catch {
     /* ignore */
   }
   emit();
 }
+
 
 function subscribe(cb: () => void) {
   listeners.add(cb);

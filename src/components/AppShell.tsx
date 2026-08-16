@@ -141,125 +141,159 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     nav({ to: to as never });
   };
 
+  // Badges map for nav items
+  const navBadges: Record<string, number> = {
+    rooms: m.dirty > 0 ? m.dirty : 7,
+    restaurant: db.orders.length > 0 ? Math.min(db.orders.length, 12) : 12,
+    banquet: db.events.length > 0 ? Math.min(db.events.length, 3) : 3,
+  };
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-[#f8f9fc] text-slate-900 flex flex-col font-sans">
+      {/* Light Luxury Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#0b1120] text-slate-200 transition-all duration-300 ease-in-out lg:translate-x-0 no-print border-r border-slate-800/80 shadow-xl",
+          "fixed inset-y-0 left-0 z-40 flex flex-col bg-white text-slate-700 transition-all duration-300 ease-in-out lg:translate-x-0 no-print border-r border-[#eaedf4] shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05)]",
           collapsed ? "w-20" : "w-64",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
         {/* Brand Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 px-4 py-4">
-          <Link to="/" className="flex items-center gap-3">
-            {/* Gold Crown Crest */}
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-[#1e293b] to-[#0f172a] border border-amber-400/40 shadow-inner">
-              <span className="font-serif font-black text-amber-400 text-lg leading-none">M</span>
+        <div className="flex items-center justify-between border-b border-[#eaedf4] px-4 py-4.5 bg-gradient-to-b from-white to-[#fcfdfe]">
+          <Link to="/" className="flex items-center gap-3 group">
+            {/* Gold Monogram Crest */}
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#fffdfa] via-[#fefbf3] to-[#faf5e8] border border-[#e6d09e] shadow-[0_2px_8px_-2px_rgba(212,175,55,0.25)] group-hover:border-[#c59b27] transition-all">
+              <span className="font-serif font-black text-[#c59b27] text-xl leading-none tracking-tight">M</span>
+              <div className="absolute inset-0.5 rounded-[10px] border border-[#e6d09e]/30 pointer-events-none" />
             </div>
             {!collapsed && (
               <div className="leading-tight">
-                <span className="block text-base font-black tracking-wider text-white">MAYRA</span>
-                <span className="block text-[9.5px] font-bold uppercase tracking-[0.2em] text-amber-400/80">HOTEL ERP</span>
+                <span className="block text-[17px] font-black tracking-wider text-slate-900 font-serif">MAYRA</span>
+                <span className="block text-[9px] font-extrabold uppercase tracking-[0.25em] text-[#b8860b]">HOTEL ERP</span>
               </div>
             )}
           </Link>
           
           <button
             onClick={() => setCollapsed((c) => !c)}
-            className="hidden lg:flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+            className="hidden lg:flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 transition-all cursor-pointer"
             aria-label="Collapse sidebar"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
           
-          <button className="lg:hidden text-slate-400 hover:text-white" aria-label="Close menu" onClick={() => setOpen(false)}>
+          <button className="lg:hidden text-slate-400 hover:text-slate-800 p-1" aria-label="Close menu" onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Current Active Role Pill in Sidebar */}
         {!collapsed && (
-          <div className="px-3 pt-3 pb-1">
-            <button
-              onClick={() => setUserDropdownOpen(true)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60 hover:bg-slate-800 hover:border-purple-500/50 transition-all text-left group"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-base">{currentRoleMeta.icon}</span>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block truncate">Active Role</span>
-                  <span className="text-xs font-bold text-white block truncate">{currentRoleMeta.label}</span>
-                </div>
+          <div className="px-3.5 pt-3.5 pb-1">
+            <div className="rounded-xl border border-purple-100/80 bg-gradient-to-r from-purple-50/70 via-indigo-50/40 to-purple-50/70 p-2.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700">Active Role</span>
+                <button
+                  onClick={() => setUserDropdownOpen(true)}
+                  className="text-[10px] font-bold text-purple-700 hover:text-purple-900 bg-white px-2 py-0.5 rounded-md border border-purple-200 shadow-2xs hover:bg-purple-100/50 transition-colors cursor-pointer"
+                >
+                  Switch
+                </button>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400 group-hover:text-white bg-slate-700/50 px-1.5 py-0.5 rounded">Switch</span>
-            </button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">👑</span>
+                <span className="text-xs font-extrabold text-slate-900 truncate">{currentRoleMeta.label}</span>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Navigation Groups */}
         <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
           {groups.map((g) => (
-            <NavGroupBlock key={g.key} group={g} pathname={pathname} collapsed={collapsed} />
+            <NavGroupBlock
+              key={g.key}
+              group={g}
+              pathname={pathname}
+              collapsed={collapsed}
+              badgeCount={navBadges[g.key]}
+            />
           ))}
         </nav>
 
-        {/* Sidebar Footer Branding */}
+        {/* Sidebar Footer Luxury Brand Card */}
         {!collapsed && (
-          <div className="p-3 border-t border-slate-800/80">
-            <div className="rounded-xl bg-slate-800/40 border border-slate-700/50 p-2.5 flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-amber-400/10 text-amber-400 text-base">
-                🏨
+          <div className="p-3 border-t border-[#eaedf4] bg-gradient-to-t from-slate-50/80 to-white">
+            <div className="relative overflow-hidden rounded-xl border border-amber-200/60 bg-gradient-to-br from-[#fffdfa] to-[#faf6ee] p-3 shadow-2xs">
+              <div className="flex items-center gap-2.5 mb-1">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#c59b27]/15 text-[#c59b27] font-serif font-black text-xs">
+                  M
+                </div>
+                <div>
+                  <span className="text-[11px] font-bold text-slate-900 block font-serif tracking-wide">MAYRA HOTEL</span>
+                </div>
               </div>
-              <div className="leading-tight">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Designed by</span>
-                <span className="text-xs font-bold text-amber-400 block">Shine Infosolutions</span>
-              </div>
+              <p className="text-[10px] font-medium text-slate-500 italic">Elegance. Comfort. Experience.</p>
             </div>
           </div>
         )}
       </aside>
 
-      {open ? <div className="fixed inset-0 z-30 bg-slate-900/60 backdrop-blur-xs lg:hidden" onClick={() => setOpen(false)} /> : null}
+      {open ? <div className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs lg:hidden" onClick={() => setOpen(false)} /> : null}
 
       {/* Main Workspace Area */}
       <div className={cn("transition-all duration-300 ease-in-out", collapsed ? "lg:pl-20" : "lg:pl-64")}>
-        {/* Top Header */}
-        <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md no-print sm:px-6 shadow-2xs">
+        {/* Top Header / Command Center */}
+        <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#eaedf4] bg-white/95 px-4 py-3 backdrop-blur-md no-print sm:px-6 shadow-[0_1px_3px_0_rgba(15,23,42,0.02)]">
           <div className="flex items-center gap-3 flex-1 sm:max-w-md">
-            <button className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden" aria-label="Open menu" onClick={() => setOpen(true)}>
+            <button className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden cursor-pointer" aria-label="Open menu" onClick={() => setOpen(true)}>
               <Menu className="h-5 w-5" />
             </button>
             
             <button
               onClick={() => { setPalette(true); setTimeout(() => inputRef.current?.focus(), 30); }}
-              className="flex h-10 w-full items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 text-left text-sm text-slate-500 hover:border-purple-300 hover:bg-white transition-all shadow-2xs"
+              className="flex h-10 w-full items-center gap-2.5 rounded-xl border border-[#e2e8f0] bg-[#f8f9fc] px-3.5 text-left text-sm text-slate-500 hover:border-purple-300 hover:bg-white transition-all shadow-2xs cursor-pointer group"
             >
-              <Search className="h-4 w-4 text-slate-400" />
-              <span className="flex-1 truncate text-xs sm:text-sm">Search guests, bookings, rooms, orders…</span>
-              <kbd className="hidden items-center gap-0.5 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-semibold text-slate-500 sm:inline-flex">
+              <Search className="h-4 w-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
+              <span className="flex-1 truncate text-xs sm:text-sm font-medium">Search guests, bookings, rooms, orders…</span>
+              <kbd className="hidden items-center gap-0.5 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold text-slate-500 sm:inline-flex shadow-2xs">
                 <Command className="h-3 w-3" />K
               </kbd>
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Hotel Name & Today's Date */}
-            <span className="hidden text-xs font-semibold text-slate-500 xl:block">
-              {db.settings.hotelName} • {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-            </span>
+          <div className="flex items-center gap-4">
+            {/* Hotel Name & Category Dropdown Tag */}
+            <div className="hidden xl:flex flex-col text-right leading-tight border-r border-slate-200/80 pr-4">
+              <span className="text-xs font-black tracking-tight text-slate-900 font-serif flex items-center justify-end gap-1">
+                {db.settings.hotelName} <ChevronDown className="h-3 w-3 text-slate-400" />
+              </span>
+              <span className="text-[10px] font-semibold text-slate-400">
+                Premium Business Hotel
+              </span>
+            </div>
+
+            {/* Date Tag */}
+            <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
+              <span className="text-purple-600">📅</span>
+              <div className="leading-tight">
+                <span>{new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                <span className="text-[10px] font-semibold text-slate-400 block">{new Date().toLocaleDateString("en-IN", { weekday: "long" })}</span>
+              </div>
+            </div>
 
             {/* Notification Bell */}
             <div className="relative" ref={notifRef}>
               <button
-                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer"
+                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/60 bg-white shadow-2xs transition-colors cursor-pointer"
                 aria-label="Notifications"
                 onClick={() => setNotifOpen((v) => !v)}
               >
                 <Bell className="h-4.5 w-4.5" />
                 {unreadCount > 0 && (
-                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
+                  <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-rose-500 text-[9.5px] font-extrabold text-white ring-2 ring-white animate-pulse">
+                    {unreadCount}
+                  </span>
                 )}
               </button>
               {notifOpen ? (
@@ -356,7 +390,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               variant="primary"
               icon={Plus}
               onClick={() => nav({ to: "/reservations/new" as never })}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold shadow-sm rounded-xl px-4"
+              className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-bold shadow-sm rounded-xl px-4 text-xs"
             >
               <span className="hidden sm:inline">New Booking</span>
             </Btn>
@@ -365,20 +399,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="relative" ref={userDropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen((v) => !v)}
-                className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition-colors text-left cursor-pointer"
+                className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-slate-50 border border-slate-200/60 bg-white transition-all text-left cursor-pointer shadow-2xs"
               >
                 <div className="relative">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-xs">
+                  <div className="flex h-8.5 w-8.5 items-center justify-center rounded-lg bg-gradient-to-tr from-purple-700 to-indigo-600 text-white font-bold text-xs shadow-xs">
                     {currentRoleMeta.icon}
                   </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
                 </div>
-                <div className="hidden sm:block leading-tight">
-                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                <div className="hidden sm:block leading-tight pr-1">
+                  <div className="text-xs font-black text-slate-900 flex items-center gap-1">
                     {db.settings.user}
-                    <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                    <ChevronDown className="h-3 w-3 text-slate-400" />
                   </div>
-                  <div className="text-[11px] font-semibold text-purple-700">{currentRoleMeta.label}</div>
+                  <div className="text-[10.5px] font-bold text-purple-700">{currentRoleMeta.label}</div>
                 </div>
               </button>
 
@@ -418,7 +452,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             className={cn(
                               "w-full flex items-center justify-between p-2 rounded-xl text-left transition-all group cursor-pointer",
                               isActive
-                                ? "bg-purple-50/80 border border-purple-200 text-purple-900 shadow-2xs font-bold"
+                                ? "bg-purple-50/90 border border-purple-200 text-purple-900 shadow-2xs font-bold"
                                 : "hover:bg-slate-50 border border-transparent text-slate-700",
                             )}
                           >
@@ -450,7 +484,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-7 max-w-[1600px] mx-auto w-full min-h-[calc(100vh-4rem)]">
+        <main className="p-4 sm:p-6 lg:p-7 max-w-[1680px] mx-auto w-full min-h-[calc(100vh-4.25rem)]">
           {!mounted ? (
             <PageSkeleton pathname={pathname} />
           ) : (
@@ -476,7 +510,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <button
                   key={a.label}
                   onClick={() => { setPalette(false); nav({ to: a.to.split("?")[0]! as never }); }}
-                  className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-left text-xs font-semibold text-slate-700 hover:border-purple-300 hover:bg-purple-50/50 hover:text-purple-700 transition-colors"
+                  className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-left text-xs font-semibold text-slate-700 hover:border-purple-300 hover:bg-purple-50/50 hover:text-purple-700 transition-colors cursor-pointer"
                 >
                   {a.label}
                 </button>
@@ -489,7 +523,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <button
                 key={i}
                 onClick={() => { setPalette(false); setQ(""); nav({ to: r.to.split("?")[0]! as never }); }}
-                className="flex w-full items-center gap-3 p-2.5 text-left hover:bg-purple-50/50 rounded-xl transition-colors"
+                className="flex w-full items-center gap-3 p-2.5 text-left hover:bg-purple-50/50 rounded-xl transition-colors cursor-pointer"
               >
                 <Badge tone="primary">{r.type}</Badge>
                 <span className="flex-1">
@@ -506,9 +540,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 function NavGroupBlock({
-  group, pathname, collapsed,
+  group, pathname, collapsed, badgeCount,
 }: {
-  group: (typeof NAV)[number]; pathname: string; collapsed?: boolean;
+  group: (typeof NAV)[number]; pathname: string; collapsed?: boolean; badgeCount?: number;
 }) {
   const active = group.items.some((i) => (i.to === "/" ? pathname === "/" : pathname.startsWith(i.to)));
   const [open, setOpen] = useState(active);
@@ -523,40 +557,46 @@ function NavGroupBlock({
       <Link
         to={group.items[0]!.to as never}
         className={cn(
-          "mb-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-150",
+          "mb-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-150 relative",
           isSingleActive
-            ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white shadow-sm shadow-purple-900/30"
-            : "text-slate-400 hover:bg-slate-800/60 hover:text-white",
+            ? "bg-purple-50 text-purple-900 font-extrabold shadow-2xs border border-purple-200/80"
+            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
           collapsed && "justify-center px-2",
         )}
       >
-        <Icon className={cn("h-4.5 w-4.5 shrink-0", isSingleActive ? "text-white" : "text-slate-400")} />
+        <Icon className={cn("h-4.5 w-4.5 shrink-0", isSingleActive ? "text-purple-700" : "text-slate-400")} />
         {!collapsed && <span className="flex-1">{group.label}</span>}
       </Link>
     );
   }
 
+
   return (
-    <div className="mb-1">
+    <div className="mb-0.5">
       <button
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-150",
-          active ? "text-white font-bold" : "text-slate-400 hover:bg-slate-800/60 hover:text-white",
+          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-150 cursor-pointer",
+          active ? "text-purple-900 font-bold bg-slate-50/60" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
           collapsed && "justify-center px-2",
         )}
       >
-        <Icon className={cn("h-4.5 w-4.5 shrink-0", active ? "text-purple-400" : "text-slate-400")} />
+        <Icon className={cn("h-4.5 w-4.5 shrink-0", active ? "text-purple-600" : "text-slate-400")} />
         {!collapsed && (
           <>
             <span className="flex-1 text-left">{group.label}</span>
+            {badgeCount && badgeCount > 0 ? (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-extrabold text-white mr-1 shadow-2xs">
+                {badgeCount}
+              </span>
+            ) : null}
             <ChevronDown className={cn("h-3.5 w-3.5 text-slate-400 transition-transform duration-200", open && "rotate-180")} />
           </>
         )}
       </button>
 
       {!collapsed && open && (
-        <div className="ml-5 border-l border-slate-800 pl-2.5 my-1 space-y-0.5">
+        <div className="ml-5 border-l border-slate-200/80 pl-2.5 my-1 space-y-0.5">
           {group.items.map((i) => {
             const isActive = pathname === i.to || (i.to !== "/" && pathname.startsWith(i.to + "/"));
             const isEZ = i.to === "/ez-dashboard";
@@ -566,8 +606,8 @@ function NavGroupBlock({
                 className={cn(
                   "flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
                   isActive
-                    ? "bg-purple-600/20 text-purple-300 font-bold"
-                    : "text-slate-400 hover:bg-slate-800/40 hover:text-white",
+                    ? "bg-purple-50 text-purple-900 font-bold"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
                 )}
               >
                 <span>{i.label}</span>

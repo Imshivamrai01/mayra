@@ -1,45 +1,61 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Settings, WrenchIcon, ShowerHead } from "lucide-react";
-import { Badge, Btn, Card, DataTable, Field, Input, KV, PageHeader, Select, Tabs } from "@/components/kit";
+import { Badge, Btn, Card, DataTable, Drawer, Field, Input, KV, PageHeader, Select, Tabs } from "@/components/kit";
 import { hkService, roomLabel, update, uid, useDB, today } from "@/lib/store";
 import type { Room, RoomStatus } from "@/lib/types";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/rooms/grid")({
   head: () => ({ meta: [{ title: "Room Grid — MAYRA Hotel ERP" }] }),
   component: RoomGrid,
 });
 
-const STATUS_META: Record<RoomStatus, { label: string; color: string; bg: string }> = {
-  available: { label: "Available", color: "text-success", bg: "bg-success/10 border-success/30" },
-  reserved: { label: "Reserved", color: "text-info", bg: "bg-info/10 border-info/30" },
-  occupied: { label: "Occupied", color: "text-primary", bg: "bg-primary/10 border-primary/30" },
-  dirty: { label: "Dirty", color: "text-danger", bg: "bg-danger/10 border-danger/30" },
-  cleaning: { label: "Cleaning", color: "text-warning", bg: "bg-warning/10 border-warning/30" },
-  inspection: { label: "Inspection", color: "text-info", bg: "bg-info/15 border-info/40" },
-  maintenance: { label: "Maintenance", color: "text-muted-foreground", bg: "bg-secondary border-border" },
-  blocked: { label: "Blocked", color: "text-muted-foreground", bg: "bg-secondary border-border" },
+const STATUS_META: Record<RoomStatus, { label: string; color: string; bg: string; badgeBg: string }> = {
+  available: { label: "Available", color: "text-emerald-700", bg: "bg-emerald-50/70 border-emerald-200 hover:border-emerald-400", badgeBg: "bg-emerald-100 text-emerald-800" },
+  reserved: { label: "Reserved", color: "text-purple-700", bg: "bg-purple-50/70 border-purple-200 hover:border-purple-400", badgeBg: "bg-purple-100 text-purple-800" },
+  occupied: { label: "Occupied", color: "text-blue-700", bg: "bg-blue-50/70 border-blue-200 hover:border-blue-400", badgeBg: "bg-blue-100 text-blue-800" },
+  dirty: { label: "Dirty", color: "text-rose-700", bg: "bg-rose-50/70 border-rose-200 hover:border-rose-400", badgeBg: "bg-rose-100 text-rose-800" },
+  cleaning: { label: "Cleaning", color: "text-amber-700", bg: "bg-amber-50/70 border-amber-200 hover:border-amber-400", badgeBg: "bg-amber-100 text-amber-800" },
+  inspection: { label: "Inspection", color: "text-indigo-700", bg: "bg-indigo-50/70 border-indigo-200 hover:border-indigo-400", badgeBg: "bg-indigo-100 text-indigo-800" },
+  maintenance: { label: "Maintenance", color: "text-slate-600", bg: "bg-slate-100 border-slate-200 hover:border-slate-400", badgeBg: "bg-slate-200 text-slate-700" },
+  blocked: { label: "Blocked", color: "text-slate-600", bg: "bg-slate-100 border-slate-200 hover:border-slate-400", badgeBg: "bg-slate-200 text-slate-700" },
 };
 
 function RoomCard({ room, onClick }: { room: Room; onClick: () => void }) {
   const db = useDB();
   const meta = STATUS_META[room.status];
   const rt = db.roomTypes.find((t) => t.id === room.typeId);
-  const booking = db.bookings.find((b) => b.roomIds.includes(room.id) && ["confirmed", "checked-in"].includes(b.status));
+  const isOccupied = room.status === "occupied";
+  const isReserved = room.status === "reserved";
+  const booking = isOccupied
+    ? db.bookings.find((b) => b.roomIds.includes(room.id) && b.status === "checked-in")
+    : isReserved
+    ? db.bookings.find((b) => b.roomIds.includes(room.id) && b.status === "confirmed")
+    : null;
   const guest = booking ? db.guests.find((g) => g.id === booking.guestId) : null;
 
   return (
-    <button onClick={onClick} className={`w-full rounded-lg border-2 p-3 text-left transition-all hover:shadow-md ${meta.bg}`}>
+    <button onClick={onClick} className={`w-full rounded-2xl border p-3.5 text-left transition-all hover:shadow-md cursor-pointer ${meta.bg}`}>
       <div className="flex items-start justify-between gap-1">
         <div>
-          <div className="text-lg font-bold">{room.number}</div>
-          <div className="text-[11px] text-muted-foreground">{rt?.code}</div>
+          <div className="text-lg font-black text-slate-900 leading-tight">{room.number}</div>
+          <div className="text-[11px] font-bold text-slate-400 mt-0.5">{rt?.code}</div>
         </div>
-        <span className={`text-[10px] font-semibold uppercase ${meta.color}`}>{meta.label}</span>
+        <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${meta.badgeBg}`}>{meta.label}</span>
       </div>
-      {guest && <div className="mt-2 truncate text-xs font-medium">{guest.name}</div>}
-      {rt && <div className="mt-1 text-[11px] text-muted-foreground">₹{rt.baseRate.toLocaleString("en-IN")}/night</div>}
+      {guest ? (
+        <div className="mt-2 truncate text-xs font-bold text-slate-800 flex items-center gap-1">
+          <span>👤 {guest.name}</span>
+          {isOccupied && <span className="text-[10px] font-semibold text-purple-700">· In-House</span>}
+        </div>
+      ) : (
+        <div className="mt-2 text-xs font-semibold text-emerald-700">
+          {room.status === "available" ? "✓ Vacant · Ready" : meta.label}
+        </div>
+      )}
+      {rt && <div className="mt-1 text-[11px] font-semibold text-slate-500">₹{rt.baseRate.toLocaleString("en-IN")}/night</div>}
     </button>
   );
 }
@@ -47,9 +63,16 @@ function RoomCard({ room, onClick }: { room: Room; onClick: () => void }) {
 function RoomDetail({ room, onClose }: { room: Room; onClose: () => void }) {
   const db = useDB();
   const rt = db.roomTypes.find((t) => t.id === room.typeId);
-  const booking = db.bookings.find((b) => b.roomIds.includes(room.id) && ["confirmed", "checked-in"].includes(b.status));
+  const isOccupied = room.status === "occupied";
+  const isReserved = room.status === "reserved";
+  const booking = isOccupied
+    ? db.bookings.find((b) => b.roomIds.includes(room.id) && b.status === "checked-in")
+    : isReserved
+    ? db.bookings.find((b) => b.roomIds.includes(room.id) && b.status === "confirmed")
+    : null;
   const guest = booking ? db.guests.find((g) => g.id === booking.guestId) : null;
   const hkStaff = db.employees.filter((e) => e.department === "Housekeeping" && e.status === "active");
+
 
   function setStatus(status: RoomStatus) {
     update((d) => { const r = d.rooms.find((x) => x.id === room.id); if (r) r.status = status; });
@@ -176,20 +199,15 @@ function RoomGrid() {
         );
       })}
 
-      {selected && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-foreground/30 backdrop-blur-[2px]">
-          <div className="flex-1" onClick={() => setSelected(null)} />
-          <aside className="flex h-full w-full max-w-md flex-col border-l border-border bg-card shadow-[var(--shadow-pop)]">
-            <header className="flex items-center justify-between border-b border-border px-4 py-3">
-              <h3 className="text-sm font-semibold">Room {selected.number}</h3>
-              <button onClick={() => setSelected(null)} className="rounded-md p-1 hover:bg-secondary">✕</button>
-            </header>
-            <div className="flex-1 overflow-y-auto p-4">
-              <RoomDetail room={selected} onClose={() => setSelected(null)} />
-            </div>
-          </aside>
-        </div>
-      )}
+      <Drawer
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        title={`Room ${selected?.number}`}
+        subtitle={`Floor ${selected?.floor} Operations & Status`}
+      >
+        {selected && <RoomDetail room={selected} onClose={() => setSelected(null)} />}
+      </Drawer>
     </div>
   );
 }
+

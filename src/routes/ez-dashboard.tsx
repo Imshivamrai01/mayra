@@ -7,9 +7,10 @@ import {
   CheckCircle, Brush, Wrench, Eye
 } from "lucide-react";
 import {
-  Badge, Btn, Card, PageHeader, StatCard, Table, Select, Input,
+  Badge, Btn, Card, Modal, PageHeader, StatCard, Table, Select, Input,
   SuccessModal, Shimmer
 } from "@/components/kit";
+
 import {
   fmtDate, guestOf, money, roomLabel, roomTypeOf, today, update, useDB,
   folioTotals, bookingService, roomService, ROOM_STATUS_META, BOOKING_STATUS_META, uid
@@ -24,13 +25,14 @@ export const Route = createFileRoute("/ez-dashboard")({
 
 const STATUS_FILTERS: { key: string; label: string; tone: string; bg: string }[] = [
   { key: "all", label: "All Rooms", tone: "default", bg: "" },
-  { key: "available", label: "Available", tone: "success", bg: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30" },
-  { key: "occupied", label: "Occupied (In-House)", tone: "primary", bg: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30" },
-  { key: "reserved", label: "Reserved (Expected)", tone: "info", bg: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30" },
-  { key: "dirty", label: "Dirty (Needs HK)", tone: "danger", bg: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30" },
-  { key: "cleaning", label: "Cleaning", tone: "warning", bg: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30" },
-  { key: "maintenance", label: "Maintenance", tone: "muted", bg: "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/30" },
+  { key: "available", label: "Available", tone: "success", bg: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  { key: "occupied", label: "Occupied (In-House)", tone: "primary", bg: "bg-purple-50 text-purple-900 border-purple-200" },
+  { key: "reserved", label: "Reserved (Expected)", tone: "info", bg: "bg-sky-50 text-sky-800 border-sky-200" },
+  { key: "dirty", label: "Dirty (Needs HK)", tone: "danger", bg: "bg-rose-50 text-rose-800 border-rose-200" },
+  { key: "cleaning", label: "Cleaning", tone: "warning", bg: "bg-amber-50 text-amber-800 border-amber-200" },
+  { key: "maintenance", label: "Maintenance", tone: "muted", bg: "bg-slate-100 text-slate-700 border-slate-200" },
 ];
+
 
 function EZDashboardPage() {
   const db = useDB();
@@ -162,9 +164,16 @@ function EZDashboardPage() {
     }
   };
 
-  const selectedBooking = selectedRoom ? roomBookings[selectedRoom.id] : null;
+  const selectedBooking = selectedRoom
+    ? selectedRoom.status === "occupied"
+      ? db.bookings.find((b) => b.roomIds.includes(selectedRoom.id) && b.status === "checked-in")
+      : selectedRoom.status === "reserved"
+      ? db.bookings.find((b) => b.roomIds.includes(selectedRoom.id) && b.status === "confirmed")
+      : null
+    : null;
   const selectedGuest = selectedBooking ? guestOf(selectedBooking, db) : null;
   const selectedTotals = selectedBooking ? folioTotals(selectedBooking, db) : null;
+
 
   return (
     <div className="space-y-6 pb-16">
@@ -463,7 +472,13 @@ function EZDashboardPage() {
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                   {roomsOnFloor.map((room) => {
                     const st = getStatusColor(room.status);
-                    const booking = roomBookings[room.id];
+                    const isOccupied = room.status === "occupied";
+                    const isReserved = room.status === "reserved";
+                    const booking = isOccupied
+                      ? db.bookings.find((b) => b.roomIds.includes(room.id) && b.status === "checked-in")
+                      : isReserved
+                      ? db.bookings.find((b) => b.roomIds.includes(room.id) && b.status === "confirmed")
+                      : null;
                     const guest = booking ? guestOf(booking, db) : null;
                     const rType = roomTypeOf(room.typeId, db);
                     const totals = booking ? folioTotals(booking, db) : null;
@@ -490,34 +505,48 @@ function EZDashboardPage() {
 
                         {/* Middle Content: Guest / Status details */}
                         <div className="my-2.5 space-y-1 text-xs">
-                          {booking && guest ? (
+                          {isOccupied && booking && guest ? (
                             <>
-                              <div className="font-semibold text-foreground truncate flex items-center gap-1">
-                                <User className="h-3 w-3 text-muted-foreground shrink-0" />
+                              <div className="font-semibold text-slate-900 truncate flex items-center gap-1">
+                                <User className="h-3 w-3 text-purple-700 shrink-0" />
                                 <span className="truncate">{guest.name}</span>
                               </div>
-                              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              <div className="text-[10px] text-slate-500 flex items-center gap-1">
                                 <Clock className="h-3 w-3 shrink-0" />
-                                <span>
-                                  {booking.status === "checked-in" ? `Out: ${fmtDate(booking.checkOut)}, ${booking.checkOutTime || "11:00 AM"}` : `In: ${fmtDate(booking.checkIn)}, ${booking.checkInTime || "12:00 PM"}`}
-                                </span>
+                                <span>Out: {fmtDate(booking.checkOut)}, {booking.checkOutTime || "11:00 AM"}</span>
                               </div>
                               {totals && (
-                                <div className="text-[11px] font-bold">
+                                <div className="text-[11px] font-extrabold">
                                   {totals.balance > 0 ? (
-                                    <span className="text-danger">Due: {money(totals.balance)}</span>
+                                    <span className="text-rose-600">Due: {money(totals.balance)}</span>
                                   ) : (
-                                    <span className="text-success">Paid</span>
+                                    <span className="text-emerald-700">✓ Paid</span>
                                   )}
                                 </div>
                               )}
                             </>
+                          ) : isReserved && booking && guest ? (
+                            <>
+                              <div className="font-semibold text-slate-900 truncate flex items-center gap-1">
+                                <User className="h-3 w-3 text-blue-600 shrink-0" />
+                                <span className="truncate">{guest.name}</span>
+                              </div>
+                              <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                                <Clock className="h-3 w-3 shrink-0" />
+                                <span>In: {fmtDate(booking.checkIn)}, {booking.checkInTime || "12:00 PM"}</span>
+                              </div>
+                            </>
                           ) : (
-                            <div className="text-[11px] text-muted-foreground py-1">
-                              {room.status === "available" && <span className="text-emerald-700 dark:text-emerald-400 font-semibold">Ready for Guest</span>}
-                              {room.status === "dirty" && <span className="text-rose-700 dark:text-rose-400 font-semibold">Housekeeping Req.</span>}
-                              {room.status === "cleaning" && <span className="text-amber-700 dark:text-amber-400 font-semibold">Cleaning in Progress</span>}
-                              {["maintenance", "blocked"].includes(room.status) && <span className="text-slate-600 font-semibold">Under Repair</span>}
+                            <div className="text-[11px] py-1 space-y-0.5">
+                              {room.status === "available" && (
+                                <>
+                                  <span className="text-emerald-700 font-bold block">✓ Vacant · Ready</span>
+                                  <span className="text-[10px] text-slate-400 font-medium block">₹{rType?.baseRate?.toLocaleString("en-IN") ?? "3,500"}/night</span>
+                                </>
+                              )}
+                              {room.status === "dirty" && <span className="text-rose-700 font-bold block">🧹 Needs Cleaning</span>}
+                              {room.status === "cleaning" && <span className="text-amber-700 font-bold block">✨ Cleaning in Progress</span>}
+                              {["maintenance", "blocked"].includes(room.status) && <span className="text-slate-600 font-bold block">🔧 Under Repair</span>}
                             </div>
                           )}
                         </div>
@@ -534,6 +563,7 @@ function EZDashboardPage() {
                       </div>
                     );
                   })}
+
                 </div>
               </div>
             );
@@ -541,68 +571,85 @@ function EZDashboardPage() {
       </div>
 
       {/* Room Quick Inspection Modal */}
-      {selectedRoom && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-foreground/40 p-4 backdrop-blur-[3px] animate-in fade-in duration-200">
-          <div className="celebrate-pop relative w-full max-w-lg rounded-2xl border border-primary/30 bg-card p-6 shadow-2xl space-y-4">
-            <div className="flex items-start justify-between border-b border-border pb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-2xl font-extrabold text-foreground">Room {selectedRoom.number}</h3>
-                  <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase border ${getStatusColor(selectedRoom.status).badgeBg}`}>
-                    {ROOM_STATUS_META[selectedRoom.status]?.label ?? selectedRoom.status}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {roomTypeOf(selectedRoom.typeId, db)?.name} · Floor {selectedRoom.floor} · {selectedRoom.bedType} Bed · ₹{roomTypeOf(selectedRoom.typeId, db)?.basePrice}/night
-                </p>
-              </div>
+      <Modal
+        open={Boolean(selectedRoom)}
+        onClose={() => setSelectedRoom(null)}
+        title={`Room ${selectedRoom?.number}`}
+        subtitle={selectedRoom ? `${roomTypeOf(selectedRoom.typeId, db)?.name} · Floor ${selectedRoom.floor} · ${selectedRoom.bedType} Bed · ₹${roomTypeOf(selectedRoom.typeId, db)?.basePrice}/night` : ""}
+        footer={
+          <div className="flex w-full justify-between items-center">
+            <Btn variant="outline" size="sm" onClick={() => setSelectedRoom(null)}>
+              Close
+            </Btn>
 
-              <button
-                onClick={() => setSelectedRoom(null)}
-                className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+            {selectedBooking ? (
+              <Btn
+                variant="primary"
+                size="sm"
+                className="shimmer-gold font-bold"
+                onClick={() => nav({ to: `/reservations/${selectedBooking.id}` as never })}
               >
-                ✕
-              </button>
+                Open Guest Folio & Invoices →
+              </Btn>
+            ) : selectedRoom?.status === "available" ? (
+              <Btn
+                variant="primary"
+                size="sm"
+                className="shimmer-gold font-bold"
+                onClick={() => nav({ to: "/reservations/new" as never })}
+              >
+                Book This Room →
+              </Btn>
+            ) : null}
+          </div>
+        }
+      >
+        {selectedRoom && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className={`px-2.5 py-1 rounded-xl text-xs font-black uppercase border ${getStatusColor(selectedRoom.status).badgeBg}`}>
+                Status: {ROOM_STATUS_META[selectedRoom.status]?.label ?? selectedRoom.status}
+              </span>
             </div>
 
             {/* If In-House Guest / Active Booking */}
             {selectedBooking && selectedGuest ? (
-              <div className="space-y-3 rounded-xl border border-border/80 bg-secondary/40 p-4">
+              <div className="space-y-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-4">
                 <div className="flex items-center justify-between">
-                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                    <User className="h-4 w-4 text-primary" />
+                  <div className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                    <User className="h-4 w-4 text-purple-700" />
                     <span>{selectedGuest.name}</span>
-                    {selectedGuest.vip && <Badge tone="primary">VIP</Badge>}
+                    {selectedGuest.vip && <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">★ VIP</span>}
                   </div>
-                  <span className="text-xs font-mono text-muted-foreground">{selectedBooking.id}</span>
+                  <span className="text-xs font-mono font-bold text-purple-700">{selectedBooking.id}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-muted-foreground">Mobile:</span> <span className="font-medium">{selectedGuest.mobile || selectedGuest.phone || "—"}</span>
+                    <span className="text-slate-400 font-semibold">Mobile:</span> <span className="font-bold text-slate-800">{selectedGuest.mobile || selectedGuest.phone || "—"}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Source:</span> <span className="font-medium">{selectedBooking.source}</span>
+                    <span className="text-slate-400 font-semibold">Source:</span> <span className="font-bold text-slate-800">{selectedBooking.source}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Check-In:</span>{" "}
-                    <span className="font-semibold text-foreground">{fmtDate(selectedBooking.checkIn)} ({selectedBooking.checkInTime || "12:00 PM"})</span>
+                    <span className="text-slate-400 font-semibold">Check-In:</span>{" "}
+                    <span className="font-bold text-slate-900">{fmtDate(selectedBooking.checkIn)} ({selectedBooking.checkInTime || "12:00 PM"})</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Check-Out:</span>{" "}
-                    <span className="font-semibold text-foreground">{fmtDate(selectedBooking.checkOut)} ({selectedBooking.checkOutTime || "11:00 AM"})</span>
+                    <span className="text-slate-400 font-semibold">Check-Out:</span>{" "}
+                    <span className="font-bold text-slate-900">{fmtDate(selectedBooking.checkOut)} ({selectedBooking.checkOutTime || "11:00 AM"})</span>
                   </div>
                 </div>
 
                 {selectedTotals && (
-                  <div className="border-t border-border/60 pt-2 flex items-center justify-between text-xs">
+                  <div className="border-t border-slate-200 pt-2 flex items-center justify-between text-xs font-semibold">
                     <div>
-                      <span className="text-muted-foreground">Total Bill:</span>{" "}
-                      <span className="font-bold">{money(selectedTotals.total)}</span>
+                      <span className="text-slate-500">Total Bill:</span>{" "}
+                      <span className="font-bold text-slate-900">{money(selectedTotals.total)}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Balance:</span>{" "}
-                      <span className={selectedTotals.balance > 0 ? "font-bold text-danger" : "font-bold text-success"}>
+                      <span className="text-slate-500">Balance:</span>{" "}
+                      <span className={selectedTotals.balance > 0 ? "font-black text-rose-600" : "font-black text-emerald-700"}>
                         {money(selectedTotals.balance)}
                       </span>
                     </div>
@@ -610,14 +657,14 @@ function EZDashboardPage() {
                 )}
               </div>
             ) : (
-              <div className="rounded-xl border border-border/60 bg-secondary/20 p-4 text-center text-xs text-muted-foreground">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center text-xs font-semibold text-slate-400">
                 No active in-house guest assigned to this room right now.
               </div>
             )}
 
             {/* Quick Status Control Buttons */}
             <div>
-              <div className="text-xs font-semibold text-muted-foreground mb-2">Change Room Status:</div>
+              <div className="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">Change Room Status:</div>
               <div className="grid grid-cols-3 gap-2">
                 <Btn
                   size="sm"
@@ -654,36 +701,10 @@ function EZDashboardPage() {
                 </Btn>
               </div>
             </div>
-
-            {/* Modal Bottom Actions */}
-            <div className="flex justify-end gap-2 border-t border-border pt-3">
-              <Btn variant="outline" size="sm" onClick={() => setSelectedRoom(null)}>
-                Close
-              </Btn>
-
-              {selectedBooking ? (
-                <Btn
-                  variant="primary"
-                  size="sm"
-                  className="shimmer-gold font-bold"
-                  onClick={() => nav({ to: `/reservations/${selectedBooking.id}` as never })}
-                >
-                  Open Guest Folio & Invoices →
-                </Btn>
-              ) : selectedRoom.status === "available" ? (
-                <Btn
-                  variant="primary"
-                  size="sm"
-                  className="shimmer-gold font-bold"
-                  onClick={() => nav({ to: "/reservations/new" as never })}
-                >
-                  Book This Room →
-                </Btn>
-              ) : null}
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
+
     </div>
   );
 }

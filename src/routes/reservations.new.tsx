@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, Check, Sparkles, User, Calendar, BedDouble, ShieldCheck, Printer, FileText } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { ArrowLeft, Check, Sparkles, User, Calendar, BedDouble, ShieldCheck, Printer, FileText, Search, Phone, MapPin, CheckCircle2, ChevronDown } from "lucide-react";
 import { Badge, Btn, Card, Field, Input, KV, PageHeader, Select, SuccessModal } from "@/components/kit";
 import { bookingService, calcBooking, guestService, money, nightsBetween, today, addDays, iso, useDB } from "@/lib/store";
 import type { BookingSource, ID } from "@/lib/types";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/reservations/new")({
   head: () => ({ meta: [{ title: "New Reservation — MAYRA Hotel ERP" }] }),
@@ -23,9 +24,24 @@ function NewReservationPage() {
   // Step 1: Guest & Stay Dates
   const [guestMode, setGuestMode] = useState<"existing" | "new">("existing");
   const [selectedGuestId, setSelectedGuestId] = useState<ID>(db.guests[0]?.id ?? "");
+  const [guestDropdownOpen, setGuestDropdownOpen] = useState(false);
+  const [guestSearchQuery, setGuestSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setGuestDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [newGuest, setNewGuest] = useState({
     salutation: "Mr.", name: "", mobile: "", email: "", city: "Pune", state: "Maharashtra", idType: "Aadhaar", idNumber: "", vip: false,
   });
+
 
   const [checkIn, setCheckIn] = useState(today());
   const [checkInTime, setCheckInTime] = useState(db.settings.checkInTime || "12:00 PM");
@@ -54,8 +70,22 @@ function NewReservationPage() {
   // Success State
   const [successBooking, setSuccessBooking] = useState<{ id: string; grc: string; guestName: string; total: number; roomName: string; billingType: string } | null>(null);
 
+  const filteredGuests = useMemo(() => {
+    if (!guestSearchQuery.trim()) return db.guests;
+    const q = guestSearchQuery.toLowerCase();
+    return db.guests.filter((g) =>
+      g.name.toLowerCase().includes(q) ||
+      g.mobile.includes(q) ||
+      g.city?.toLowerCase().includes(q) ||
+      g.email?.toLowerCase().includes(q)
+    );
+  }, [db.guests, guestSearchQuery]);
+
+  const currentSelectedGuest = db.guests.find((g) => g.id === selectedGuestId) || db.guests[0];
+
   const nights = nightsBetween(checkIn, checkOut);
   const selectedType = db.roomTypes.find((r) => r.id === roomTypeId);
+
   const effectiveRate = +customRate > 0 ? +customRate : (selectedType?.baseRate ?? 4000);
 
   const calc = calcBooking(
@@ -148,51 +178,235 @@ function NewReservationPage() {
         subtitle="Complete dedicated reservation & tariff calculator"
       />
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-8 lg:grid-cols-3">
         {/* Left 2 Cols: Form Sections */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
           {/* 1. Guest Selection */}
-          <Card title="1. Guest Information" className="relative overflow-hidden">
-            <div className="flex gap-2 mb-4">
+          <Card title="1. Guest Information" className={cn("p-6 overflow-visible transition-all", guestDropdownOpen ? "relative z-50" : "relative z-10")}>
+            <div className="flex gap-3 mb-6">
+
               <button
                 type="button"
                 onClick={() => setGuestMode("existing")}
-                className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${guestMode === "existing" ? "border-primary bg-primary/10 text-primary font-semibold shadow-sm" : "border-border hover:bg-secondary"}`}
+
+                className={cn(
+                  "flex-1 py-3 px-4 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer",
+                  guestMode === "existing"
+                    ? "border-purple-600 bg-purple-50/80 text-purple-900 shadow-xs ring-1 ring-purple-600/20"
+                    : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                )}
               >
                 Existing Guest
               </button>
               <button
                 type="button"
                 onClick={() => setGuestMode("new")}
-                className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${guestMode === "new" ? "border-primary bg-primary/10 text-primary font-semibold shadow-sm" : "border-border hover:bg-secondary"}`}
+                className={cn(
+                  "flex-1 py-3 px-4 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer",
+                  guestMode === "new"
+                    ? "border-purple-600 bg-purple-50/80 text-purple-900 shadow-xs ring-1 ring-purple-600/20"
+                    : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                )}
               >
                 + New Guest Profile
               </button>
             </div>
 
             {guestMode === "existing" ? (
-              <div className="space-y-3">
-                <Field label="Search / Select Existing Guest">
-                  <Select
-                    value={selectedGuestId}
-                    onChange={(e) => setSelectedGuestId(e.target.value)}
-                    options={db.guests.map((g) => ({
-                      value: g.id,
-                      label: `${g.name} (${g.mobile}) — ${g.city} ${g.vip ? "⭐ VIP" : ""}`,
-                    }))}
-                  />
-                </Field>
-                {selectedGuestId && (
-                  <div className="rounded-lg bg-secondary/60 p-3 text-xs flex justify-between items-center border border-border/80">
-                    <div>
-                      <span className="font-semibold text-foreground">{db.guests.find((g) => g.id === selectedGuestId)?.name}</span>
-                      <p className="text-muted-foreground mt-0.5">{db.guests.find((g) => g.id === selectedGuestId)?.email} · {db.guests.find((g) => g.id === selectedGuestId)?.mobile}</p>
+              <div className="space-y-4" ref={dropdownRef}>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                      Search & Select Registered Guest Profile
+                    </label>
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      {db.guests.length} Profiles in Database
+                    </span>
+                  </div>
+
+                  <div className="relative">
+                    {/* Unified Clean Search Input */}
+                    <div
+                      onClick={() => setGuestDropdownOpen(true)}
+                      className={cn(
+                        "relative flex items-center w-full h-13 rounded-2xl border bg-white px-4 cursor-pointer transition-all shadow-2xs",
+                        guestDropdownOpen
+                          ? "border-purple-600 ring-2 ring-purple-600/20"
+                          : "border-slate-200 hover:border-slate-300"
+                      )}
+                    >
+                      <Search className="h-4.5 w-4.5 text-purple-700 shrink-0 mr-3" />
+                      <input
+                        type="text"
+                        value={guestDropdownOpen ? guestSearchQuery : `${currentSelectedGuest?.salutation || "Mr."} ${currentSelectedGuest?.name || ""} · ${currentSelectedGuest?.mobile || ""} (${currentSelectedGuest?.city || "India"})`}
+                        onFocus={() => {
+                          setGuestDropdownOpen(true);
+                          setGuestSearchQuery("");
+                        }}
+                        onChange={(e) => {
+                          setGuestSearchQuery(e.target.value);
+                          if (!guestDropdownOpen) setGuestDropdownOpen(true);
+                        }}
+                        placeholder="Search guest by name, phone (e.g. 9876...) or city..."
+                        className="w-full h-full bg-transparent text-xs sm:text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 cursor-text"
+                      />
+                      {guestDropdownOpen && guestSearchQuery ? (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setGuestSearchQuery("");
+                          }}
+                          className="h-6 w-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0 ml-2"
+                        >
+                          ✕
+                        </button>
+                      ) : null}
+                      <ChevronDown
+                        className={cn(
+                          "h-4.5 w-4.5 text-slate-400 transition-transform shrink-0 ml-2",
+                          guestDropdownOpen ? "rotate-180 text-purple-700" : ""
+                        )}
+                      />
                     </div>
-                    <Badge tone="success">Verified Profile</Badge>
+
+                    {/* Rich Interactive Dropdown Popover */}
+                    {guestDropdownOpen && (
+                      <div className="absolute z-50 left-0 right-0 top-full mt-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl space-y-2.5 animate-in fade-in zoom-in-95 duration-150">
+                        {/* Header & Quick Filter Pills */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 text-xs">
+                          <span className="font-bold text-slate-500 text-[11px] uppercase tracking-wider">
+                            {filteredGuests.length} Guests Matching Search
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setGuestMode("new");
+                              setGuestDropdownOpen(false);
+                            }}
+                            className="font-bold text-purple-700 hover:text-purple-900 text-xs flex items-center gap-1 cursor-pointer"
+                          >
+                            + Add New Profile
+                          </button>
+                        </div>
+
+                        {/* Scrollable Guest List */}
+                        <div className="overflow-y-auto space-y-1.5 max-h-80 pr-1 divide-y divide-slate-50">
+                          {filteredGuests.length === 0 ? (
+                            <div className="py-8 text-center space-y-2">
+                              <p className="text-xs font-bold text-slate-600">No registered guest found matching "{guestSearchQuery}"</p>
+                              <Btn
+                                size="sm"
+                                variant="primary"
+                                onClick={() => {
+                                  setGuestMode("new");
+                                  setGuestDropdownOpen(false);
+                                  setNewGuest((g) => ({ ...g, name: guestSearchQuery }));
+                                }}
+                              >
+                                Create "{guestSearchQuery || "New Guest"}" Profile
+                              </Btn>
+                            </div>
+                          ) : (
+                            filteredGuests.map((g) => {
+                              const isSelected = g.id === selectedGuestId;
+                              return (
+                                <div
+                                  key={g.id}
+                                  onClick={() => {
+                                    setSelectedGuestId(g.id);
+                                    setGuestDropdownOpen(false);
+                                    setGuestSearchQuery("");
+                                  }}
+                                  className={cn(
+                                    "flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all text-xs sm:text-sm",
+                                    isSelected
+                                      ? "bg-purple-50/90 border border-purple-200/80 shadow-2xs font-bold"
+                                      : "hover:bg-slate-50/90 border border-transparent"
+                                  )}
+                                >
+                                  <div className="flex items-center gap-3.5 min-w-0">
+                                    <div
+                                      className={cn(
+                                        "h-10 w-10 rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-2xs",
+                                        isSelected
+                                          ? "bg-purple-700 text-white"
+                                          : "bg-slate-100 text-slate-700"
+                                      )}
+                                    >
+                                      {g.name?.slice(0, 2).toUpperCase()}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-bold text-slate-900 truncate">
+                                          {g.salutation || "Mr."} {g.name}
+                                        </span>
+                                        {g.vip && (
+                                          <span className="text-[9.5px] font-black text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full shrink-0">
+                                            ⭐ VIP
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-slate-500 flex items-center gap-2 mt-0.5 truncate font-medium">
+                                        <span>📞 {g.mobile}</span>
+                                        <span className="text-slate-300">·</span>
+                                        <span>📍 {g.city || "India"}</span>
+                                        {g.email && (
+                                          <>
+                                            <span className="text-slate-300">·</span>
+                                            <span className="text-slate-400">{g.email}</span>
+                                          </>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {isSelected ? (
+                                    <span className="h-6 w-6 rounded-full bg-purple-700 text-white flex items-center justify-center text-xs font-black shrink-0">
+                                      ✓
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs font-semibold text-slate-400 hover:text-purple-700">
+                                      Select →
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Selected Guest Meta Summary Strip */}
+                {currentSelectedGuest && !guestDropdownOpen && (
+                  <div className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-purple-50/30 border border-slate-200/80 text-xs shadow-2xs">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="h-9 w-9 rounded-xl bg-purple-700 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-xs">
+                        {currentSelectedGuest.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900 text-sm">{currentSelectedGuest.salutation || "Mr."} {currentSelectedGuest.name}</span>
+                          {currentSelectedGuest.vip && <span className="text-[9px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-1.5 py-0.2 rounded">⭐ VIP GUEST</span>}
+                        </div>
+                        <div className="text-xs text-slate-500 truncate mt-0.5 font-medium">
+                          📞 {currentSelectedGuest.mobile} · ✉️ {currentSelectedGuest.email || "No email"} · 📍 {currentSelectedGuest.city}, {currentSelectedGuest.state || "India"}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 shrink-0">
+                      ✓ Profile Verified
+                    </span>
                   </div>
                 )}
               </div>
             ) : (
+
+
+
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Full Name" required>
                   <Input value={newGuest.name} onChange={(e) => setNewGuest((g) => ({ ...g, name: e.target.value }))} placeholder="e.g. Rahul Sharma" />
@@ -221,11 +435,12 @@ function NewReservationPage() {
           </Card>
 
           {/* 2. Dates & Room Configuration */}
-          <Card title="2. Stay Dates, Timings & Room Selection">
+          <Card title="2. Stay Dates, Timings & Room Selection" className="relative z-0">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
               <Field label="Check-in Date">
                 <Input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
               </Field>
+
               <Field label="Standard Check-In Time">
                 <Select
                   value={checkInTime}
@@ -383,10 +598,11 @@ function NewReservationPage() {
                   onChange={(e) => setRatePlanId(e.target.value)}
                   options={db.ratePlans.map((rp) => ({
                     value: rp.id,
-                    label: `${rp.name} (${rp.code}) — +${money(rp.mealRate)}/pax/nt`,
+                    label: `${rp.code} — ${rp.name} (${rp.description}) ${rp.mealRate > 0 ? `· +${money(rp.mealRate)}/pax` : "· No Meals"}`,
                   }))}
                 />
               </Field>
+
               <Field label="Booking Source">
                 <Select value={source} onChange={(e) => setSource(e.target.value as BookingSource)} options={SOURCES.map((s) => ({ value: s, label: s }))} />
               </Field>

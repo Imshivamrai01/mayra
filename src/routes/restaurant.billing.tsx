@@ -5,8 +5,9 @@ import {
   UtensilsCrossed, AlertCircle, ShoppingBag, ArrowRight, UserCheck, Search
 } from "lucide-react";
 import {
-  Badge, Btn, Card, DataTable, Field, Input, PageHeader, Select, StatCard, SuccessModal, Tabs
+  Badge, Btn, Card, DataTable, Field, Input, Modal, PageHeader, Select, StatCard, SuccessModal, Tabs
 } from "@/components/kit";
+
 import {
   fmtDate, money, orderTotals, posService, today, useDB
 } from "@/lib/store";
@@ -257,152 +258,148 @@ function RestaurantBillingPage() {
       </div>
 
       {/* Settle Bill Modal */}
-      {settleOrder && !postRoomOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-semibold text-base">Settle Bill · #{settleOrder.number}</h3>
-              <button onClick={() => setSettleOrder(null)} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="bg-secondary/60 rounded-lg p-3 space-y-1 text-xs">
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>{money(orderTotals(settleOrder, db).subtotal)}</span>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>GST (5%)</span>
-                  <span>{money(orderTotals(settleOrder, db).tax)}</span>
-                </div>
-                <div className="flex justify-between font-bold text-sm border-t border-border pt-1">
-                  <span>Grand Total</span>
-                  <span className="text-primary">{money(orderTotals(settleOrder, db).total)}</span>
-                </div>
+      <Modal
+        open={Boolean(settleOrder && !postRoomOpen)}
+        onClose={() => setSettleOrder(null)}
+        title={`Settle Restaurant Bill · #${settleOrder?.number}`}
+        footer={
+          <>
+            <Btn onClick={() => setSettleOrder(null)}>Cancel</Btn>
+            <Btn variant="primary" onClick={handleDirectSettle}>Confirm Settlement</Btn>
+          </>
+        }
+      >
+        {settleOrder && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-slate-100 bg-slate-50 p-3.5 space-y-1.5 text-xs font-semibold text-slate-700">
+              <div className="flex justify-between">
+                <span>Total Bill Amount</span>
+                <span className="font-bold text-slate-900">{money(orderTotals(settleOrder, db).subtotal)}</span>
               </div>
-
-              <Field label="Payment Mode">
-                <div className="grid grid-cols-2 gap-2">
-                  {["Cash", "UPI", "Card", "Bank Transfer"].map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setPayMode(m)}
-                      className={`rounded-md border py-2.5 text-xs font-semibold transition-all ${
-                        payMode === m ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-border bg-card hover:bg-secondary"
-                      }`}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
-              </Field>
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-border pt-3">
-              <Btn onClick={() => setSettleOrder(null)}>Cancel</Btn>
-              <Btn variant="primary" onClick={handleDirectSettle}>Confirm Settlement</Btn>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Post to Room Modal */}
-      {settleOrder && postRoomOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl border border-border bg-card p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-semibold text-base">Post to In-House Guest Room</h3>
-              <button onClick={() => { setPostRoomOpen(false); setSettleOrder(null); }} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="text-xs text-muted-foreground">
-                Bill amount <span className="font-bold text-foreground">{money(orderTotals(settleOrder, db).total)}</span> will be posted to the guest's room folio.
+              <div className="flex justify-between">
+                <span>GST Tax (5%)</span>
+                <span>{money(orderTotals(settleOrder, db).tax)}</span>
               </div>
-
-              <Field label="Select In-House Room / Guest">
-                <Select
-                  value={roomBookingId}
-                  onChange={(e) => setRoomBookingId(e.target.value)}
-                  options={[
-                    { value: "", label: "— Choose In-House Room —" },
-                    ...inHouseBookings.map((b) => {
-                      const g = db.guests.find((x) => x.id === b.guestId);
-                      const r = db.rooms.find((x) => x.id === b.roomIds[0]);
-                      return { value: b.id, label: `Room ${r?.number || "—"} · ${g?.name || "Guest"}` };
-                    }),
-                  ]}
-                />
-              </Field>
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-border pt-3">
-              <Btn onClick={() => { setPostRoomOpen(false); setSettleOrder(null); }}>Cancel</Btn>
-              <Btn variant="primary" onClick={handlePostToRoom} disabled={!roomBookingId}>
-                Transfer to Room Folio
-              </Btn>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Print Bill Receipt Modal */}
-      {printOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-2xl my-8 space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-3 no-print">
-              <h3 className="font-semibold text-base">Restaurant Cash Receipt</h3>
-              <div className="flex items-center gap-2">
-                <Btn variant="primary" size="sm" icon={Printer} onClick={() => window.print()}>Print</Btn>
-                <Btn size="sm" onClick={() => setPrintOrder(null)}>Close</Btn>
+              <div className="flex justify-between font-black text-slate-900 border-t border-slate-200 pt-1 text-sm">
+                <span>Net Payable</span>
+                <span className="text-purple-700">{money(orderTotals(settleOrder, db).total)}</span>
               </div>
             </div>
 
-            <div className="rounded border p-4 bg-white text-black font-mono text-xs space-y-3">
-              <div className="text-center border-b pb-2">
-                <h2 className="text-base font-bold">MAYRA HOTEL & RESTAURANT</h2>
-                <p className="text-[10px] text-gray-500">Civil Lines, Jaipur · GSTIN: 08AAACH1234F1Z8</p>
-                <p className="text-[10px] text-gray-500">Ph: +91 98765 43210</p>
-              </div>
-
-              <div className="flex justify-between border-b pb-2 text-[11px]">
-                <div>
-                  <p>Order: #{printOrder.number}</p>
-                  <p>Date: {fmtDate(today())}</p>
-                </div>
-                <div className="text-right">
-                  <p>KOT: {printOrder.kot || "—"}</p>
-                  <p>Mode: {printOrder.paymentMode || printOrder.mode}</p>
-                </div>
-              </div>
-
-              <div className="space-y-1 border-b pb-2">
-                {printOrder.items.map((it, i) => (
-                  <div key={i} className="flex justify-between">
-                    <span>{it.name} × {it.qty}</span>
-                    <span>₹{(it.price * it.qty).toFixed(2)}</span>
-                  </div>
+            <Field label="Payment Mode">
+              <div className="grid grid-cols-2 gap-2">
+                {["Cash", "UPI", "Card", "Bank Transfer"].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setPayMode(m)}
+                    className={`rounded-xl border py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                      payMode === m ? "border-purple-600 bg-purple-50 text-purple-900 shadow-2xs" : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                    }`}
+                  >
+                    {m}
+                  </button>
                 ))}
               </div>
+            </Field>
+          </div>
+        )}
+      </Modal>
 
-              <div className="space-y-1 text-right text-[11px]">
-                <div className="flex justify-between"><span>Subtotal:</span><span>₹{orderTotals(printOrder, db).subtotal.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>CGST (2.5%):</span><span>₹{(orderTotals(printOrder, db).tax / 2).toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>SGST (2.5%):</span><span>₹{(orderTotals(printOrder, db).tax / 2).toFixed(2)}</span></div>
-                <div className="flex justify-between font-bold text-sm border-t pt-1">
-                  <span>Grand Total:</span>
-                  <span>₹{orderTotals(printOrder, db).total.toFixed(2)}</span>
-                </div>
+      {/* Post to Room Modal */}
+      <Modal
+        open={Boolean(settleOrder && postRoomOpen)}
+        onClose={() => { setPostRoomOpen(false); setSettleOrder(null); }}
+        title="Post to In-House Guest Room"
+        footer={
+          <>
+            <Btn onClick={() => { setPostRoomOpen(false); setSettleOrder(null); }}>Cancel</Btn>
+            <Btn variant="primary" onClick={handlePostToRoom} disabled={!roomBookingId}>
+              Transfer to Room Folio
+            </Btn>
+          </>
+        }
+      >
+        {settleOrder && (
+          <div className="space-y-3">
+            <div className="text-xs text-slate-500 font-semibold">
+              Bill amount <span className="font-bold text-slate-900">{money(orderTotals(settleOrder, db).total)}</span> will be posted to the guest's room folio.
+            </div>
+
+            <Field label="Select In-House Room / Guest">
+              <Select
+                value={roomBookingId}
+                onChange={(e) => setRoomBookingId(e.target.value)}
+                options={[
+                  { value: "", label: "— Choose In-House Room —" },
+                  ...inHouseBookings.map((b) => {
+                    const g = db.guests.find((x) => x.id === b.guestId);
+                    const r = db.rooms.find((x) => x.id === b.roomIds[0]);
+                    return { value: b.id, label: `Room ${r?.number || "—"} · ${g?.name || "Guest"}` };
+                  }),
+                ]}
+              />
+            </Field>
+          </div>
+        )}
+      </Modal>
+
+      {/* Print Bill Receipt Modal */}
+      <Modal
+        open={Boolean(printOrder)}
+        onClose={() => setPrintOrder(null)}
+        title="Restaurant Cash Receipt"
+        footer={
+          <>
+            <Btn size="sm" onClick={() => setPrintOrder(null)}>Close</Btn>
+            <Btn variant="primary" size="sm" icon={Printer} onClick={() => window.print()}>Print Receipt</Btn>
+          </>
+        }
+      >
+        {printOrder && (
+          <div className="rounded-xl border border-slate-200 p-4 bg-white text-slate-900 font-mono text-xs space-y-3">
+            <div className="text-center border-b border-slate-100 pb-2">
+              <h2 className="text-base font-bold">MAYRA HOTEL & RESTAURANT</h2>
+              <p className="text-[10px] text-slate-500">Civil Lines, Jaipur · GSTIN: 08AAACH1234F1Z8</p>
+              <p className="text-[10px] text-slate-500">Ph: +91 98765 43210</p>
+            </div>
+
+            <div className="flex justify-between border-b border-slate-100 pb-2 text-[11px]">
+              <div>
+                <p>Order: #{printOrder.number}</p>
+                <p>Date: {fmtDate(today())}</p>
               </div>
-
-              <div className="text-center pt-3 border-t text-[10px] text-gray-500">
-                <p>Thank you for dining with us!</p>
-                <p>Please visit again.</p>
+              <div className="text-right">
+                <p>KOT: {printOrder.kot || "—"}</p>
+                <p>Mode: {printOrder.paymentMode || printOrder.mode}</p>
               </div>
             </div>
+
+            <div className="space-y-1 border-b border-slate-100 pb-2">
+              {printOrder.items.map((it, i) => (
+                <div key={i} className="flex justify-between">
+                  <span>{it.name} × {it.qty}</span>
+                  <span>₹{(it.price * it.qty).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-1 text-right text-[11px]">
+              <div className="flex justify-between"><span>Subtotal:</span><span>₹{orderTotals(printOrder, db).subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>CGST (2.5%):</span><span>₹{(orderTotals(printOrder, db).tax / 2).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>SGST (2.5%):</span><span>₹{(orderTotals(printOrder, db).tax / 2).toFixed(2)}</span></div>
+              <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1">
+                <span>Grand Total:</span>
+                <span className="text-purple-700">₹{orderTotals(printOrder, db).total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="text-center pt-3 border-t border-slate-100 text-[10px] text-slate-400">
+              <p>Thank you for dining with us!</p>
+              <p>Please visit again.</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
       {/* Success Modal */}
       {successReceipt && (

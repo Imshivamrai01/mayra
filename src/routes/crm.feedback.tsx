@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Star, Download } from "lucide-react";
-import { Badge, Btn, DataTable, Field, Input, PageHeader, Select, StatCard, Tabs, exportCSV } from "@/components/kit";
+import { Badge, Btn, DataTable, Field, Input, Modal, PageHeader, Select, StatCard, Tabs, exportCSV } from "@/components/kit";
 import { fmtDate, money, today, uid, update, useDB, guestOf } from "@/lib/store";
 import type { GuestFeedback } from "@/lib/types";
 import { toast } from "sonner";
@@ -49,23 +49,23 @@ function FeedbackPage() {
   }
 
   function StarRating({ n }: { n: number }) {
-    return <span className="text-warning">{"★".repeat(n)}{"☆".repeat(5 - n)}</span>;
+    return <span className="text-amber-500 font-bold tracking-widest text-sm">{"★".repeat(n)}{"☆".repeat(5 - n)}</span>;
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 pb-12">
       <PageHeader
-        title="Guest Feedback"
-        subtitle="Reviews and satisfaction tracking"
+        title="Guest Feedback & CRM"
+        subtitle="Guest satisfaction scores, department ratings & feedback intelligence"
         actions={
           <>
-            <Btn size="sm" icon={Download} onClick={() => exportCSV("feedback.csv", db.feedback.map((f) => ({ date: f.date, guest: db.guests.find((g) => g.id === f.guestId)?.name ?? "", rating: f.rating, category: f.category, comment: f.comment })))}>Export</Btn>
+            <Btn size="sm" icon={Download} onClick={() => exportCSV("feedback.csv", db.feedback.map((f) => ({ date: f.date, guest: db.guests.find((g) => g.id === f.guestId)?.name ?? "", rating: f.rating, category: f.category, comment: f.comment })))}>Export CSV</Btn>
             <Btn variant="primary" size="sm" icon={Plus} onClick={() => setAddOpen(true)}>Add Feedback</Btn>
           </>
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-4">
+      <div className="grid gap-3.5 sm:grid-cols-4">
         <StatCard label="Avg Rating" value={avg === "—" ? avg : `${avg}/5`} tone="warning" icon={Star} />
         <StatCard label="Total Reviews" value={db.feedback.length} />
         <StatCard label="5-Star Reviews" value={fiveStars.length} tone="success" />
@@ -73,15 +73,15 @@ function FeedbackPage() {
       </div>
 
       {byCategory.length > 0 && (
-        <div className="rounded-lg border border-border bg-card p-4">
-          <h3 className="mb-3 text-sm font-semibold">Category Ratings</h3>
+        <div className="card-surface rounded-2xl bg-white border border-slate-200/80 p-5 shadow-2xs">
+          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-3.5">Departmental Ratings</h3>
           <div className="grid gap-3 sm:grid-cols-3">
             {byCategory.map((c) => (
-              <div key={c.category} className="flex items-center justify-between rounded-md bg-secondary/40 px-3 py-2">
-                <span className="text-sm">{c.category}</span>
+              <div key={c.category} className="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-100 px-3.5 py-2.5">
+                <span className="text-xs font-bold text-slate-700">{c.category}</span>
                 <div className="text-right">
-                  <div className="text-sm font-semibold">{c.avg?.toFixed(1)}/5</div>
-                  <div className="text-xs text-muted-foreground">{c.count} reviews</div>
+                  <div className="text-xs font-black text-purple-700">{c.avg?.toFixed(1)} / 5 ★</div>
+                  <div className="text-[10px] font-semibold text-slate-400">{c.count} reviews</div>
                 </div>
               </div>
             ))}
@@ -96,47 +96,55 @@ function FeedbackPage() {
         searchKeys={[(f) => db.guests.find((g) => g.id === f.guestId)?.name ?? "", "comment", "category"]}
         columns={[
           { key: "date", label: "Date", render: (f) => fmtDate(f.date) },
-          { key: "guest", label: "Guest", render: (f) => db.guests.find((g) => g.id === f.guestId)?.name ?? "—" },
+          { key: "guest", label: "Guest", render: (f) => <span className="font-bold text-slate-900">{db.guests.find((g) => g.id === f.guestId)?.name ?? "—"}</span> },
           { key: "rating", label: "Rating", render: (f) => <StarRating n={f.rating} /> },
           { key: "category", label: "Category", render: (f) => <Badge tone="muted">{f.category}</Badge> },
-          { key: "comment", label: "Comment", render: (f) => <span className="text-sm">{f.comment}</span> },
-          { key: "source", label: "Source", render: (f) => <span className="text-xs text-muted-foreground">{f.source ?? "Direct"}</span> },
+          { key: "comment", label: "Comment", render: (f) => <span className="text-xs font-medium text-slate-700">{f.comment}</span> },
+          { key: "source", label: "Source", render: (f) => <span className="text-xs font-semibold text-slate-400">{f.source ?? "Direct"}</span> },
         ]}
         pageSize={15}
       />
 
-      {addOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4">
-          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-pop)]">
-            <h4 className="mb-4 font-semibold">Add Guest Feedback</h4>
-            <div className="space-y-3">
-              <Field label="Guest">
-                <Select value={form.guestId} onChange={(e) => set("guestId", e.target.value)} options={[{ value: "", label: "Select guest" }, ...db.guests.map((g) => ({ value: g.id, label: g.name }))]} />
-              </Field>
-              <Field label="Rating">
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((r) => (
-                    <button key={r} onClick={() => set("rating", String(r))} className={`flex-1 rounded-md border py-2 text-sm font-medium transition-colors ${+form.rating === r ? "border-warning bg-warning/10 text-warning" : "border-border hover:bg-secondary"}`}>{r}★</button>
-                  ))}
-                </div>
-              </Field>
-              <Field label="Category">
-                <Select value={form.category} onChange={(e) => set("category", e.target.value)} options={CATEGORIES.map((c) => ({ value: c, label: c }))} />
-              </Field>
-              <Field label="Comment">
-                <textarea value={form.comment} onChange={(e) => set("comment", e.target.value)} rows={3} className="w-full rounded-md border border-border bg-card px-2.5 py-2 text-sm outline-none focus:border-primary resize-none" placeholder="Guest's comments…" />
-              </Field>
-              <Field label="Source">
-                <Select value={form.source} onChange={(e) => set("source", e.target.value)} options={["In-person", "WhatsApp", "Email", "MakeMyTrip", "Google", "TripAdvisor"].map((s) => ({ value: s, label: s }))} />
-              </Field>
+      <Modal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="Add Guest Feedback"
+        footer={
+          <>
+            <Btn onClick={() => setAddOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={addFeedback}>Submit Feedback</Btn>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="Guest">
+            <Select value={form.guestId} onChange={(e) => set("guestId", e.target.value)} options={[{ value: "", label: "Select guest" }, ...db.guests.map((g) => ({ value: g.id, label: g.name }))]} />
+          </Field>
+          <Field label="Rating">
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((r) => (
+                <button
+                  key={r}
+                  onClick={() => set("rating", String(r))}
+                  className={`flex-1 rounded-xl border py-2.5 text-xs font-black transition-all cursor-pointer ${+form.rating === r ? "border-amber-500 bg-amber-50 text-amber-900 shadow-2xs" : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"}`}
+                >
+                  {r} ★
+                </button>
+              ))}
             </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Btn onClick={() => setAddOpen(false)}>Cancel</Btn>
-              <Btn variant="primary" onClick={addFeedback}>Submit</Btn>
-            </div>
-          </div>
+          </Field>
+          <Field label="Category">
+            <Select value={form.category} onChange={(e) => set("category", e.target.value)} options={CATEGORIES.map((c) => ({ value: c, label: c }))} />
+          </Field>
+          <Field label="Comment">
+            <textarea value={form.comment} onChange={(e) => set("comment", e.target.value)} rows={3} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm font-medium text-slate-900 outline-none focus:border-purple-600 resize-none shadow-2xs" placeholder="Guest's review / comments…" />
+          </Field>
+          <Field label="Source">
+            <Select value={form.source} onChange={(e) => set("source", e.target.value)} options={["In-person", "WhatsApp", "Email", "MakeMyTrip", "Google", "TripAdvisor"].map((s) => ({ value: s, label: s }))} />
+          </Field>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
+

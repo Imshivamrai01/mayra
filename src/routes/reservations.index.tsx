@@ -324,8 +324,9 @@ function BookingDetail({ booking, onClose }: { booking: Booking; onClose: () => 
         <KV label="Nights" value={booking.nights} />
         <KV label="Room(s)" value={rooms || "—"} />
         <KV label="Type" value={rt?.name ?? "—"} />
-        <KV label="Package" value={rp?.code ?? "—"} />
+        <KV label="Meal Plan" value={rp ? `${rp.code} (${rp.name}) — ${rp.description}` : "—"} />
         <KV label="Adults" value={booking.adults} />
+
         <KV label="Children" value={booking.children} />
         <KV label="Source" value={booking.source} />
       </div>
