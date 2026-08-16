@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#99731e" />
+      <stop offset="35%" stop-color="#d4a737" />
+      <stop offset="70%" stop-color="#f5e19e" />
+      <stop offset="100%" stop-color="#b8922e" />
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141c2b" />
+      <stop offset="100%" stop-color="#0b1019" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with gold border -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="2.5" />
+  
+  <!-- Crown / Star Accent -->
+  <path d="M26 18 L32 13 L38 18 L35 22 L29 22 Z" fill="url(#goldGrad)" />
+  <circle cx="32" cy="11" r="2" fill="url(#goldGrad)" />
+  
+  <!-- Stylized Luxury 'M' -->
+  <path d="M19 46 L19 25 L27 38 L32 30 L37 38 L45 25 L45 46 L39.5 46 L39.5 34 L34.5 42 L29.5 42 L24.5 34 L24.5 46 Z" fill="url(#goldGrad)" />
+</svg>
