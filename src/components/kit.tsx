@@ -206,23 +206,23 @@ export function Field({ label, children, hint, required, className }: { label: s
 }
 
 const fieldCls =
-  "h-9 w-full rounded-md border border-border bg-card px-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-ring/25";
+  "h-9.5 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition-all placeholder:text-slate-400 text-slate-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-100";
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cn(fieldCls, props.className)} />;
 }
 export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea {...props} className={cn(fieldCls, "h-auto min-h-[72px] py-2", props.className)} />;
+  return <textarea {...props} className={cn(fieldCls, "h-auto min-h-[72px] py-2.5", props.className)} />;
 }
 export function Select({ options, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & { options: { value: string; label: string }[] }) {
   return (
     <div className="relative">
-      <select {...props} className={cn(fieldCls, "appearance-none pr-8", props.className)}>
+      <select {...props} className={cn(fieldCls, "appearance-none pr-8 cursor-pointer", props.className)}>
         {options.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+      <ChevronDown className="pointer-events-none absolute right-2.5 top-3 h-4 w-4 text-slate-400" />
     </div>
   );
 }
@@ -230,11 +230,11 @@ export function Select({ options, ...props }: React.SelectHTMLAttributes<HTMLSel
 export function SearchInput({ value, onChange, placeholder = "Search…", className }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
   return (
     <div className={cn("relative", className)}>
-      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
       <input
         aria-label={placeholder} value={value} placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className={cn(fieldCls, "pl-8")}
+        className={cn(fieldCls, "pl-9")}
       />
     </div>
   );
@@ -242,17 +242,24 @@ export function SearchInput({ value, onChange, placeholder = "Search…", classN
 
 export function Tabs({ tabs, value, onChange, className }: { tabs: { value: string; label: string; count?: number }[]; value: string; onChange: (v: string) => void; className?: string }) {
   return (
-    <div className={cn("flex flex-wrap gap-1 border-b border-border", className)}>
+    <div className={cn("flex flex-wrap gap-1 border-b border-slate-200", className)}>
       {tabs.map((t) => (
         <button
           key={t.value} onClick={() => onChange(t.value)}
           className={cn(
-            "-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-            value === t.value ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
+            "-mb-px border-b-2 px-3.5 py-2.5 text-sm font-semibold transition-all duration-150 cursor-pointer",
+            value === t.value ? "border-purple-600 text-purple-700 font-bold" : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300",
           )}
         >
           {t.label}
-          {typeof t.count === "number" ? <span className="ml-1.5 rounded-full bg-secondary px-1.5 py-0.5 text-[11px] tabular-nums">{t.count}</span> : null}
+          {typeof t.count === "number" ? (
+            <span className={cn(
+              "ml-1.5 rounded-full px-2 py-0.5 text-[11px] tabular-nums font-bold",
+              value === t.value ? "bg-purple-100 text-purple-800" : "bg-slate-100 text-slate-600",
+            )}>
+              {t.count}
+            </span>
+          ) : null}
         </button>
       ))}
     </div>
@@ -528,50 +535,50 @@ export function DataTable<T>({
   const slice = filtered.slice((current - 1) * pageSize, current * pageSize);
 
   return (
-    <div className="card-surface shimmer-card overflow-hidden">
+    <div className="card-surface rounded-2xl bg-white border border-slate-100 shadow-xs overflow-hidden">
       {(searchKeys || toolbar) && (
-        <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
-          {searchKeys ? <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1); }} className="w-full sm:w-64" /> : null}
+        <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-4">
+          {searchKeys ? <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1); }} className="w-full sm:w-72" /> : null}
           <div className="flex flex-1 flex-wrap items-center gap-2">{toolbar}</div>
-          <span className="text-xs text-muted-foreground tabular-nums">{filtered.length} record(s)</span>
+          <span className="text-xs font-semibold text-slate-400 tabular-nums">{filtered.length} record(s)</span>
         </div>
       )}
       <div className="overflow-x-auto w-full">
         <table className={cn("w-full border-collapse", dense ? "text-xs" : "text-sm")}>
           <thead>
-            <tr className="border-b border-border bg-secondary/60">
+            <tr className="border-b border-slate-100 bg-slate-50/80">
               {columns.map((c) => (
                 <th
                   key={c.key}
                   style={c.width ? { width: c.width } : undefined}
                   onClick={() => c.sortable !== false && setSort((s) => (s?.key === c.key ? { key: c.key, dir: s.dir === 1 ? -1 : 1 } : { key: c.key, dir: 1 }))}
                   className={cn(
-                    dense ? "px-2 py-2 text-[10.5px]" : "px-3 py-2 text-[11px]",
-                    "font-semibold uppercase tracking-wide text-muted-foreground select-none whitespace-nowrap",
+                    dense ? "px-3 py-2.5 text-[10.5px]" : "px-4 py-3 text-[11px]",
+                    "font-bold uppercase tracking-wider text-slate-400 select-none whitespace-nowrap",
                     c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "text-left",
-                    c.sortable !== false && "cursor-pointer hover:text-foreground",
+                    c.sortable !== false && "cursor-pointer hover:text-purple-600 transition-colors",
                   )}
                 >
                   {c.label}
-                  {sort?.key === c.key ? <span className="ml-1">{sort.dir === 1 ? "↑" : "↓"}</span> : null}
+                  {sort?.key === c.key ? <span className="ml-1 text-purple-600 font-extrabold">{sort.dir === 1 ? "↑" : "↓"}</span> : null}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-50">
             {slice.map((row, i) => (
               <tr
                 key={rowKey ? rowKey(row, i) : ((row as { id?: string }).id ?? i)}
                 onClick={() => onRowClick?.(row)}
-                className={cn("border-b border-border/70 last:border-0 transition-colors hover:bg-secondary/50", onRowClick && "cursor-pointer")}
+                className={cn("transition-colors hover:bg-purple-50/30", onRowClick && "cursor-pointer")}
               >
                 {columns.map((c) => (
                   <td
                     key={c.key}
                     className={cn(
-                      dense ? "px-2 py-1.5 text-xs" : "px-3 py-2.5",
+                      dense ? "px-3 py-2 text-xs" : "px-4 py-3",
                       c.align === "right" ? "text-right tabular-nums" : c.align === "center" ? "text-center" : "text-left",
-                      "whitespace-nowrap",
+                      "whitespace-nowrap font-medium text-slate-700",
                     )}
                   >
                     {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "—")}
@@ -584,9 +591,9 @@ export function DataTable<T>({
         {!slice.length ? (empty ?? <EmptyState title="No records found" message="Try changing the search text or filters." action={q ? <Btn size="sm" onClick={() => setQ("")}>Clear search</Btn> : undefined} />) : null}
       </div>
       {pages > 1 ? (
-        <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-2">
-          <span className="text-xs text-muted-foreground">Page {current} of {pages}</span>
-          <div className="flex gap-1">
+        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-3 bg-slate-50/40">
+          <span className="text-xs font-semibold text-slate-500">Page {current} of {pages}</span>
+          <div className="flex gap-1.5">
             <Btn size="sm" onClick={() => setPage(Math.max(1, current - 1))} disabled={current === 1} aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></Btn>
             <Btn size="sm" onClick={() => setPage(Math.min(pages, current + 1))} disabled={current === pages} aria-label="Next page"><ChevronRight className="h-4 w-4" /></Btn>
           </div>

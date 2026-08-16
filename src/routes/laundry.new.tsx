@@ -113,7 +113,7 @@ function NewLaundryPage() {
           Back to Laundry Orders
         </Btn>
         <span className="text-muted-foreground">|</span>
-        <Badge tone="primary" className="shimmer-gold-badge px-3 py-1">Laundry Service Intake</Badge>
+        <Badge tone="primary" className="shimmer-purple-badge px-3 py-1">Laundry Service Intake</Badge>
       </div>
 
       <PageHeader

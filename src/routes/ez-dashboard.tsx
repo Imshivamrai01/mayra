@@ -173,32 +173,32 @@ function EZDashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="flex h-3 w-3 rounded-full bg-emerald-500 beacon-pulse" />
-            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              EZ Room Dashboard <Sparkles className="h-5 w-5 text-amber-500 animate-pulse" />
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              EZ Room Dashboard <Sparkles className="h-5 w-5 text-purple-600 animate-pulse" />
             </h1>
-            <span className="shimmer-gold-badge text-xs px-2.5 py-0.5 rounded-full font-bold ml-2">Live Room Matrix</span>
+            <span className="shimmer-purple-badge text-xs px-2.5 py-0.5 rounded-full font-bold ml-2">Live Room Matrix</span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-slate-500 font-medium">
             Real-time visual room status board, daily arrivals & departures, and one-click quick actions.
           </p>
         </div>
 
         {/* Hotel Timing Policy Banner */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-2 text-xs flex items-center gap-3 shadow-sm">
-            <Clock className="h-4 w-4 text-primary" />
+          <div className="rounded-xl border border-purple-200 bg-purple-50/60 px-3.5 py-2 text-xs flex items-center gap-3 shadow-xs">
+            <Clock className="h-4 w-4 text-purple-600" />
             <div>
-              <span className="font-semibold text-foreground">Standard Timings:</span>{" "}
-              <span className="text-muted-foreground">Check-in: <strong className="text-foreground">{db.settings.checkInTime || "12:00 PM"}</strong></span> ·{" "}
-              <span className="text-muted-foreground">Check-out: <strong className="text-foreground">{db.settings.checkOutTime || "11:00 AM"}</strong></span>
+              <span className="font-bold text-slate-900">Standard Timings:</span>{" "}
+              <span className="text-slate-500">Check-in: <strong className="text-slate-900">{db.settings.checkInTime || "12:00 PM"}</strong></span> ·{" "}
+              <span className="text-slate-500">Check-out: <strong className="text-slate-900">{db.settings.checkOutTime || "11:00 AM"}</strong></span>
             </div>
           </div>
 
           <Btn
             variant="primary"
-            size="sm"
+            size="md"
             icon={Plus}
-            className="shimmer-gold font-bold shadow-md"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold shadow-sm rounded-xl px-4"
             onClick={() => nav({ to: "/reservations/new" as never })}
           >
             New Booking

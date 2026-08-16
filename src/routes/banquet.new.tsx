@@ -87,7 +87,7 @@ function NewBanquetPage() {
           Back to Banquet Events
         </Btn>
         <span className="text-muted-foreground">|</span>
-        <Badge tone="primary" className="shimmer-gold-badge px-3 py-1">Banquet Booking Wizard</Badge>
+        <Badge tone="primary" className="shimmer-purple-badge px-3 py-1">Banquet Booking Wizard</Badge>
       </div>
 
       <PageHeader

@@ -140,7 +140,7 @@ function NewReservationPage() {
           Back to Reservations
         </Btn>
         <span className="text-muted-foreground">|</span>
-        <Badge tone="primary" className="shimmer-gold-badge px-3 py-1">New Booking Wizard</Badge>
+        <Badge tone="primary" className="shimmer-purple-badge px-3 py-1">New Booking Wizard</Badge>
       </div>
 
       <PageHeader

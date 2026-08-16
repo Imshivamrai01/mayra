@@ -65,7 +65,7 @@ function NewProductPage() {
           Back to Products
         </Btn>
         <span className="text-muted-foreground">|</span>
-        <Badge tone="primary" className="shimmer-gold-badge px-3 py-1">Inventory Catalog</Badge>
+        <Badge tone="primary" className="shimmer-purple-badge px-3 py-1">Inventory Catalog</Badge>
       </div>
 
       <PageHeader
