@@ -77,15 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "MAYRA Hotel ERP" },
+      { name: "description", content: "Hotel PMS, restaurant POS and ERP demo for MAYRA Hotel." },
+      { name: "author", content: "MAYRA Hospitality" },
+      { property: "og:title", content: "MAYRA Hotel ERP" },
+      { property: "og:description", content: "Hotel PMS, restaurant POS and ERP demo for MAYRA Hotel." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
+
     links: [
       {
         rel: "stylesheet",
