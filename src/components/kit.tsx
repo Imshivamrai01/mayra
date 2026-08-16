@@ -11,44 +11,44 @@ export function Btn({
   icon?: React.ComponentType<{ className?: string }>;
 }) {
   const variants: Record<string, string> = {
-    default: "bg-card border border-border text-foreground hover:bg-secondary",
-    outline: "bg-transparent border border-border text-foreground hover:bg-secondary",
-    primary: "bg-primary text-primary-foreground hover:opacity-90 border border-transparent",
-    ghost: "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent",
-    danger: "bg-danger text-primary-foreground hover:opacity-90 border border-transparent",
-    success: "bg-success text-primary-foreground hover:opacity-90 border border-transparent",
+    default: "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-xs",
+    outline: "bg-transparent border border-slate-200 text-slate-700 hover:bg-slate-50",
+    primary: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-sm hover:from-purple-700 hover:to-indigo-700 active:scale-[0.98] border border-transparent font-semibold",
+    ghost: "bg-transparent text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-transparent",
+    danger: "bg-rose-600 text-white hover:bg-rose-700 border border-transparent font-medium",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700 border border-transparent font-medium",
   };
   const sizes: Record<string, string> = {
-    sm: "h-8 px-2.5 text-xs gap-1.5",
-    md: "h-9 px-3 text-sm gap-2",
-    lg: "h-11 px-5 text-sm gap-2",
+    sm: "h-8 px-3 text-xs gap-1.5 rounded-lg",
+    md: "h-9.5 px-4 text-sm gap-2 rounded-xl",
+    lg: "h-11 px-6 text-sm gap-2 rounded-xl",
   };
   return (
     <button
       {...props}
       className={cn(
-        "inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "inline-flex items-center justify-center font-medium transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/40",
         variants[variant], sizes[size], className,
       )}
     >
-      {Icon ? <Icon className="h-4 w-4" /> : null}
+      {Icon ? <Icon className="h-4 w-4 shrink-0" /> : null}
       {children}
     </button>
   );
 }
 
 export const TONES: Record<string, string> = {
-  success: "bg-success-soft text-success border-success/25",
-  danger: "bg-danger-soft text-danger border-danger/25",
-  warning: "bg-warning-soft text-warning border-warning/30",
-  info: "bg-info-soft text-info border-info/25",
-  primary: "bg-primary-soft text-accent-foreground border-primary/30",
-  muted: "bg-secondary text-muted-foreground border-border",
+  success: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  danger: "bg-rose-50 text-rose-700 border-rose-200",
+  warning: "bg-amber-50 text-amber-800 border-amber-200",
+  info: "bg-blue-50 text-blue-700 border-blue-200",
+  primary: "bg-purple-50 text-purple-700 border-purple-200",
+  muted: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
 export function Badge({ tone = "muted", children, className }: { tone?: string; children: ReactNode; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap", TONES[tone] ?? TONES["muted"], className)}>
+    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold whitespace-nowrap", TONES[tone] ?? TONES["muted"], className)}>
       {children}
     </span>
   );
@@ -56,32 +56,32 @@ export function Badge({ tone = "muted", children, className }: { tone?: string; 
 
 export function Dot({ tone = "muted" }: { tone?: string }) {
   const map: Record<string, string> = {
-    success: "bg-success", danger: "bg-danger", warning: "bg-warning",
-    info: "bg-info", primary: "bg-primary", muted: "bg-muted-foreground",
+    success: "bg-emerald-500", danger: "bg-rose-500", warning: "bg-amber-500",
+    info: "bg-blue-500", primary: "bg-purple-600", muted: "bg-slate-400",
   };
   return <span className={cn("inline-block h-2 w-2 rounded-full", map[tone] ?? map["muted"])} />;
 }
 
 export function Card({ children, className, title, action, dense }: { children: ReactNode; className?: string; title?: ReactNode; action?: ReactNode; dense?: boolean }) {
   return (
-    <section className={cn("card-surface shimmer-card", className)}>
+    <section className={cn("card-surface rounded-2xl bg-white border border-slate-100 shadow-xs", className)}>
       {title ? (
-        <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 bg-secondary/20">
-          <h3 className="text-sm font-semibold">{title}</h3>
+        <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">{title}</h3>
           {action}
         </header>
       ) : null}
-      <div className={dense ? "" : "p-4"}>{children}</div>
+      <div className={dense ? "" : "p-5"}>{children}</div>
     </section>
   );
 }
 
 export function PageHeader({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: ReactNode; children?: ReactNode }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">{title}</h1>
-        {subtitle ? <p className="mt-0.5 text-[13px] text-muted-foreground">{subtitle}</p> : null}
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">{title}</h1>
+        {subtitle ? <p className="mt-1 text-[13px] font-medium text-slate-500">{subtitle}</p> : null}
         {children}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
@@ -100,24 +100,27 @@ export function StatCard({
     <Comp
       onClick={onClick}
       className={cn(
-        "card-surface shimmer-card p-4 text-left transition-all",
-        onClick && "hover:border-primary/40 hover:shadow-[var(--shadow-pop)] cursor-pointer",
+        "card-surface rounded-2xl bg-white border border-slate-100 p-5 text-left transition-all duration-200 hover:shadow-md hover:border-slate-200",
+        onClick && "cursor-pointer",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-[12px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
-        {Icon ? <Icon className="h-4 w-4 text-primary/70" /> : null}
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{label}</span>
+        {Icon ? (
+          <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+            <Icon className="h-4 w-4" />
+          </div>
+        ) : null}
       </div>
-      <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-2xl font-bold tabular-nums text-foreground">{value}</span>
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">{value}</span>
         {typeof trend === "number" ? (
-          <span className={cn("text-xs font-medium", trend >= 0 ? "text-success" : "text-danger")}>
+          <span className={cn("text-xs font-bold", trend >= 0 ? "text-emerald-600" : "text-rose-600")}>
             {trend >= 0 ? "▲" : "▼"} {Math.abs(trend).toFixed(1)}%
           </span>
         ) : null}
       </div>
-      {sub ? <div className="mt-1 text-xs text-muted-foreground">{sub}</div> : null}
-      {tone !== "muted" ? <div className={cn("mt-3 h-1 rounded-full", TONES[tone]?.split(" ")[0])} /> : null}
+      {sub ? <div className="mt-1 text-xs text-slate-500 font-medium">{sub}</div> : null}
     </Comp>
   );
 }
