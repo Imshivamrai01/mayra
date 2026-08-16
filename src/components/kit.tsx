@@ -290,7 +290,7 @@ export interface Column<T> {
   sortable?: boolean;
 }
 
-export function DataTable<T extends { id?: string }>({
+export function DataTable<T>({
   columns, rows, searchKeys, toolbar, pageSize = 12, empty, onRowClick, dense, rowKey,
 }: {
   columns: Column<T>[];
@@ -367,7 +367,7 @@ export function DataTable<T extends { id?: string }>({
           <tbody>
             {slice.map((row, i) => (
               <tr
-                key={rowKey ? rowKey(row, i) : (row.id ?? i)}
+                key={rowKey ? rowKey(row, i) : ((row as { id?: string }).id ?? i)}
                 onClick={() => onRowClick?.(row)}
                 className={cn("border-b border-border/70 last:border-0 transition-colors hover:bg-secondary/50", onRowClick && "cursor-pointer")}
               >
