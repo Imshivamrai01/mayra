@@ -7,7 +7,7 @@ import type { PurchaseDoc } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inventory/grn/")({
-  head: () => ({ meta: [{ title: "GRN — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "GRN — Hotel Amara ERP" }] }),
   component: GRNPage,
 });
 

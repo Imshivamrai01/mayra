@@ -14,7 +14,7 @@ import { dashboardMetrics, fmtDate, money, moneyShort, revenueSeries, useDB, tod
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/reports/revenue")({
-  head: () => ({ meta: [{ title: "Executive Revenue & Yield Analytics — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Executive Revenue & Yield Analytics — Hotel Amara ERP" }] }),
   component: RevenueReportPage,
 });
 

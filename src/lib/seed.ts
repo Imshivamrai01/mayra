@@ -180,7 +180,7 @@ export function buildSeed(): DB {
     const b: Booking = {
       id: `bk-${i}`,
       grc: `GRC-${2600 + i}`,
-      invoiceNo: `MYR/25-26/${1000 + i}`,
+      invoiceNo: `AMR/25-26/${1000 + i}`,
       guestId: g.id,
       source,
       roomTypeId: rt.id,
@@ -249,16 +249,16 @@ export function buildSeed(): DB {
   }
   // demo OTA bookings
   const otaSpecs: [string, string, string, BookingSource, number, number][] = [
-    ["MYR-MMT-1024", "g-1", "rt-deluxe", "MakeMyTrip", 2, 9800],
-    ["MYR-GIB-8831", "g-2", "rt-suite", "Goibibo", 3, 18500],
-    ["MYR-BMS-2214", "g-3", "rt-family", "BookMyShow", 1, 7200],
+    ["AMR-MMT-1024", "g-1", "rt-deluxe", "MakeMyTrip", 2, 9800],
+    ["AMR-GIB-8831", "g-2", "rt-suite", "Goibibo", 3, 18500],
+    ["AMR-BMS-2214", "g-3", "rt-family", "BookMyShow", 1, 7200],
   ];
   otaSpecs.forEach(([id, gid, rtid, src, nights, amt], k) => {
     const pool = roomsByType[rtid]!.filter((r) => !usedRoomToday.has(r.id));
     const room = pool[0] ?? roomsByType[rtid]![0]!;
     usedRoomToday.add(room.id);
     const b: Booking = {
-      id, grc: `GRC-29${k}0`, invoiceNo: `MYR/25-26/2${k}00`, guestId: gid, source: src,
+      id, grc: `GRC-29${k}0`, invoiceNo: `AMR/25-26/2${k}00`, guestId: gid, source: src,
       roomTypeId: rtid, roomIds: [room.id], ratePlanId: "rp-cp",
       checkIn: iso(addDays(now, k)), checkOut: iso(addDays(now, k + nights)), nights,
       adults: 2, children: 0, extraBed: 0, rateNight: Math.round(amt / nights),
@@ -504,7 +504,7 @@ export function buildSeed(): DB {
       mappings.push({ id: `map-${c.id}-${rt.id}`, channel: c.name, local: rt.name, remote: `${rt.name} Room`, kind: "room" }),
     );
     ["EP", "CP", "MAP"].forEach((rp) =>
-      mappings.push({ id: `rmap-${c.id}-${rp}`, channel: c.name, local: `MAYRA ${rp}`, remote: `${c.name.slice(0, 3).toUpperCase()} ${rp}`, kind: "rate" }),
+      mappings.push({ id: `rmap-${c.id}-${rp}`, channel: c.name, local: `AMARA ${rp}`, remote: `${c.name.slice(0, 3).toUpperCase()} ${rp}`, kind: "rate" }),
     );
   });
   const syncLogs: DB["syncLogs"] = Array.from({ length: 14 }, (_, i) => ({
@@ -576,13 +576,13 @@ export function buildSeed(): DB {
   return {
     version: 1,
     settings: {
-      hotelName: "MAYRA HOTEL", legalName: "Mayra Hospitality Pvt. Ltd.",
+      hotelName: "HOTEL AMARA", legalName: "Amara Hospitality Pvt. Ltd.",
       address: "Plot 12, Riverside Road, Koregaon Park, Pune 411001",
-      phone: "+91 20 4988 1200", email: "reservations@mayrahotel.in",
+      phone: "+91 20 4988 1200", email: "reservations@hotelamara.in",
       gstin: "27AAGCM1234K1ZP", state: "Maharashtra", currency: "₹",
       gstSlabLow: 12, gstSlabHigh: 18, gstThreshold: 7500, fbTax: 5,
       checkInTime: "14:00", checkOutTime: "11:00",
-      invoicePrefix: "MYR/25-26/", grcPrefix: "GRC-",
+      invoicePrefix: "AMR/25-26/", grcPrefix: "GRC-",
       terms: "Tariff is subject to applicable GST. Check-out at 11:00 AM. Late check-out subject to availability.",
       role: "Admin", user: "Admin",
     },

@@ -154,11 +154,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mb-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-full bg-[#170f0a] flex items-center justify-center text-[#ffffff] font-serif text-lg overflow-hidden border border-[#d1c4bd] shrink-0">
-              <span className="font-serif font-bold text-[#fed65b]">M</span>
+              <span className="font-serif font-bold text-[#fed65b]">A</span>
             </div>
             <div>
               <h1 className="font-serif text-xl font-semibold text-[#170f0a] tracking-tight leading-none">
-                {db.settings.hotelName?.split(" ")[0] || "Aurelia"}
+                {db.settings.hotelName?.split(" ").pop() || "Amara"}
               </h1>
               <p className="font-label-caps text-[10px] text-[#4e4540] tracking-widest mt-1">LUXURY HMS</p>
             </div>
@@ -242,7 +242,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </button>
 
             <h2 className="hidden sm:block font-serif text-xl sm:text-2xl font-semibold text-[#170f0a] tracking-tight">
-              {db.settings.hotelName || "Aurelia Grand Hotel"}
+              {db.settings.hotelName || "Hotel Amara"}
             </h2>
 
             {/* Ghost Search Box */}
@@ -311,7 +311,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             {/* Quick Help / Guide Button */}
             <button
-              onClick={() => { toast.info("Aurelia HMS Hotel ERP", { description: "Use the top search or sidebar to navigate." }); }}
+              onClick={() => { toast.info("Hotel Amara ERP", { description: "Use the top search or sidebar to navigate." }); }}
               className="text-[#4e4540] hover:text-[#170f0a] transition-colors p-1 cursor-pointer"
               aria-label="Help"
             >

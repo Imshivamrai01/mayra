@@ -1,5 +1,5 @@
 ---
-name: Aurelia HMS
+name: Hotel Amara
 colors:
   surface: '#fbf9f4'
   surface-dim: '#dbdad5'

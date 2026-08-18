@@ -19,7 +19,7 @@ import type { Booking, Room, RoomStatus } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/ez-dashboard")({
-  head: () => ({ meta: [{ title: "EZ Room Dashboard — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "EZ Room Dashboard — Hotel Amara ERP" }] }),
   component: EZDashboardPage,
 });
 

@@ -7,7 +7,7 @@ import type { Room, RoomStatus, RoomType } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/rooms/list")({
-  head: () => ({ meta: [{ title: "Room List — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Room List — Hotel Amara ERP" }] }),
   component: RoomList,
 });
 

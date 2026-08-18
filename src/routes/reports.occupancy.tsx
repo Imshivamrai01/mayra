@@ -7,7 +7,7 @@ import { Download } from "lucide-react";
 import { exportCSV } from "@/components/kit";
 
 export const Route = createFileRoute("/reports/occupancy")({
-  head: () => ({ meta: [{ title: "Occupancy Report — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Occupancy Report — Hotel Amara ERP" }] }),
   component: OccupancyReportPage,
 });
 

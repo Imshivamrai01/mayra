@@ -7,7 +7,7 @@ import type { Ledger } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/finance/ledger")({
-  head: () => ({ meta: [{ title: "Ledger — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Ledger — Hotel Amara ERP" }] }),
   component: LedgerPage,
 });
 

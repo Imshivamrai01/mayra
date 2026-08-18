@@ -5,7 +5,7 @@ import type {
   RoomStatus, Role,
 } from "./types";
 
-const KEY = "mayra-erp-db-v1";
+const KEY = "amara-erp-db-v1";
 
 let db: DB = buildSeed();
 let hydrated = false;
@@ -229,7 +229,7 @@ export function getRoomCurrentStatus(room: Room, data: DB = db, dateStr: string 
     (b) => b.roomIds.includes(room.id) && b.status === "checked-in" && b.checkIn <= dateStr && b.checkOut > dateStr
   );
   if (inHouse) return "occupied";
-  return room.status === "occupied" ? "occupied" : "available";
+  return "available";
 }
 
 /* ----------------------------- services ----------------------------- */
@@ -286,7 +286,7 @@ export const bookingService = {
       const isNonGst = payload.billingType === "NON-GST";
       const bookingId = isNonGst ? nextNo("nonGstBooking", "NBK-") : nextNo("booking", "GBK-");
       const grcNo = isNonGst ? nextNo("nonGstGrc", "N-GRC-") : nextNo("grc", "G-GRC-");
-      const invoiceNo = isNonGst ? nextNo("nonGstInvoice", "MYR/BOS/25-26/") : nextNo("invoice", "MYR/GST/25-26/");
+      const invoiceNo = isNonGst ? nextNo("nonGstInvoice", "AMR/BOS/25-26/") : nextNo("invoice", "AMR/GST/25-26/");
 
       const gId = payload.guestId || d.guests[0]?.id || uid("g");
       const rTypeId = payload.roomTypeId || d.roomTypes[0]?.id || "rt-deluxe";

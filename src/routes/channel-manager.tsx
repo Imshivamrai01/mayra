@@ -7,7 +7,7 @@ import type { OTAChannel, OTAListing } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/channel-manager")({
-  head: () => ({ meta: [{ title: "Channel Manager — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Channel Manager — Hotel Amara ERP" }] }),
   component: ChannelManagerPage,
 });
 

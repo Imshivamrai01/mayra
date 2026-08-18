@@ -7,7 +7,7 @@ import type { Guest } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/guests/")({
-  head: () => ({ meta: [{ title: "Guests — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Guests — Hotel Amara ERP" }] }),
   component: GuestsPage,
 });
 

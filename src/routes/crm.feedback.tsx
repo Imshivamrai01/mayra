@@ -7,7 +7,7 @@ import type { GuestFeedback } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/crm/feedback")({
-  head: () => ({ meta: [{ title: "Guest Feedback — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Guest Feedback — Hotel Amara ERP" }] }),
   component: FeedbackPage,
 });
 

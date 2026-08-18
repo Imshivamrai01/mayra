@@ -7,7 +7,7 @@ import type { PurchaseDoc } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inventory/grn/new")({
-  head: () => ({ meta: [{ title: "New Purchase Order — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "New Purchase Order — Hotel Amara ERP" }] }),
   component: NewPOPage,
 });
 

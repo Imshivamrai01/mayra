@@ -7,7 +7,7 @@ import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inventory/products/")({
-  head: () => ({ meta: [{ title: "Products — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Products — Hotel Amara ERP" }] }),
   component: ProductsPage,
 });
 

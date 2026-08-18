@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/restaurant/orders")({
-  head: () => ({ meta: [{ title: "All Orders — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "All Orders — Hotel Amara ERP" }] }),
   component: AllOrdersPage,
 });
 

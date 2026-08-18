@@ -7,7 +7,7 @@ import type { LaundryOrder } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/laundry/new")({
-  head: () => ({ meta: [{ title: "New Laundry Order — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "New Laundry Order — Hotel Amara ERP" }] }),
   component: NewLaundryPage,
 });
 

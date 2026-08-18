@@ -7,7 +7,7 @@ import type { MenuItem } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/restaurant/menu")({
-  head: () => ({ meta: [{ title: "Menu — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Menu — Hotel Amara ERP" }] }),
   component: MenuPage,
 });
 

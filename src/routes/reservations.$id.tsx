@@ -17,7 +17,7 @@ import type { Booking, FolioCharge } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reservations/$id")({
-  head: () => ({ meta: [{ title: "Booking Details — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Booking Details — Hotel Amara ERP" }] }),
   component: ReservationDetailPage,
 });
 
@@ -519,7 +519,7 @@ function ReservationDetailPage() {
               {/* Hotel Header */}
               <div className="flex justify-between items-start border-b pb-3">
                 <div>
-                  <h1 className="text-xl font-bold tracking-tight text-primary">MAYRA HOTEL</h1>
+                  <h1 className="text-xl font-bold tracking-tight text-primary">HOTEL AMARA</h1>
                   <p className="text-gray-600">Hospitality Management System</p>
                   <p className="text-gray-500">12, Luxury Boulevard, Civil Lines, Jaipur, Rajasthan</p>
                   <p className="text-gray-500">GSTIN: 08AAACH1234F1Z8 · Phone: +91 98765 43210</p>
@@ -596,7 +596,7 @@ function ReservationDetailPage() {
               {/* Signatures */}
               <div className="grid grid-cols-2 gap-8 pt-8 border-t text-center text-gray-500">
                 <div className="border-t border-gray-400 pt-1">Guest Signature</div>
-                <div className="border-t border-gray-400 pt-1">Authorized Signatory (MAYRA Hotel)</div>
+                <div className="border-t border-gray-400 pt-1">Authorized Signatory (Hotel Amara)</div>
               </div>
             </div>
       </Modal>

@@ -6,7 +6,7 @@ import { money, today, update, useDB } from "@/lib/store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings/hotel")({
-  head: () => ({ meta: [{ title: "Hotel Settings — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Hotel Settings — Hotel Amara ERP" }] }),
   component: HotelSettingsPage,
 });
 
@@ -137,7 +137,7 @@ function HotelSettingsPage() {
                 <p className="font-medium mb-1">Local Storage</p>
                 <p className="text-muted-foreground">All data is persisted in browser localStorage. Export regularly to prevent data loss.</p>
               </div>
-              <Btn className="w-full" onClick={() => { const d = JSON.stringify(db, null, 2); const blob = new Blob([d], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `mayra-backup-${today()}.json`; a.click(); toast.success("Backup downloaded"); }}>
+              <Btn className="w-full" onClick={() => { const d = JSON.stringify(db, null, 2); const blob = new Blob([d], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `hotel-amara-backup-${today()}.json`; a.click(); toast.success("Backup downloaded"); }}>
                 Export Data Backup
               </Btn>
               <Btn className="w-full" variant="danger" onClick={() => { if (window.confirm("Reset all demo data? This cannot be undone.")) { localStorage.clear(); window.location.reload(); } }}>

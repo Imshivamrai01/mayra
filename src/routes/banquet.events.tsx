@@ -7,7 +7,7 @@ import type { BanquetEvent } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/banquet/events")({
-  head: () => ({ meta: [{ title: "Banquet Events — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Banquet Events — Hotel Amara ERP" }] }),
   component: BanquetPage,
 });
 

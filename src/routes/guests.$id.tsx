@@ -13,7 +13,7 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/guests/$id")({
-  head: () => ({ meta: [{ title: "Guest Profile — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Guest Profile — Hotel Amara ERP" }] }),
   component: GuestDetailPage,
 });
 

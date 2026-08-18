@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/restaurant/kds")({
-  head: () => ({ meta: [{ title: "Aurelia HMS — Kitchen Display System" }] }),
+  head: () => ({ meta: [{ title: "Hotel Amara — Kitchen Display System" }] }),
   component: KDSPage,
 });
 

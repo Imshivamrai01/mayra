@@ -13,7 +13,7 @@ import type { Booking, BookingSource, BookingStatus, Guest } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reservations/")({
-  head: () => ({ meta: [{ title: "Reservations — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Reservations — Hotel Amara ERP" }] }),
   component: ReservationsPage,
 });
 

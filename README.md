@@ -1,10 +1,10 @@
-# Mayra Hospitality Suite
+# Amara Hospitality Suite
 
 You are a senior product architect, UX designer and frontend engineer.
 
 Build a COMPLETE, PREMIUM, FULLY WORKING FRONTEND-ONLY Hotel ERP + PMS + POS for a hotel named:
 
-MAYRA
+AMARA
 
 IMPORTANT:
 
@@ -42,7 +42,7 @@ The architecture must be designed so that a real backend can be connected later 
 
 Product name:
 
-MAYRA HOTEL ERP
+HOTEL AMARA ERP
 
 Product type:
 
@@ -208,7 +208,7 @@ MAIN CONTENT AREA
 
 Sidebar:
 
-MAYRA
+AMARA
 
 HOTEL ERP
 
@@ -508,7 +508,7 @@ Header:
 
 Good Morning, Admin
 
-MAYRA HOTEL
+HOTEL AMARA
 
 Current Date
 
@@ -1334,7 +1334,7 @@ Housekeeping task automatically created.
 
 This is one of the MOST IMPORTANT screens.
 
-Create a fast Petpooja-inspired restaurant POS workflow, but with a unique MAYRA design.
+Create a fast Petpooja-inspired restaurant POS workflow, but with a unique AMARA design.
 
 Layout:
 
@@ -2088,7 +2088,7 @@ View Logs
 
 Create mapping:
 
-MAYRA ROOM TYPE
+AMARA ROOM TYPE
 
 →
 
@@ -2116,15 +2116,15 @@ Suite
 
 Example:
 
-MAYRA EP
+AMARA EP
 
 → MMT EP
 
-MAYRA CP
+AMARA CP
 
 → Goibibo CP
 
-MAYRA MAP
+AMARA MAP
 
 → BookMyShow MAP
 
@@ -2144,7 +2144,7 @@ Deluxe inventory:
 
 Show:
 
-MAYRA
+AMARA
 
 5
 
@@ -2236,7 +2236,7 @@ Create realistic demo OTA bookings.
 
 Example:
 
-MYR-MMT-1024
+AMR-MMT-1024
 
 Rahul Sharma
 
@@ -2250,7 +2250,7 @@ Paid
 
 Confirmed
 
-MYR-GIB-8831
+AMR-GIB-8831
 
 Priya Singh
 
@@ -2264,7 +2264,7 @@ Partial
 
 Confirmed
 
-MYR-BMS-2214
+AMR-BMS-2214
 
 Amit Verma
 
@@ -2522,7 +2522,7 @@ Seed realistic data.
 
 Hotel:
 
-MAYRA HOTEL
+HOTEL AMARA
 
 Rooms:
 
@@ -3510,7 +3510,7 @@ Spend implementation effort on:
 
 - responsive UX
 
-Build MAYRA HOTEL ERP as a polished, premium, frontend-only, fully interactive client demonstration.
+Build HOTEL AMARA ERP as a polished, premium, frontend-only, fully interactive client demonstration.
 
 START BUILDING NOW.
 

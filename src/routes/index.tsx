@@ -26,7 +26,7 @@ import { Badge, Btn, Drawer, Modal } from "@/components/kit";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "Aurelia HMS — Executive Dashboard" }] }),
+  head: () => ({ meta: [{ title: "Hotel Amara — Executive Dashboard" }] }),
   component: ExecutiveDashboard,
 });
 

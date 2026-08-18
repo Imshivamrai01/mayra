@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/housekeeping")({
-  head: () => ({ meta: [{ title: "Aurelia HMS — Housekeeping Dashboard" }] }),
+  head: () => ({ meta: [{ title: "Hotel Amara — Housekeeping Dashboard" }] }),
   component: HousekeepingPage,
 });
 

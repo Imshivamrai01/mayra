@@ -7,7 +7,7 @@ import type { Employee } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/hr/new")({
-  head: () => ({ meta: [{ title: "New Employee Onboarding — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "New Employee Onboarding — Hotel Amara ERP" }] }),
   component: NewEmployeePage,
 });
 
@@ -92,7 +92,7 @@ function NewEmployeePage() {
               <Input value={form.mobile} onChange={(e) => set("mobile", e.target.value)} placeholder="10-digit mobile" />
             </Field>
             <Field label="Email Address">
-              <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="staff@mayrahotel.in" />
+              <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="staff@hotelamara.in" />
             </Field>
             <Field label="Date of Joining">
               <Input type="date" value={form.joining} onChange={(e) => set("joining", e.target.value)} />

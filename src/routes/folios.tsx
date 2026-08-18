@@ -7,7 +7,7 @@ import type { Booking, ChargeKind, FolioCharge } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/folios")({
-  head: () => ({ meta: [{ title: "Folios — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Folios — Hotel Amara ERP" }] }),
   component: FoliosPage,
 });
 
@@ -205,7 +205,7 @@ function FolioDetail({ booking }: { booking: Booking }) {
           {/* Header Banner */}
           <div className="flex items-start justify-between pb-3 border-b-2 border-slate-900">
             <div>
-              <span className="text-base font-black tracking-wider text-slate-900 block">MAYRA HOTEL & RESIDENCES</span>
+              <span className="text-base font-black tracking-wider text-slate-900 block">HOTEL AMARA & RESIDENCES</span>
               <span className="text-[11px] font-semibold text-slate-500 block">Luxury Business & Leisure Suites</span>
               <span className="text-[10px] text-slate-400 block mt-0.5">12 Barakhamba Road, Connaught Place, New Delhi 110001</span>
               <span className="text-[10px] font-mono font-bold text-slate-700 block">GSTIN: 07AAAAA0000A1Z5 · SAC: 996311</span>
@@ -292,12 +292,12 @@ function FolioDetail({ booking }: { booking: Booking }) {
           {/* Footer Terms & Signatory */}
           <div className="flex items-center justify-between pt-3 border-t border-slate-200 text-[10px] text-slate-400">
             <div>
-              <p>Thank you for staying at MAYRA Hotel & Residences.</p>
+              <p>Thank you for staying at Hotel Amara & Residences.</p>
               <p>Computer generated invoice, no physical signature required.</p>
             </div>
             <div className="text-right">
               <span className="block font-bold text-slate-700">Authorized Signatory</span>
-              <span className="block text-slate-400 mt-1">MAYRA Hospitality Desk</span>
+              <span className="block text-slate-400 mt-1">Amara Hospitality Desk</span>
             </div>
           </div>
 
