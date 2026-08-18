@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aurelia HMS - Executive Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#f0dfd6",
+                        "on-primary": "#ffffff",
+                        "secondary": "#735c00",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "surface-container": "#f0eee9",
+                        "inverse-primary": "#d3c3ba",
+                        "primary": "#170f0a",
+                        "secondary-container": "#fed65b",
+                        "surface-tint": "#685c55",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#745c00",
+                        "outline-variant": "#d1c4bd",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-surface-variant": "#4e4540",
+                        "surface-bright": "#fbf9f4",
+                        "surface-dim": "#dbdad5",
+                        "surface": "#fbf9f4",
+                        "on-primary-container": "#988a82",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdea5",
+                        "background": "#fbf9f4",
+                        "surface-container-highest": "#e4e2dd",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "tertiary": "#190f00",
+                        "on-tertiary-container": "#aa8843",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#332300",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1c19",
+                        "on-secondary-fixed-variant": "#574500",
+                        "error": "#ba1a1a",
+                        "primary-container": "#2d241e",
+                        "on-background": "#1b1c19",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#30312e",
+                        "on-primary-fixed": "#221a14",
+                        "surface-container-low": "#f5f3ee",
+                        "inverse-on-surface": "#f2f1ec",
+                        "surface-variant": "#e4e2dd",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary-fixed": "#241a00",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "surface-container-high": "#eae8e3",
+                        "outline": "#7f756f",
+                        "secondary-fixed": "#ffe088"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-page": "40px",
+                        "density-compact": "8px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "density-comfortable": "16px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"],
+                        "data-tabular": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Subtle line styles for editorial look */
+        .editorial-border-b { border-bottom: 1px solid theme('colors.outline-variant'); }
+        .editorial-border-r { border-right: 1px solid theme('colors.outline-variant'); }
+        
+        /* Chart container styling to blend with the 'layered paper' aesthetic */
+        .chart-container {
+            background-color: theme('colors.surface');
+            border: 1px solid theme('colors.outline-variant');
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- SideNavBar (Shared Component) -->
+<nav class="hidden md:flex flex-col h-screen fixed left-0 top-0 w-64 bg-surface-container border-r border-outline-variant py-margin-page px-density-comfortable z-40">
+<div class="mb-12 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-display-md text-headline-sm overflow-hidden">
+<img alt="Aurelia HMS Logo" class="w-full h-full object-cover" data-alt="A sophisticated, minimalist logo for a luxury hotel management system named Aurelia. The logo should feature an elegant, stylized 'A' in a muted gold tone set against a deep espresso brown background. The aesthetic should be high-end, editorial, and refined." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMw3u8wywNc3YOupYSlYVoGf5Bw6xjSJKaPHvQ_5uug7h1dlh7aJlJqBTkScdc4EjrYxhh4hJe42kZfZkcjvPUlxbMXkKBNacOg9XkvATEkXdwTDn3ZgKtU0mdcpMbzkxdhk8HYxV2eNdrJ80y38XO5PoXKHJYE9Xmz1e_ZDKPloSVm2pDVmjG8L1M--Q5XIu6baMHEMyS0g4oQU4P7bRlSFkxBBjtv2cNMtW7AQNAjnm4RIM_Nos"/>
+</div>
+<div>
+<h1 class="font-display-md text-display-md text-primary">Aurelia</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Luxury HMS</p>
+</div>
+</div>
+<button class="mb-8 w-full bg-primary text-on-primary py-3 px-4 rounded flex items-center justify-center gap-2 font-label-caps text-label-caps hover:bg-opacity-90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+            New Booking
+        </button>
+<div class="flex-1 overflow-y-auto scrollbar-hide space-y-1">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary font-bold hover:text-primary transition-colors duration-200 opacity-80 scale-[0.99] transition-all bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined text-[20px] icon-fill">dashboard</span>
+<span class="font-body-md text-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="font-body-md text-body-md">Bookings</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">bed</span>
+<span class="font-body-md text-body-md">Rooms</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="font-body-md text-body-md">Guests</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">cleaning_services</span>
+<span class="font-body-md text-body-md">Housekeeping</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">local_laundry_service</span>
+<span class="font-body-md text-body-md">Laundry</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+<span class="font-body-md text-body-md">Restaurant</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+<span class="font-body-md text-body-md">POS</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">event_seat</span>
+<span class="font-body-md text-body-md">Banquets</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+<span class="font-body-md text-body-md">Staff</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary transition-colors duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar (Shared Component) -->
+<header class="hidden md:flex justify-between items-center h-16 px-margin-page ml-64 fixed top-0 right-0 w-[calc(100%-16rem)] bg-surface border-b border-outline-variant z-50">
+<div class="flex items-center gap-4 flex-1">
+<h2 class="font-display-md text-display-md text-primary">Aurelia Grand Hotel</h2>
+<div class="relative w-64 ml-8">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 pl-10 pr-4 py-2 font-body-md text-body-md text-primary placeholder:text-outline transition-colors outline-none" placeholder="Search guests, rooms..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-6 w-px bg-outline-variant"></div>
+<button class="flex items-center gap-3 hover:bg-surface-container-low px-3 py-1.5 rounded transition-colors">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Profile</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Manager Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a well-dressed hotel manager. The manager is wearing a tailored charcoal suit and has a warm, welcoming expression. The background is a subtly blurred luxury hotel lobby, bathed in soft, natural light emphasizing an editorial, high-end feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5JwLoRRq3_J6dwPUZhOhB-L37eei0J0v2JqImlKq-eE0pEM1MYwVKV4ATW6-BjCpQU-aZsirKtadV6Ni-mFlRZSulaeR446r6g2sN12zGxOKoTMol8JBbgD3NbT6PakJgIbX4_2JPCfx3ffyKxVxOKTsTHA7eYGMHKrLtZytKes6pxVCgXitoGBbqQ7SECE9SkqcUiaCxzev4gEsRPtd8uhqnSJz67Y_VGJ4yOajTkuUksTFEPFk"/>
+</div>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 ml-0 md:ml-64 mt-0 md:mt-16 p-density-comfortable md:p-margin-page max-w-container-max overflow-x-hidden">
+<!-- Header Section -->
+<header class="mb-12">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-2">Good evening, Arman</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Sunday, 16 August 2026</p>
+</header>
+<!-- KPI Cards (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-12">
+<!-- Card 1 -->
+<div class="p-6 border border-outline-variant bg-surface flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">Occupancy</h3>
+<span class="material-symbols-outlined text-outline">key</span>
+</div>
+<div>
+<div class="font-display-md text-display-md text-primary">82%</div>
+<div class="flex items-center gap-1 mt-2 text-on-secondary-container">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span class="font-data-tabular text-data-tabular text-outline">+4% vs last week</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-6 border border-outline-variant bg-surface flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">Today's Revenue</h3>
+<span class="material-symbols-outlined text-outline">account_balance_wallet</span>
+</div>
+<div>
+<div class="font-display-md text-display-md text-primary">₹4,86,500</div>
+<div class="flex items-center gap-1 mt-2 text-on-secondary-container">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span class="font-data-tabular text-data-tabular text-outline">+12% vs last week</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-6 border border-outline-variant bg-surface flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">ADR</h3>
+<span class="material-symbols-outlined text-outline">sell</span>
+</div>
+<div>
+<div class="font-display-md text-display-md text-primary">₹7,240</div>
+<div class="flex items-center gap-1 mt-2 text-outline">
+<span class="material-symbols-outlined text-[14px]">trending_flat</span>
+<span class="font-data-tabular text-data-tabular">Stable</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="p-6 border border-outline-variant bg-surface flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">RevPAR</h3>
+<span class="material-symbols-outlined text-outline">hotel_class</span>
+</div>
+<div>
+<div class="font-display-md text-display-md text-primary">₹5,937</div>
+<div class="flex items-center gap-1 mt-2 text-on-secondary-container">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span class="font-data-tabular text-data-tabular text-outline">+2% vs last week</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Main Chart Area (Col Span 8) -->
+<section class="lg:col-span-8 space-y-gutter">
+<div class="chart-container p-6 h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-primary">Occupancy &amp; Revenue Trend</h3>
+<div class="flex gap-4">
+<span class="font-label-caps text-label-caps text-outline hover:text-primary cursor-pointer transition-colors">7 Days</span>
+<span class="font-label-caps text-label-caps text-primary border-b border-primary pb-1">30 Days</span>
+</div>
+</div>
+<div class="flex-1 relative w-full">
+<canvas id="mainTrendChart"></canvas>
+</div>
+</div>
+<!-- Recent Bookings Table -->
+<div class="bg-surface border border-outline-variant">
+<div class="p-6 editorial-border-b flex justify-between items-center bg-surface-container-low">
+<h3 class="font-headline-sm text-headline-sm text-primary">Recent Bookings</h3>
+<button class="font-label-caps text-label-caps text-secondary hover:text-primary transition-colors flex items-center gap-1">
+                            View All <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="editorial-border-b bg-surface">
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant font-normal">Guest Name</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant font-normal">Room</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant font-normal">Check-in</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant font-normal">Check-out</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant font-normal">Amount</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant font-normal">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular text-primary">
+<tr class="editorial-border-b hover:bg-surface-bright transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center font-label-caps text-label-caps text-outline">EK</div>
+                                        Elena Kowalski
+                                    </td>
+<td class="p-4">402 (Suite)</td>
+<td class="p-4 text-on-surface-variant">Today</td>
+<td class="p-4 text-on-surface-variant">19 Aug</td>
+<td class="p-4">₹24,500</td>
+<td class="p-4"><span class="px-2 py-1 rounded border border-outline-variant text-[10px] uppercase tracking-wider text-on-surface-variant bg-surface-bright">Confirmed</span></td>
+</tr>
+<tr class="editorial-border-b hover:bg-surface-bright transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center font-label-caps text-label-caps text-outline">JD</div>
+                                        James Davenport
+                                    </td>
+<td class="p-4">215 (Deluxe)</td>
+<td class="p-4 text-on-surface-variant">Today</td>
+<td class="p-4 text-on-surface-variant">21 Aug</td>
+<td class="p-4">₹35,000</td>
+<td class="p-4"><span class="px-2 py-1 rounded border border-secondary text-[10px] uppercase tracking-wider text-secondary bg-surface-bright">VIP</span></td>
+</tr>
+<tr class="editorial-border-b hover:bg-surface-bright transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center font-label-caps text-label-caps text-outline">SM</div>
+                                        Sarah Mitchell
+                                    </td>
+<td class="p-4">104 (Standard)</td>
+<td class="p-4 text-on-surface-variant">17 Aug</td>
+<td class="p-4 text-on-surface-variant">18 Aug</td>
+<td class="p-4">₹6,500</td>
+<td class="p-4"><span class="px-2 py-1 rounded border border-outline-variant text-[10px] uppercase tracking-wider text-on-surface-variant bg-surface-bright">Pending</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Sidebar Metrics & Operations (Col Span 4) -->
+<section class="lg:col-span-4 space-y-gutter flex flex-col">
+<!-- Key Metrics List -->
+<div class="bg-surface border border-outline-variant p-6">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-6">Today's Summary</h3>
+<ul class="space-y-4">
+<li class="flex justify-between items-center editorial-border-b pb-3">
+<span class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">flight_land</span> Arrivals
+                            </span>
+<span class="font-data-tabular text-data-tabular text-primary font-bold">24</span>
+</li>
+<li class="flex justify-between items-center editorial-border-b pb-3">
+<span class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">flight_takeoff</span> Departures
+                            </span>
+<span class="font-data-tabular text-data-tabular text-primary font-bold">18</span>
+</li>
+<li class="flex justify-between items-center editorial-border-b pb-3">
+<span class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">person</span> In-house
+                            </span>
+<span class="font-data-tabular text-data-tabular text-primary font-bold">112</span>
+</li>
+<li class="flex justify-between items-center editorial-border-b pb-3">
+<span class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">key</span> Available
+                            </span>
+<span class="font-data-tabular text-data-tabular text-primary font-bold">15</span>
+</li>
+<li class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">build</span> Maintenance
+                            </span>
+<span class="font-data-tabular text-data-tabular text-on-error-container font-bold">3</span>
+</li>
+</ul>
+</div>
+<!-- Today's Operations Alerts -->
+<div class="bg-surface border border-outline-variant p-6 flex-1">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-primary">Operations</h3>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-low border-l-2 border-secondary">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-caps text-label-caps text-secondary">VIP Arrival</span>
+<span class="font-data-tabular text-[10px] text-outline">14:00</span>
+</div>
+<p class="font-body-md text-body-md text-primary">Mr. Davenport (Suite 402) requested airport pickup. Concierge notified.</p>
+</div>
+<div class="p-4 bg-surface-container-low border-l-2 border-outline">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Late Check-out</span>
+<span class="font-data-tabular text-[10px] text-outline">13:30</span>
+</div>
+<p class="font-body-md text-body-md text-primary">Room 215 requested late checkout. Approved by Front Desk.</p>
+</div>
+<div class="p-4 bg-surface-container-low border-l-2 border-outline">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Maintenance</span>
+<span class="font-data-tabular text-[10px] text-outline">Active</span>
+</div>
+<p class="font-body-md text-body-md text-primary">HVAC repair in Room 108 pending parts arrival.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Chart.js Configuration for Editorial Aesthetic
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('mainTrendChart').getContext('2d');
+            
+            // Define colors matching the tailwind config
+            const primaryColor = '#170f0a';
+            const secondaryColor = '#735c00';
+            const outlineVariantColor = '#d1c4bd';
+            const surfaceBrightColor = '#fbf9f4';
+
+            // Gradient for Revenue Area
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(115, 92, 0, 0.1)'); // subtle secondary tint
+            gradient.addColorStop(1, 'rgba(251, 249, 244, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Aug 10', 'Aug 11', 'Aug 12', 'Aug 13', 'Aug 14', 'Aug 15', 'Today'],
+                    datasets: [
+                        {
+                            label: 'Revenue (₹)',
+                            data: [350000, 380000, 410000, 390000, 450000, 480000, 486500],
+                            borderColor: secondaryColor,
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            pointBackgroundColor: surfaceBrightColor,
+                            pointBorderColor: secondaryColor,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Occupancy (%)',
+                            data: [65, 70, 75, 72, 80, 85, 82],
+                            borderColor: primaryColor,
+                            borderWidth: 1.5,
+                            borderDash: [5, 5],
+                            pointBackgroundColor: primaryColor,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 6,
+                                font: {
+                                    family: 'Inter',
+                                    size: 11,
+                                    weight: '500'
+                                },
+                                color: primaryColor
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: primaryColor,
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Inter', size: 12 },
+                            padding: 12,
+                            cornerRadius: 4,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: {
+                                font: { family: 'Inter', size: 11 },
+                                color: outlineVariantColor
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            grid: {
+                                color: outlineVariantColor + '40', // transparent outline
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: { family: 'Inter', size: 11 },
+                                color: outlineVariantColor,
+                                callback: function(value) {
+                                    return '₹' + (value / 1000) + 'k';
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { display: false, drawBorder: false },
+                            ticks: {
+                                font: { family: 'Inter', size: 11 },
+                                color: outlineVariantColor,
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body></html>

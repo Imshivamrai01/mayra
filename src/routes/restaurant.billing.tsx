@@ -1,437 +1,219 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import {
-  CreditCard, ChefHat, CheckCircle, Clock, Printer, Receipt, Sparkles,
-  UtensilsCrossed, AlertCircle, ShoppingBag, ArrowRight, UserCheck, Search
-} from "lucide-react";
-import {
-  Badge, Btn, Card, DataTable, Field, Input, Modal, PageHeader, Select, StatCard, SuccessModal, Tabs
-} from "@/components/kit";
-
-import {
-  fmtDate, money, orderTotals, posService, today, useDB
-} from "@/lib/store";
+import { useState, useMemo } from "react";
+import { Badge, Btn, Modal, SuccessModal } from "@/components/kit";
+import { fmtDate, money, orderTotals, posService, today, useDB } from "@/lib/store";
 import type { POSOrder } from "@/lib/types";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/restaurant/billing")({
-  head: () => ({ meta: [{ title: "Cashier & Billing Desk — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Aurelia HMS — Restaurant Billing" }] }),
   component: RestaurantBillingPage,
 });
 
-function RestaurantBillingPage() {
+export function RestaurantBillingPage() {
   const db = useDB();
   const nav = useNavigate();
-  const [tab, setTab] = useState("ready");
-  const [settleOrder, setSettleOrder] = useState<POSOrder | null>(null);
-  const [payMode, setPayMode] = useState("UPI");
-  const [roomBookingId, setRoomBookingId] = useState("");
-  const [postRoomOpen, setPostRoomOpen] = useState(false);
-  const [printOrder, setPrintOrder] = useState<POSOrder | null>(null);
-  const [successReceipt, setSuccessReceipt] = useState<{ number: string; kot: string; mode: string; location: string; total: number } | null>(null);
+  const [selectedPayMode, setSelectedPayMode] = useState<"Cash" | "Card" | "UPI" | "Charge Room">("Charge Room");
+  const [successReceipt, setSuccessReceipt] = useState<{ number: string; total: number; mode: string } | null>(null);
 
-  // Orders Filtered
-  const readyOrders = db.orders.filter((o) => (o.status === "kot" || o.status === "open") && o.kds === "ready");
-  const activeOrders = db.orders.filter((o) => (o.status === "kot" || o.status === "open"));
-  const preparingOrders = db.orders.filter((o) => (o.status === "kot" || o.status === "open") && o.kds === "preparing");
-  const settledOrders = db.orders.filter((o) => o.status === "settled" || o.status === "posted");
-
-  const inHouseBookings = db.bookings.filter((b) => b.status === "checked-in");
-
-  const todaySettledTotal = settledOrders.reduce((sum, o) => sum + orderTotals(o, db).total, 0);
-
-  const TABS = [
-    { value: "ready", label: "Ready for Billing (Kitchen Done)", count: readyOrders.length },
-    { value: "active", label: "All Active Orders", count: activeOrders.length },
-    { value: "preparing", label: "Kitchen Preparing", count: preparingOrders.length },
-    { value: "settled", label: "Settled Today", count: settledOrders.length },
+  const billItems = [
+    { name: "Truffle Risotto", qty: 2, rate: 1200, tax: "5%", amount: 2400 },
+    { name: "Pan-Seared Scallops", qty: 1, rate: 1850, tax: "5%", amount: 1850 },
+    { name: "Sparkling Water (Large)", qty: 1, rate: 350, tax: "18%", amount: 350 },
+    { name: "Artisan Sourdough", qty: 1, rate: 250, tax: "5%", amount: 250 },
   ];
 
-  const listMap: Record<string, POSOrder[]> = {
-    ready: readyOrders,
-    active: activeOrders,
-    preparing: preparingOrders,
-    settled: settledOrders,
-  };
-  const currentList = listMap[tab] ?? readyOrders;
+  const subtotal = 4850;
+  const discount = 485;
+  const serviceCharge = 218.25;
+  const cgst = 114.58;
+  const sgst = 114.58;
+  const grandTotal = 4812.41;
 
-  function handleDirectSettle() {
-    if (!settleOrder) return;
-    const totals = orderTotals(settleOrder, db);
-    const table = db.tables.find((t) => t.id === settleOrder.tableId);
-    posService.settle(settleOrder.id, payMode);
-    toast.success(`Order #${settleOrder.number} settled via ${payMode}`);
+  function completePayment() {
+    toast.success(`Payment of ₹4,812.41 completed via ${selectedPayMode}`);
     setSuccessReceipt({
-      number: settleOrder.number,
-      kot: settleOrder.kot || "—",
-      mode: `Settled via ${payMode}`,
-      location: table ? table.name : settleOrder.mode,
-      total: totals.total,
+      number: "ORD-8294",
+      total: grandTotal,
+      mode: selectedPayMode,
     });
-    setSettleOrder(null);
-  }
-
-  function handlePostToRoom() {
-    if (!settleOrder || !roomBookingId) {
-      toast.error("Please select a room to post charge");
-      return;
-    }
-    const totals = orderTotals(settleOrder, db);
-    const booking = db.bookings.find((b) => b.id === roomBookingId);
-    const guest = db.guests.find((g) => g.id === booking?.guestId);
-    const room = db.rooms.find((r) => r.id === booking?.roomIds[0]);
-
-    posService.postToRoom(settleOrder.id, roomBookingId);
-    toast.success(`Order #${settleOrder.number} posted to Room ${room?.number}`);
-    setSuccessReceipt({
-      number: settleOrder.number,
-      kot: settleOrder.kot || "—",
-      mode: `Posted to Room Folio (${room?.number})`,
-      location: `Room ${room?.number} (${guest?.name})`,
-      total: totals.total,
-    });
-    setPostRoomOpen(false);
-    setSettleOrder(null);
-    setRoomBookingId("");
   }
 
   return (
-    <div className="space-y-5 pb-12">
+    <div className="space-y-8 font-sans pb-12">
       {/* Top Header */}
-      <PageHeader
-        title="Restaurant Billing & Cashier Desk"
-        subtitle="Automatic queue of orders prepared by kitchen ready for settlement & room posting"
-        actions={
-          <div className="flex items-center gap-2">
-            <Btn size="sm" icon={ChefHat} onClick={() => nav({ to: "/restaurant/kds" })}>
-              Open Kitchen Display (KDS)
-            </Btn>
-            <Btn variant="primary" size="sm" icon={UtensilsCrossed} className="shimmer-gold" onClick={() => nav({ to: "/pos" })}>
-              + New POS Order
-            </Btn>
-          </div>
-        }
-      />
+      <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-[#d1c4bd]">
+        <div>
+          <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#170f0a] tracking-tight">
+            Restaurant Billing
+          </h1>
+          <p className="font-sans text-xs sm:text-sm text-[#4e4540] mt-1">
+            Folio &amp; Settlement
+          </p>
+        </div>
 
-      {/* KPI Stats */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Ready for Billing"
-          value={readyOrders.length}
-          sub="Kitchen marked prepared"
-          tone={readyOrders.length > 0 ? "success" : "muted"}
-        />
-        <StatCard
-          label="In Preparation"
-          value={preparingOrders.length}
-          sub="Live in kitchen"
-          tone="info"
-        />
-        <StatCard
-          label="Today's Settled Orders"
-          value={settledOrders.length}
-          sub="Completed transactions"
-          tone="primary"
-        />
-        <StatCard
-          label="Total F&B Collection"
-          value={money(todaySettledTotal)}
-          sub="Cash, UPI, Card & Room Folio"
-          tone="success"
-        />
+        <div className="flex items-center gap-6 text-right">
+          <div>
+            <span className="font-label-caps text-[10px] text-[#7f756f] block">TABLE</span>
+            <span className="font-serif text-xl font-bold text-[#170f0a]">T04</span>
+          </div>
+          <div>
+            <span className="font-label-caps text-[10px] text-[#7f756f] block">ROOM</span>
+            <span className="font-serif text-xl font-bold text-[#170f0a]">204</span>
+          </div>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs tabs={TABS} value={tab} onChange={setTab} />
-
-      {/* Orders Grid / Table */}
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {currentList.map((order) => {
-          const totals = orderTotals(order, db);
-          const table = db.tables.find((t) => t.id === order.tableId);
-          const isReady = order.kds === "ready";
-          const isSettled = order.status === "settled" || order.status === "posted";
-
-          return (
-            <div
-              key={order.id}
-              className={`rounded-xl border bg-card p-4 shadow-sm transition-all hover:shadow-md flex flex-col justify-between ${
-                isReady && !isSettled ? "border-emerald-500/80 ring-2 ring-emerald-500/20 bg-emerald-50/10" : "border-border"
-              }`}
-            >
+      {/* Main Grid: Bill Items (8 cols) & Summary Panel (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left 8 Columns */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Guest Name Card */}
+          <div className="p-5 border border-[#d1c4bd] bg-[#fbf9f4] rounded-[0.25rem] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#e4e2dd] flex items-center justify-center text-[#7f756f]">
+                <span className="material-symbols-outlined text-[20px]">person</span>
+              </div>
               <div>
-                {/* Card Header */}
-                <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-base text-primary">#{order.number}</span>
-                      {order.kot && <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] font-mono">{order.kot}</span>}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
-                      <span>{table ? `Table ${table.name}` : order.mode}</span>
-                      <span>·</span>
-                      <span>{order.waiter || "Captain"}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    {isReady && !isSettled && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 text-xs font-bold animate-pulse">
-                        <Sparkles className="h-3 w-3" /> Ready for Bill
-                      </span>
-                    )}
-                    {order.kds === "preparing" && !isSettled && (
-                      <Badge tone="info">Preparing</Badge>
-                    )}
-                    {order.kds === "new" && !isSettled && (
-                      <Badge tone="warning">New KOT</Badge>
-                    )}
-                    {isSettled && (
-                      <Badge tone="success">{order.paymentMode ? `Settled (${order.paymentMode})` : "Posted to Room"}</Badge>
-                    )}
-                  </div>
-                </div>
-
-                {/* Items List */}
-                <div className="py-3 space-y-1.5">
-                  {order.items.map((it, idx) => (
-                    <div key={idx} className="flex justify-between text-xs">
-                      <span className="font-medium text-foreground">
-                        {it.qty} × {it.name}
-                      </span>
-                      <span className="text-muted-foreground">{money(it.price * it.qty)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Card Footer: Commercials & Action Buttons */}
-              <div className="border-t border-border/60 pt-3 mt-2 space-y-3">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xs text-muted-foreground">Total Bill (incl. 5% GST):</span>
-                  <span className="text-lg font-bold text-foreground">{money(totals.total)}</span>
-                </div>
-
-                {!isSettled ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    <Btn
-                      variant="primary"
-                      size="sm"
-                      icon={CreditCard}
-                      className={isReady ? "shimmer-gold font-bold shadow-md" : ""}
-                      onClick={() => setSettleOrder(order)}
-                    >
-                      Settle Bill
-                    </Btn>
-                    <Btn
-                      size="sm"
-                      icon={UserCheck}
-                      onClick={() => {
-                        setSettleOrder(order);
-                        setPostRoomOpen(true);
-                      }}
-                    >
-                      Post to Room
-                    </Btn>
-                  </div>
-                ) : (
-                  <div className="flex justify-end">
-                    <Btn size="sm" icon={Printer} onClick={() => setPrintOrder(order)}>
-                      Print Receipt
-                    </Btn>
-                  </div>
-                )}
+                <span className="font-label-caps text-[9px] text-[#7f756f] block">GUEST NAME</span>
+                <span className="font-serif text-base font-bold text-[#170f0a]">Rahul Mehta</span>
               </div>
             </div>
-          );
-        })}
-
-        {currentList.length === 0 && (
-          <div className="col-span-full py-16 text-center rounded-xl border border-dashed border-border p-8 bg-secondary/30">
-            <Receipt className="h-10 w-10 text-muted-foreground mx-auto mb-2 opacity-50" />
-            <h3 className="font-semibold text-base">No orders in this queue</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              When kitchen marks an order as "Ready", it will automatically appear here for instant settlement.
-            </p>
+            <div className="text-right">
+              <span className="font-label-caps text-[9px] text-[#7f756f] block">SERVER</span>
+              <span className="text-xs font-semibold text-[#170f0a]">Elena R.</span>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Settle Bill Modal */}
-      <Modal
-        open={Boolean(settleOrder && !postRoomOpen)}
-        onClose={() => setSettleOrder(null)}
-        title={`Settle Restaurant Bill · #${settleOrder?.number}`}
-        footer={
-          <>
-            <Btn onClick={() => setSettleOrder(null)}>Cancel</Btn>
-            <Btn variant="primary" onClick={handleDirectSettle}>Confirm Settlement</Btn>
-          </>
-        }
-      >
-        {settleOrder && (
-          <div className="space-y-4">
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-3.5 space-y-1.5 text-xs font-semibold text-slate-700">
-              <div className="flex justify-between">
-                <span>Total Bill Amount</span>
-                <span className="font-bold text-slate-900">{money(orderTotals(settleOrder, db).subtotal)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>GST Tax (5%)</span>
-                <span>{money(orderTotals(settleOrder, db).tax)}</span>
-              </div>
-              <div className="flex justify-between font-black text-slate-900 border-t border-slate-200 pt-1 text-sm">
-                <span>Net Payable</span>
-                <span className="text-purple-700">{money(orderTotals(settleOrder, db).total)}</span>
-              </div>
-            </div>
-
-            <Field label="Payment Mode">
-              <div className="grid grid-cols-2 gap-2">
-                {["Cash", "UPI", "Card", "Bank Transfer"].map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setPayMode(m)}
-                    className={`rounded-xl border py-2.5 text-xs font-bold transition-all cursor-pointer ${
-                      payMode === m ? "border-purple-600 bg-purple-50 text-purple-900 shadow-2xs" : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
-                    }`}
-                  >
-                    {m}
-                  </button>
+          {/* Bill Items Table */}
+          <div className="border border-[#d1c4bd] bg-[#ffffff] rounded-[0.25rem] overflow-hidden">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-[#d1c4bd] bg-[#f5f3ee]">
+                  <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">Item</th>
+                  <th className="p-4 font-label-caps text-[10px] text-[#4e4540] text-center">Qty</th>
+                  <th className="p-4 font-label-caps text-[10px] text-[#4e4540] text-right">Rate</th>
+                  <th className="p-4 font-label-caps text-[10px] text-[#4e4540] text-center">Tax</th>
+                  <th className="p-4 font-label-caps text-[10px] text-[#4e4540] text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="font-data-tabular divide-y divide-[#d1c4bd]/40 text-[#170f0a]">
+                {billItems.map((item, i) => (
+                  <tr key={i} className="hover:bg-[#fbf9f4] transition-colors">
+                    <td className="p-4 font-medium">{item.name}</td>
+                    <td className="p-4 text-center">{item.qty}</td>
+                    <td className="p-4 text-right">₹{item.rate.toLocaleString("en-IN")}</td>
+                    <td className="p-4 text-center text-[#7f756f]">{item.tax}</td>
+                    <td className="p-4 text-right font-bold">₹{item.amount.toLocaleString("en-IN")}</td>
+                  </tr>
                 ))}
-              </div>
-            </Field>
+              </tbody>
+            </table>
           </div>
-        )}
-      </Modal>
+        </div>
 
-      {/* Post to Room Modal */}
-      <Modal
-        open={Boolean(settleOrder && postRoomOpen)}
-        onClose={() => { setPostRoomOpen(false); setSettleOrder(null); }}
-        title="Post to In-House Guest Room"
-        footer={
-          <>
-            <Btn onClick={() => { setPostRoomOpen(false); setSettleOrder(null); }}>Cancel</Btn>
-            <Btn variant="primary" onClick={handlePostToRoom} disabled={!roomBookingId}>
-              Transfer to Room Folio
-            </Btn>
-          </>
-        }
-      >
-        {settleOrder && (
-          <div className="space-y-3">
-            <div className="text-xs text-slate-500 font-semibold">
-              Bill amount <span className="font-bold text-slate-900">{money(orderTotals(settleOrder, db).total)}</span> will be posted to the guest's room folio.
-            </div>
+        {/* Right 4 Columns: Summary & Payment */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Summary Box */}
+          <div className="p-6 border border-[#d1c4bd] bg-[#fbf9f4] rounded-[0.25rem] space-y-4">
+            <h3 className="font-serif text-lg font-semibold text-[#170f0a]">Summary</h3>
 
-            <Field label="Select In-House Room / Guest">
-              <Select
-                value={roomBookingId}
-                onChange={(e) => setRoomBookingId(e.target.value)}
-                options={[
-                  { value: "", label: "— Choose In-House Room —" },
-                  ...inHouseBookings.map((b) => {
-                    const g = db.guests.find((x) => x.id === b.guestId);
-                    const r = db.rooms.find((x) => x.id === b.roomIds[0]);
-                    return { value: b.id, label: `Room ${r?.number || "—"} · ${g?.name || "Guest"}` };
-                  }),
-                ]}
-              />
-            </Field>
-          </div>
-        )}
-      </Modal>
-
-      {/* Print Bill Receipt Modal */}
-      <Modal
-        open={Boolean(printOrder)}
-        onClose={() => setPrintOrder(null)}
-        title="Restaurant Cash Receipt"
-        footer={
-          <>
-            <Btn size="sm" onClick={() => setPrintOrder(null)}>Close</Btn>
-            <Btn variant="primary" size="sm" icon={Printer} onClick={() => window.print()}>Print Receipt</Btn>
-          </>
-        }
-      >
-        {printOrder && (
-          <div className="rounded-xl border border-slate-200 p-4 bg-white text-slate-900 font-mono text-xs space-y-3">
-            <div className="text-center border-b border-slate-100 pb-2">
-              <h2 className="text-base font-bold">MAYRA HOTEL & RESTAURANT</h2>
-              <p className="text-[10px] text-slate-500">Civil Lines, Jaipur · GSTIN: 08AAACH1234F1Z8</p>
-              <p className="text-[10px] text-slate-500">Ph: +91 98765 43210</p>
-            </div>
-
-            <div className="flex justify-between border-b border-slate-100 pb-2 text-[11px]">
-              <div>
-                <p>Order: #{printOrder.number}</p>
-                <p>Date: {fmtDate(today())}</p>
+            <div className="space-y-2 text-xs font-data-tabular">
+              <div className="flex justify-between text-[#4e4540]">
+                <span>Subtotal</span>
+                <span>₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className="text-right">
-                <p>KOT: {printOrder.kot || "—"}</p>
-                <p>Mode: {printOrder.paymentMode || printOrder.mode}</p>
+              <div className="flex justify-between text-[#735c00]">
+                <span>Discount (10% Member)</span>
+                <span>-₹{discount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex justify-between text-[#4e4540]">
+                <span>Service Charge (5%)</span>
+                <span>₹{serviceCharge.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-[#7f756f]">
+                <span>CGST (2.5%)</span>
+                <span>₹{cgst.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-[#7f756f]">
+                <span>SGST (2.5%)</span>
+                <span>₹{sgst.toFixed(2)}</span>
               </div>
             </div>
 
-            <div className="space-y-1 border-b border-slate-100 pb-2">
-              {printOrder.items.map((it, i) => (
-                <div key={i} className="flex justify-between">
-                  <span>{it.name} × {it.qty}</span>
-                  <span>₹{(it.price * it.qty).toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-1 text-right text-[11px]">
-              <div className="flex justify-between"><span>Subtotal:</span><span>₹{orderTotals(printOrder, db).subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>CGST (2.5%):</span><span>₹{(orderTotals(printOrder, db).tax / 2).toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>SGST (2.5%):</span><span>₹{(orderTotals(printOrder, db).tax / 2).toFixed(2)}</span></div>
-              <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1">
-                <span>Grand Total:</span>
-                <span className="text-purple-700">₹{orderTotals(printOrder, db).total.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="text-center pt-3 border-t border-slate-100 text-[10px] text-slate-400">
-              <p>Thank you for dining with us!</p>
-              <p>Please visit again.</p>
+            <div className="flex justify-between items-baseline pt-4 border-t border-[#d1c4bd]">
+              <span className="font-label-caps text-xs text-[#170f0a] font-bold">GRAND TOTAL</span>
+              <span className="font-serif text-2xl sm:text-3xl font-bold text-[#170f0a]">
+                ₹{grandTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              </span>
             </div>
           </div>
-        )}
-      </Modal>
 
-      {/* Success Modal */}
-      {successReceipt && (
-        <SuccessModal
-          open={!!successReceipt}
-          onClose={() => setSuccessReceipt(null)}
-          title="Bill Settled Successfully!"
-          subtitle={`Order #${successReceipt.number} · ${successReceipt.mode}`}
-          details={[
-            { label: "Order Number", value: successReceipt.number },
-            { label: "KOT Reference", value: successReceipt.kot },
-            { label: "Table / Destination", value: successReceipt.location },
-            { label: "Settlement Mode", value: successReceipt.mode },
-            { label: "Total Amount", value: money(successReceipt.total) },
-          ]}
-          primaryAction={{
-            label: "Open Kitchen Display",
-            icon: ChefHat,
-            onClick: () => {
-              setSuccessReceipt(null);
-              nav({ to: "/restaurant/kds" });
-            },
-          }}
-          secondaryAction={{
-            label: "Back to POS",
-            onClick: () => {
-              setSuccessReceipt(null);
-              nav({ to: "/pos" });
-            },
-          }}
-        />
-      )}
+          {/* Payment Method 4-Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { id: "Cash", icon: "payments", label: "Cash" },
+              { id: "Card", icon: "credit_card", label: "Card" },
+              { id: "UPI", icon: "qr_code_2", label: "UPI" },
+              { id: "Charge Room", icon: "hotel", label: "Charge Room" },
+            ].map((pm) => (
+              <button
+                key={pm.id}
+                onClick={() => setSelectedPayMode(pm.id as any)}
+                className={cn(
+                  "p-4 border rounded-[0.25rem] text-center transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 h-24",
+                  selectedPayMode === pm.id
+                    ? "bg-[#fed65b]/20 border-[#fed65b] text-[#745c00]"
+                    : "bg-[#ffffff] border-[#d1c4bd] text-[#170f0a] hover:bg-[#f5f3ee]"
+                )}
+              >
+                <span className="material-symbols-outlined text-[24px]">{pm.icon}</span>
+                <span className="font-label-caps text-[10px]">{pm.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Actions Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-[#d1c4bd]">
+        <div className="flex flex-wrap gap-3">
+          <Btn variant="outline" onClick={() => window.print()}>
+            <span className="material-symbols-outlined text-[16px] mr-1.5">print</span>
+            Print Bill
+          </Btn>
+          <Btn variant="outline" onClick={() => toast.success("Bill emailed to guest")}>
+            <span className="material-symbols-outlined text-[16px] mr-1.5">mail</span>
+            Email
+          </Btn>
+          <Btn variant="outline" onClick={() => toast.info("Split bill mode enabled")}>
+            <span className="material-symbols-outlined text-[16px] mr-1.5">call_split</span>
+            Split Bill
+          </Btn>
+        </div>
+
+        <button
+          onClick={completePayment}
+          className="bg-[#170f0a] text-[#ffffff] px-6 py-3 rounded-[0.25rem] flex items-center gap-2 font-label-caps text-xs hover:bg-[#2d241e] transition-colors cursor-pointer"
+        >
+          Complete Payment
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+      </div>
+
+      <SuccessModal
+        open={!!successReceipt}
+        onClose={() => setSuccessReceipt(null)}
+        title="Payment Settled"
+        subtitle={`Order #${successReceipt?.number}`}
+        details={[
+          { label: "Guest", value: "Rahul Mehta" },
+          { label: "Table", value: "Table T04" },
+          { label: "Payment Mode", value: successReceipt?.mode ?? "Charge Room" },
+          { label: "Grand Total", value: money(successReceipt?.total ?? grandTotal) },
+        ]}
+      />
     </div>
   );
 }

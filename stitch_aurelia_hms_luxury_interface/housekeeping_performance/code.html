@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Housekeeping Performance - Aurelia HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbdad5",
+                        "inverse-primary": "#d3c3ba",
+                        "primary-fixed": "#f0dfd6",
+                        "surface-variant": "#e4e2dd",
+                        "tertiary-fixed": "#ffdea5",
+                        "on-secondary-fixed": "#241a00",
+                        "on-surface": "#1b1c19",
+                        "on-surface-variant": "#4e4540",
+                        "on-tertiary-container": "#aa8843",
+                        "outline": "#7f756f",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "on-secondary-fixed-variant": "#574500",
+                        "on-secondary-container": "#745c00",
+                        "background": "#fbf9f4",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#e9c349",
+                        "surface-container-low": "#f5f3ee",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "tertiary": "#190f00",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fbf9f4",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-tint": "#685c55",
+                        "surface": "#fbf9f4",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eee9",
+                        "on-primary": "#ffffff",
+                        "secondary": "#735c00",
+                        "secondary-fixed": "#ffe088",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#30312e",
+                        "on-primary-fixed": "#221a14",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#fed65b",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f2f1ec",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "on-primary-container": "#988a82",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#332300",
+                        "surface-container-high": "#eae8e3",
+                        "primary-container": "#2d241e",
+                        "primary": "#170f0a",
+                        "on-background": "#1b1c19",
+                        "surface-container-highest": "#e4e2dd",
+                        "outline-variant": "#d1c4bd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "density-comfortable": "16px",
+                        "margin-page": "40px",
+                        "density-compact": "8px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen selection:bg-surface-dim">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-background border-r border-outline-variant flex flex-col py-margin-page gap-density-comfortable z-40">
+<div class="px-gutter mb-8">
+<h1 class="text-headline-sm font-display-md text-primary tracking-tight">Aurelia HMS</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Grand Estate</p>
+</div>
+<div class="flex flex-col w-full">
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="dashboard">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="calendar_month">calendar_month</span>
+                Bookings
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="bed">bed</span>
+                Rooms
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="group">group</span>
+                Guests
+            </a>
+<a class="flex items-center px-gutter py-3 text-primary font-bold border-r-2 border-primary bg-surface-container-low hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="cleaning_services">cleaning_services</span>
+                Housekeeping
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="local_laundry_service">local_laundry_service</span>
+                Laundry
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="restaurant">restaurant</span>
+                Restaurant
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="point_of_sale">point_of_sale</span>
+                POS
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="event_seat">event_seat</span>
+                Banquets
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="analytics">analytics</span>
+                Reports
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="badge">badge</span>
+                Staff
+            </a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
+                Settings
+            </a>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-30 bg-background/95 backdrop-blur-md border-b border-outline-variant flex justify-between items-center h-16 px-gutter ml-64">
+<div class="flex items-center flex-1">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-transparent border-b border-outline-variant focus:border-primary focus:ring-0 pl-10 pr-4 py-2 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant outline-none transition-colors" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-opacity duration-200 active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-opacity duration-200 active:opacity-80">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-DEFAULT font-label-caps uppercase tracking-wider hover:bg-primary-container hover:text-primary transition-colors duration-200">
+                Check In
+            </button>
+<div class="h-8 w-8 rounded-full bg-surface-dim overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a luxury hotel staff member, calm expression, elegant setting, warm lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzYzGdakVgWy_MszAWlpuCAMlEtwGukrxxWQnfn28TOByZPN2TtajsEpey8-1HpTRLROYxap0UNVtdOWNXgfu2zWdWlWMhzyk9USvWfFafBsUwaC1LDTSSKj1TuCsEDPppapVjuX_KzZotd9SettTN0bXtqvBV6OWCrcG4LSbWnefqaXj8H-LBUoAta-LBQJRBKwaLccj6ydqoxkpxrRtnAJ__H3MnikAjNCLSa4W3J7GqZihy9Qg"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-64 mt-16 p-margin-page max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-display-md text-display-md text-primary mb-2">Housekeeping Performance</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Staff efficiency and inspection metrics overview.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-4 py-2 border-b-2 border-primary text-primary font-body-md text-body-md hover:bg-surface-container transition-colors">Today</button>
+<button class="px-4 py-2 border-b border-transparent text-on-surface-variant font-body-md text-body-md hover:bg-surface-container transition-colors">This Week</button>
+<button class="px-4 py-2 border-b border-transparent text-on-surface-variant font-body-md text-body-md hover:bg-surface-container transition-colors">This Month</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Performance Chart Area -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-low border border-outline-variant rounded-lg p-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-primary">Efficiency Trends</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Avg Cleaning Time vs Rooms</span>
+</div>
+<!-- Placeholder for Chart -->
+<div class="w-full h-64 border-b border-l border-outline-variant relative flex items-end justify-between px-4 pb-2">
+<div class="w-full absolute bottom-1/4 border-t border-dashed border-outline opacity-30"></div>
+<div class="w-full absolute bottom-2/4 border-t border-dashed border-outline opacity-30"></div>
+<div class="w-full absolute bottom-3/4 border-t border-dashed border-outline opacity-30"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors h-2/4 relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 font-label-caps text-label-caps bg-surface px-2 py-1 border border-outline-variant">8:00</div></div>
+<div class="w-8 bg-primary/40 hover:bg-primary/60 transition-colors h-3/4 relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 font-label-caps text-label-caps bg-surface px-2 py-1 border border-outline-variant">9:00</div></div>
+<div class="w-8 bg-primary/30 hover:bg-primary/50 transition-colors h-2/5 relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 font-label-caps text-label-caps bg-surface px-2 py-1 border border-outline-variant">10:00</div></div>
+<div class="w-8 bg-primary/60 hover:bg-primary/80 transition-colors h-4/5 relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 font-label-caps text-label-caps bg-surface px-2 py-1 border border-outline-variant">11:00</div></div>
+<div class="w-8 bg-primary/80 hover:bg-primary transition-colors h-full relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 font-label-caps text-label-caps bg-surface px-2 py-1 border border-outline-variant">12:00</div></div>
+<div class="w-8 bg-primary/50 hover:bg-primary/70 transition-colors h-3/5 relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 font-label-caps text-label-caps bg-surface px-2 py-1 border border-outline-variant">13:00</div></div>
+</div>
+</div>
+<!-- Top Performers Bento -->
+<div class="col-span-12 lg:col-span-4 grid grid-rows-3 gap-gutter">
+<div class="row-span-3 bg-inverse-on-surface border border-outline-variant rounded-lg p-6 flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-6">Top Performers</h3>
+<div class="flex-1 flex flex-col gap-4">
+<div class="flex items-center gap-4 bg-background p-4 border border-outline-variant rounded-DEFAULT">
+<img alt="Staff Avatar" class="w-12 h-12 rounded-full object-cover" data-alt="Close up portrait of a professional housekeeping staff member, warm smile, immaculate uniform, luxury hotel hallway background, soft natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr7XmAy0Q1j55QXkBkEcEUYt1eqAobxhu-MhzAc-Ou-MKiSnOvCaT26ifZRV4kA1aSj4c2qn-seMvU_8rZDsPStg059KYWGAXpZDOjUdK3VjyruKcqUdXC3NfheseLdypDHisxcQXPvtorqsYbZCxZudavRXpYIjVYYJCxLacb0rn9G35aTl0SkVWEplby99Uxto1mtcl9FX9iq189TVuUTC2NiQ6bGegwUOuk9x9Qqk5unj1qYzQ"/>
+<div class="flex-1">
+<h4 class="font-body-md text-body-md text-primary font-bold">Elena Rodriguez</h4>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">12 Rooms • 4.9 Score</p>
+</div>
+<span class="material-symbols-outlined text-secondary" data-icon="workspace_premium">workspace_premium</span>
+</div>
+<div class="flex items-center gap-4 bg-background p-4 border border-outline-variant rounded-DEFAULT opacity-80">
+<img alt="Staff Avatar" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a focused hotel staff member, neat appearance, subtle uniform details, elegant lobby background, high key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8Z5pbJgxIMVZsEBCZi1uMjih9PXYZND953JkEgiGQeUl0vZKYJPrvTq4NHy2yPZuQgWWiM6EiZxWzXzrheHztqVeoRHqhFfyT4meOC7VzHeDUuekgniUO6eduTMrkui_tLppEh5xfAXf4IGAHzgD7peQKKJP3RLkASVYqjw5yY7BE3bRKYfGvwIH3NJJZj1VMsRHZG991j5MBJAIR7ySmlGck4eKIaKdx681J-WbRK1_4k2FCY-U"/>
+<div class="flex-1">
+<h4 class="font-body-md text-body-md text-primary">Marcus Chen</h4>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">10 Rooms • 4.8 Score</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-background p-4 border border-outline-variant rounded-DEFAULT opacity-70">
+<img alt="Staff Avatar" class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a friendly hotel staff member, subtle uniform details, elegant lobby background, high key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb08QMnqRM-KESpK8OrArpzeEFllRf5sKKz_tEwDM3sUKww6M7sCVDGmdt5JqprLOG9J2p5g_cZxo0I8GgXvQ_Olb19tIBwlaGuUUPfbijET5bSoA7MDYxWNk0av6YM_fxF7PgTJWH1G6E7W-gxkgiX2sV1idymajt1C8eDiISYX6UdyUl32BIJGrCdj7KYc_wCr6XrwhdSb9cRI5v9i27sjDdCSed9hUd46IiQKe9v008wCkD61o"/>
+<div class="flex-1">
+<h4 class="font-body-md text-body-md text-primary">Sarah Jenkins</h4>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">9 Rooms • 4.7 Score</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Performance Table -->
+<div class="col-span-12 mt-8">
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low font-label-caps text-label-caps text-on-surface-variant uppercase">
+<tr>
+<th class="py-4 px-6 border-b border-outline-variant font-medium">Staff Name</th>
+<th class="py-4 px-6 border-b border-outline-variant font-medium">Rooms Assigned</th>
+<th class="py-4 px-6 border-b border-outline-variant font-medium">Rooms Completed</th>
+<th class="py-4 px-6 border-b border-outline-variant font-medium">Avg Cleaning Time</th>
+<th class="py-4 px-6 border-b border-outline-variant font-medium">Inspection Score</th>
+<th class="py-4 px-6 border-b border-outline-variant font-medium">Pending Tasks</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular text-primary">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-4 px-6 border-b border-outline-variant/50">Elena Rodriguez</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">14</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">12</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">28 min</td>
+<td class="py-4 px-6 border-b border-outline-variant/50 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.9/5.0</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">2</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-4 px-6 border-b border-outline-variant/50">Marcus Chen</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">12</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">10</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">32 min</td>
+<td class="py-4 px-6 border-b border-outline-variant/50 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.8/5.0</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">2</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-4 px-6 border-b border-outline-variant/50">Sarah Jenkins</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">15</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">9</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">35 min</td>
+<td class="py-4 px-6 border-b border-outline-variant/50 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.7/5.0</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">6</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-4 px-6 border-b border-outline-variant/50">David Smith</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">10</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">10</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">40 min</td>
+<td class="py-4 px-6 border-b border-outline-variant/50 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span> 4.5/5.0</td>
+<td class="py-4 px-6 border-b border-outline-variant/50">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</body></html>

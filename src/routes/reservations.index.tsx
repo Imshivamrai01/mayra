@@ -391,7 +391,7 @@ function ReservationsPage() {
         actions={
           <>
             <Btn size="sm" icon={Download} onClick={() => exportCSV("reservations.csv", filtered.map((b) => ({ id: b.id, grc: b.grc, guest: guestOf(b, db)?.name ?? "", checkIn: b.checkIn, checkOut: b.checkOut, nights: b.nights, status: b.status, billingType: b.billingType || "GST", source: b.source, amount: folioTotals(b, db).total })))}>Export</Btn>
-            <Btn variant="primary" size="sm" icon={Plus} className="shimmer-gold font-semibold shadow-sm" onClick={() => nav({ to: "/reservations/new" as never })}>New Booking</Btn>
+            <Btn variant="primary" size="sm" icon={Plus} onClick={() => nav({ to: "/reservations/new" as never })}>New Booking</Btn>
           </>
         }
       />

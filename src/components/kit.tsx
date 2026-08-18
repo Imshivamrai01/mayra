@@ -6,28 +6,29 @@ import { cn } from "@/lib/utils";
 export function Btn({
   children, variant = "default", size = "md", className, icon: Icon, ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "default" | "primary" | "ghost" | "danger" | "success" | "outline";
+  variant?: "default" | "primary" | "ghost" | "danger" | "success" | "outline" | "gold";
   size?: "sm" | "md" | "lg";
   icon?: React.ComponentType<{ className?: string }>;
 }) {
   const variants: Record<string, string> = {
-    default: "bg-white border border-slate-200/90 text-slate-800 hover:bg-slate-50 shadow-2xs font-semibold",
-    outline: "bg-transparent border border-slate-200/90 text-slate-700 hover:bg-slate-50 font-semibold",
-    primary: "bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 text-white shadow-xs hover:from-purple-800 hover:to-indigo-800 active:scale-[0.98] border border-transparent font-bold",
-    ghost: "bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent font-medium",
-    danger: "bg-rose-600 text-white hover:bg-rose-700 border border-transparent font-bold shadow-xs",
-    success: "bg-emerald-600 text-white hover:bg-emerald-700 border border-transparent font-bold shadow-xs",
+    default: "bg-[#ffffff] border border-[#d1c4bd] !text-[#170f0a] hover:bg-[#f5f3ee] font-medium",
+    outline: "bg-transparent border border-[#d1c4bd] !text-[#170f0a] hover:bg-[#f5f3ee] font-medium",
+    primary: "bg-[#170f0a] !text-[#ffffff] hover:bg-[#2d241e] active:scale-[0.99] border border-[#170f0a] font-bold",
+    gold: "bg-[#fed65b] !text-[#745c00] hover:bg-[#e9c349] border border-[#e9c349] font-bold",
+    ghost: "bg-transparent !text-[#4e4540] hover:bg-[#f0eee9] hover:!text-[#170f0a] border border-transparent font-medium",
+    danger: "bg-[#ba1a1a] !text-[#ffffff] hover:bg-[#93000a] border border-[#ba1a1a] font-bold",
+    success: "bg-[#285430] !text-[#ffffff] hover:bg-[#1e3f24] border border-[#285430] font-bold",
   };
   const sizes: Record<string, string> = {
-    sm: "h-8 px-3 text-xs gap-1.5 rounded-lg",
-    md: "h-9.5 px-3.5 text-xs sm:text-sm gap-2 rounded-xl",
-    lg: "h-11 px-5 text-sm gap-2 rounded-xl",
+    sm: "h-8 px-3 text-xs gap-1.5 rounded-[0.25rem]",
+    md: "h-9 px-4 text-xs gap-2 rounded-[0.25rem]",
+    lg: "h-10 px-5 text-sm gap-2.5 rounded-[0.25rem]",
   };
   return (
     <button
       {...props}
       className={cn(
-        "inline-flex items-center justify-center transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/40 cursor-pointer select-none",
+        "inline-flex items-center justify-center transition-colors duration-150 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary cursor-pointer select-none tracking-wide",
         variants[variant], sizes[size], className,
       )}
     >
@@ -38,17 +39,17 @@ export function Btn({
 }
 
 export const TONES: Record<string, string> = {
-  success: "bg-emerald-50 text-emerald-800 border-emerald-200/90",
-  danger: "bg-rose-50 text-rose-800 border-rose-200/90",
-  warning: "bg-amber-50 text-amber-900 border-amber-200/90",
-  info: "bg-blue-50 text-blue-800 border-blue-200/90",
-  primary: "bg-purple-50 text-purple-800 border-purple-200/90",
-  muted: "bg-slate-100 text-slate-700 border-slate-200/90",
+  success: "bg-[#e5eedc] text-[#285430] border-[#c0d6b0]",
+  danger: "bg-[#ffdad6] text-[#93000a] border-[#ffb4ab]",
+  warning: "bg-[#fed65b]/20 text-[#745c00] border-[#fed65b]/60",
+  info: "bg-[#e2e8ec] text-[#2c4251] border-[#c5d1d9]",
+  primary: "bg-[#f0dfd6] text-[#4f453e] border-[#d3c3ba]",
+  muted: "bg-[#f5f3ee] text-[#4e4540] border-[#d1c4bd]",
 };
 
 export function Badge({ tone = "muted", children, className }: { tone?: string; children: ReactNode; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10.5px] font-bold whitespace-nowrap", TONES[tone] ?? TONES["muted"], className)}>
+    <span className={cn("inline-flex items-center gap-1 rounded-[0.25rem] border px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wider whitespace-nowrap font-label-caps", TONES[tone] ?? TONES["muted"], className)}>
       {children}
     </span>
   );
@@ -56,8 +57,8 @@ export function Badge({ tone = "muted", children, className }: { tone?: string; 
 
 export function Dot({ tone = "muted" }: { tone?: string }) {
   const map: Record<string, string> = {
-    success: "bg-emerald-500", danger: "bg-rose-500", warning: "bg-amber-500",
-    info: "bg-blue-500", primary: "bg-purple-600", muted: "bg-slate-400",
+    success: "bg-[#285430]", danger: "bg-error", warning: "bg-secondary",
+    info: "bg-[#2c4251]", primary: "bg-primary", muted: "bg-outline",
   };
   return <span className={cn("inline-block h-2 w-2 rounded-full", map[tone] ?? map["muted"])} />;
 }
@@ -65,10 +66,10 @@ export function Dot({ tone = "muted" }: { tone?: string }) {
 export function Card({ children, className, title, action, dense }: { children: ReactNode; className?: string; title?: ReactNode; action?: ReactNode; dense?: boolean }) {
   const hasOverflow = className && /overflow-(hidden|visible|auto|scroll)/.test(className);
   return (
-    <section className={cn("card-surface rounded-2xl bg-white border border-[#eaedf3] shadow-2xs", !hasOverflow && "overflow-hidden", className)}>
+    <section className={cn("bg-surface border border-outline-variant rounded-[0.25rem]", !hasOverflow && "overflow-hidden", className)}>
       {title ? (
-        <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-3.5 bg-gradient-to-b from-white to-[#fcfdfe]">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">{title}</h3>
+        <header className="flex items-center justify-between gap-3 border-b border-outline-variant px-5 py-3.5 bg-surface-container-low">
+          <h3 className="font-headline-sm text-sm sm:text-base text-primary font-serif">{title}</h3>
           {action}
         </header>
       ) : null}
@@ -77,13 +78,12 @@ export function Card({ children, className, title, action, dense }: { children: 
   );
 }
 
-
 export function PageHeader({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: ReactNode; children?: ReactNode }) {
   return (
-    <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2 font-sans">{title}</h1>
-        {subtitle ? <p className="mt-0.5 text-xs font-semibold text-slate-500">{subtitle}</p> : null}
+        <h1 className="text-2xl sm:text-3xl font-display-md text-primary">{title}</h1>
+        {subtitle ? <p className="mt-1 text-xs font-medium text-on-surface-variant font-sans">{subtitle}</p> : null}
         {children}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
@@ -102,27 +102,30 @@ export function StatCard({
     <Comp
       onClick={onClick}
       className={cn(
-        "card-surface rounded-2xl bg-white border border-slate-200/70 p-4.5 text-left transition-all duration-200 hover:shadow-md hover:border-purple-200",
-        onClick && "cursor-pointer",
+        "p-5 border border-outline-variant bg-surface rounded-[0.25rem] text-left transition-colors flex flex-col justify-between h-36",
+        onClick && "cursor-pointer hover:bg-surface-container-low",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">{label}</span>
+        <span className="font-label-caps text-label-caps text-on-surface-variant">{label}</span>
         {Icon ? (
-          <div className="p-2 rounded-xl bg-purple-50 text-purple-700 border border-purple-100">
+          <div className="text-outline">
             <Icon className="h-4 w-4" />
           </div>
         ) : null}
       </div>
-      <div className="mt-2.5 flex items-baseline gap-2">
-        <span className="text-2xl font-black tracking-tight text-slate-900 tabular-nums">{value}</span>
-        {typeof trend === "number" ? (
-          <span className={cn("text-[11px] font-extrabold", trend >= 0 ? "text-emerald-600" : "text-rose-600")}>
-            {trend >= 0 ? "▲" : "▼"} {Math.abs(trend).toFixed(1)}%
-          </span>
-        ) : null}
+      <div>
+        <div className="font-display-md text-display-md text-primary tabular-nums">{value}</div>
+        <div className="flex items-center gap-1 mt-1">
+          {typeof trend === "number" ? (
+            <span className={cn("text-xs font-semibold tabular-nums", trend >= 0 ? "text-secondary" : "text-error")}>
+              {trend >= 0 ? "↗ +" : "↘ -"}{Math.abs(trend).toFixed(1)}% vs last week
+            </span>
+          ) : sub ? (
+            <span className="font-data-tabular text-data-tabular text-outline">{sub}</span>
+          ) : null}
+        </div>
       </div>
-      {sub ? <div className="mt-1 text-[11.5px] text-slate-500 font-semibold">{sub}</div> : null}
     </Comp>
   );
 }
@@ -136,16 +139,16 @@ export function Modal({ open, onClose, title, children, footer, wide }: { open: 
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-[3px] animate-in fade-in duration-150">
-      <div className={cn("mt-10 w-full rounded-2xl border border-slate-200/90 bg-white shadow-2xl animate-in zoom-in-95 duration-150 overflow-hidden", wide ? "max-w-4xl" : "max-w-lg")}>
-        <header className="flex items-center justify-between border-b border-slate-100 px-5 py-3.5 bg-slate-50/50">
-          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">{title}</h3>
-          <button aria-label="Close dialog" onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-primary/40 p-4 backdrop-blur-[2px] animate-in fade-in duration-150">
+      <div className={cn("mt-12 w-full rounded-[0.25rem] border border-outline-variant bg-surface shadow-2xl animate-in zoom-in-95 duration-150 overflow-hidden", wide ? "max-w-4xl" : "max-w-lg")}>
+        <header className="flex items-center justify-between border-b border-outline-variant px-5 py-4 bg-surface-container-low">
+          <h3 className="font-headline-sm text-base text-primary font-serif">{title}</h3>
+          <button aria-label="Close dialog" onClick={onClose} className="rounded p-1 text-outline hover:bg-surface-container hover:text-primary transition-colors cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </header>
-        <div className="max-h-[72vh] overflow-y-auto p-5">{children}</div>
-        {footer ? <footer className="flex justify-end gap-2.5 border-t border-slate-100 px-5 py-3.5 bg-slate-50/30">{footer}</footer> : null}
+        <div className="max-h-[72vh] overflow-y-auto p-5 font-sans">{children}</div>
+        {footer ? <footer className="flex justify-end gap-2.5 border-t border-outline-variant px-5 py-3.5 bg-surface-container-low">{footer}</footer> : null}
       </div>
     </div>
   );
@@ -159,20 +162,20 @@ export function Drawer({ open, onClose, title, subtitle, children, footer, width
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-[3px] animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex justify-end bg-primary/40 backdrop-blur-[2px] animate-in fade-in duration-150">
       <div className="flex-1" onClick={onClose} />
-      <aside className={cn("flex h-full w-full flex-col border-l border-slate-200 bg-white shadow-2xl animate-in slide-in-from-right duration-200", width)}>
-        <header className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 bg-slate-50/50">
+      <aside className={cn("flex h-full w-full flex-col border-l border-outline-variant bg-surface shadow-2xl animate-in slide-in-from-right duration-200", width)}>
+        <header className="flex items-start justify-between gap-3 border-b border-outline-variant px-5 py-4 bg-surface-container-low">
           <div>
-            <h3 className="text-sm font-extrabold text-slate-900">{title}</h3>
-            {subtitle ? <p className="text-xs text-slate-500 font-medium">{subtitle}</p> : null}
+            <h3 className="font-headline-sm text-base text-primary font-serif">{title}</h3>
+            {subtitle ? <p className="text-xs text-on-surface-variant font-medium mt-0.5">{subtitle}</p> : null}
           </div>
-          <button aria-label="Close panel" onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer">
+          <button aria-label="Close panel" onClick={onClose} className="rounded p-1 text-outline hover:bg-surface-container hover:text-primary transition-colors cursor-pointer">
             <X className="h-4 w-4" />
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto p-5">{children}</div>
-        {footer ? <footer className="flex flex-wrap justify-end gap-2.5 border-t border-slate-100 px-5 py-3.5 bg-slate-50/30">{footer}</footer> : null}
+        <div className="flex-1 overflow-y-auto p-5 font-sans">{children}</div>
+        {footer ? <footer className="flex flex-wrap justify-end gap-2.5 border-t border-outline-variant px-5 py-3.5 bg-surface-container-low">{footer}</footer> : null}
       </aside>
     </div>
   );
@@ -184,12 +187,12 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
       open={open} onClose={onClose} title={title}
       footer={
         <>
-          <Btn onClick={onClose}>Keep</Btn>
+          <Btn onClick={onClose} variant="outline">Cancel</Btn>
           <Btn variant={tone === "danger" ? "danger" : "primary"} onClick={() => { onConfirm(); onClose(); }}>{confirmLabel}</Btn>
         </>
       }
     >
-      <p className="text-xs font-semibold text-slate-600">{message}</p>
+      <p className="text-xs font-medium text-on-surface-variant">{message}</p>
     </Modal>
   );
 }
@@ -198,17 +201,17 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
 export function Field({ label, children, hint, required, className }: { label: string; children: ReactNode; hint?: string; required?: boolean; className?: string }) {
   return (
     <label className={cn("block", className)}>
-      <span className="mb-1 block text-xs font-bold text-slate-700">
-        {label} {required ? <span className="text-rose-600">*</span> : null}
+      <span className="mb-1 block font-label-caps text-label-caps text-on-surface-variant">
+        {label} {required ? <span className="text-error">*</span> : null}
       </span>
       {children}
-      {hint ? <span className="mt-1 block text-[11px] font-medium text-slate-400">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-[11px] font-medium text-outline">{hint}</span> : null}
     </label>
   );
 }
 
 const fieldCls =
-  "h-9.5 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs sm:text-sm outline-none transition-all placeholder:text-slate-400 text-slate-900 focus:border-purple-600 focus:ring-2 focus:ring-purple-100 shadow-2xs";
+  "h-9 w-full rounded-[0.25rem] border border-outline-variant bg-surface px-3 text-xs sm:text-sm outline-none transition-colors placeholder:text-outline text-primary focus:border-primary focus:ring-1 focus:ring-primary";
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cn(fieldCls, props.className)} />;
@@ -224,7 +227,7 @@ export function Select({ options, ...props }: React.SelectHTMLAttributes<HTMLSel
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-2.5 top-3 h-4 w-4 text-slate-400" />
+      <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4 text-outline" />
     </div>
   );
 }
@@ -232,7 +235,7 @@ export function Select({ options, ...props }: React.SelectHTMLAttributes<HTMLSel
 export function SearchInput({ value, onChange, placeholder = "Search…", className }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
   return (
     <div className={cn("relative", className)}>
-      <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+      <Search className="absolute left-3 top-2.5 h-4 w-4 text-outline" />
       <input
         aria-label={placeholder} value={value} placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
@@ -244,20 +247,20 @@ export function SearchInput({ value, onChange, placeholder = "Search…", classN
 
 export function Tabs({ tabs, value, onChange, className }: { tabs: { value: string; label: string; count?: number }[]; value: string; onChange: (v: string) => void; className?: string }) {
   return (
-    <div className={cn("flex flex-wrap gap-1 border-b border-slate-200", className)}>
+    <div className={cn("flex flex-wrap gap-2 border-b border-outline-variant", className)}>
       {tabs.map((t) => (
         <button
           key={t.value} onClick={() => onChange(t.value)}
           className={cn(
-            "-mb-px border-b-2 px-3.5 py-2.5 text-xs font-bold transition-all duration-150 cursor-pointer",
-            value === t.value ? "border-purple-600 text-purple-900 font-extrabold" : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300",
+            "-mb-px border-b-2 px-3.5 py-2 text-xs font-label-caps transition-colors cursor-pointer",
+            value === t.value ? "border-primary text-primary font-bold" : "border-transparent text-outline hover:text-primary",
           )}
         >
           {t.label}
           {typeof t.count === "number" ? (
             <span className={cn(
-              "ml-1.5 rounded-full px-2 py-0.5 text-[10.5px] tabular-nums font-extrabold",
-              value === t.value ? "bg-purple-100 text-purple-900" : "bg-slate-100 text-slate-600",
+              "ml-1.5 rounded-[0.25rem] px-1.5 py-0.2 text-[10px] tabular-nums font-bold",
+              value === t.value ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant",
             )}>
               {t.count}
             </span>
@@ -269,50 +272,41 @@ export function Tabs({ tabs, value, onChange, className }: { tabs: { value: stri
 }
 
 export function Shimmer({ className }: { className?: string }) {
-  return <div className={cn("shimmer-skeleton rounded-xl", className)} />;
+  return <div className={cn("bg-surface-container-high animate-pulse rounded-[0.25rem]", className)} />;
 }
 
 export function StatSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="card-surface rounded-2xl bg-white border border-slate-200/70 p-5 space-y-3 shadow-2xs">
+        <div key={i} className="p-5 border border-outline-variant bg-surface rounded-[0.25rem] space-y-3 h-36 flex flex-col justify-between">
           <div className="flex justify-between items-center">
-            <div className="h-3.5 w-24 shimmer-skeleton rounded-md" />
-            <div className="h-7 w-7 shimmer-skeleton rounded-xl" />
+            <div className="h-3 w-20 bg-surface-container-high animate-pulse rounded" />
+            <div className="h-5 w-5 bg-surface-container-high animate-pulse rounded-full" />
           </div>
-          <div className="h-8 w-28 shimmer-skeleton rounded-xl" />
-          <div className="h-3 w-36 shimmer-skeleton rounded-md" />
+          <div className="h-8 w-24 bg-surface-container-high animate-pulse rounded" />
+          <div className="h-3 w-32 bg-surface-container-high animate-pulse rounded" />
         </div>
       ))}
     </div>
   );
 }
 
-
 export function TableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="card-surface rounded-2xl bg-white border border-slate-100 shadow-xs overflow-hidden">
-      <div className="p-4 border-b border-slate-100 flex items-center justify-between gap-3 bg-slate-50/40">
-        <div className="h-9.5 w-64 shimmer-skeleton rounded-xl" />
+    <div className="border border-outline-variant bg-surface rounded-[0.25rem] overflow-hidden">
+      <div className="p-4 border-b border-outline-variant flex items-center justify-between gap-3 bg-surface-container-low">
+        <div className="h-8 w-60 bg-surface-container-high animate-pulse rounded" />
         <div className="flex gap-2">
-          <div className="h-9.5 w-24 shimmer-skeleton rounded-xl" />
-          <div className="h-9.5 w-28 shimmer-skeleton rounded-xl" />
+          <div className="h-8 w-20 bg-surface-container-high animate-pulse rounded" />
         </div>
       </div>
-      <div className="divide-y divide-slate-50 p-3 space-y-2">
+      <div className="divide-y divide-outline-variant/40 p-2 space-y-2">
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex items-center justify-between p-3 gap-4">
-            <div className="flex items-center gap-3 flex-1">
-              <div className="h-9 w-9 rounded-xl shimmer-skeleton flex-shrink-0" />
-              <div className="space-y-1.5 flex-1 max-w-sm">
-                <div className="h-4 w-3/4 shimmer-skeleton rounded-md" />
-                <div className="h-3 w-1/2 shimmer-skeleton rounded-md" />
-              </div>
-            </div>
-            <div className="h-5 w-20 shimmer-skeleton rounded-full hidden sm:block" />
-            <div className="h-4 w-24 shimmer-skeleton rounded-md hidden md:block" />
-            <div className="h-8 w-20 shimmer-skeleton rounded-xl" />
+            <div className="h-4 w-40 bg-surface-container-high animate-pulse rounded" />
+            <div className="h-4 w-20 bg-surface-container-high animate-pulse rounded" />
+            <div className="h-4 w-24 bg-surface-container-high animate-pulse rounded" />
           </div>
         ))}
       </div>
@@ -322,104 +316,30 @@ export function TableSkeleton({ rows = 6 }: { rows?: number }) {
 
 export function CardSkeleton() {
   return (
-    <div className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4 shadow-xs">
-      <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-        <div className="h-5 w-40 shimmer-skeleton rounded-lg" />
-        <div className="h-5 w-16 shimmer-skeleton rounded-full" />
+    <div className="border border-outline-variant bg-surface rounded-[0.25rem] p-5 space-y-4">
+      <div className="flex justify-between items-center border-b border-outline-variant pb-3">
+        <div className="h-5 w-40 bg-surface-container-high animate-pulse rounded" />
+        <div className="h-5 w-16 bg-surface-container-high animate-pulse rounded" />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="h-10 shimmer-skeleton rounded-xl" />
-        <div className="h-10 shimmer-skeleton rounded-xl" />
-        <div className="h-10 shimmer-skeleton rounded-xl" />
-        <div className="h-10 shimmer-skeleton rounded-xl" />
+        <div className="h-10 bg-surface-container-high animate-pulse rounded" />
+        <div className="h-10 bg-surface-container-high animate-pulse rounded" />
       </div>
-      <div className="h-24 shimmer-skeleton rounded-xl mt-2" />
     </div>
   );
 }
 
 export function PageSkeleton({ pathname }: { pathname?: string }) {
-  const isForm = pathname?.includes("/new") || pathname?.includes("/edit");
-  const isDashboard = pathname === "/" || pathname === "/ez-dashboard";
-
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
-      {/* Header Skeleton */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
-          <div className="h-7 w-56 shimmer-skeleton rounded-xl" />
-          <div className="h-4 w-72 shimmer-skeleton rounded-lg" />
-        </div>
-        <div className="flex gap-2.5">
-          <div className="h-9.5 w-28 shimmer-skeleton rounded-xl" />
-          <div className="h-9.5 w-32 shimmer-skeleton rounded-xl" />
+          <div className="h-7 w-48 bg-surface-container-high animate-pulse rounded" />
+          <div className="h-3.5 w-64 bg-surface-container-high animate-pulse rounded" />
         </div>
       </div>
-
-      {isForm ? (
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <CardSkeleton />
-            <CardSkeleton />
-          </div>
-          <div>
-            <CardSkeleton />
-          </div>
-        </div>
-      ) : isDashboard ? (
-        <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-3">
-                <div className="flex justify-between items-center">
-                  <div className="h-4 w-24 shimmer-skeleton rounded-lg" />
-                  <div className="h-8 w-8 shimmer-skeleton rounded-xl" />
-                </div>
-                <div className="h-8 w-32 shimmer-skeleton rounded-xl" />
-                <div className="h-3 w-40 shimmer-skeleton rounded-md" />
-                <div className="h-5 w-full shimmer-skeleton rounded-lg mt-2" />
-              </div>
-            ))}
-          </div>
-
-          <div className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <div className="h-5 w-48 shimmer-skeleton rounded-lg" />
-              <div className="h-5 w-24 shimmer-skeleton rounded-lg" />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-2xl border border-slate-100 p-4 space-y-3 bg-slate-50/50">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 shimmer-skeleton rounded-full" />
-                    <div className="space-y-1.5 flex-1">
-                      <div className="h-4 w-20 shimmer-skeleton rounded" />
-                      <div className="h-5 w-24 shimmer-skeleton rounded" />
-                    </div>
-                  </div>
-                  <div className="h-4 w-full shimmer-skeleton rounded mt-2" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-3">
-            <div className="xl:col-span-2 card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4">
-              <div className="h-5 w-40 shimmer-skeleton rounded-lg" />
-              <div className="h-64 w-full shimmer-skeleton rounded-xl" />
-            </div>
-            <div className="card-surface rounded-2xl bg-white border border-slate-100 p-5 space-y-4">
-              <div className="h-5 w-36 shimmer-skeleton rounded-lg" />
-              <div className="h-64 w-full shimmer-skeleton rounded-xl" />
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <StatSkeleton />
-          <TableSkeleton rows={6} />
-        </>
-      )}
+      <StatSkeleton />
+      <TableSkeleton rows={6} />
     </div>
   );
 }
@@ -427,12 +347,12 @@ export function PageSkeleton({ pathname }: { pathname?: string }) {
 export function EmptyState({ title, message, action, icon: Icon = Inbox }: { title: string; message?: string; action?: ReactNode; icon?: React.ComponentType<{ className?: string }> }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center">
-      <div className="rounded-full bg-secondary p-3">
-        <Icon className="h-5 w-5 text-muted-foreground" />
+      <div className="rounded-full bg-surface-container p-3 border border-outline-variant">
+        <Icon className="h-5 w-5 text-outline" />
       </div>
-      <p className="text-sm font-medium">{title}</p>
-      {message ? <p className="max-w-sm text-xs text-muted-foreground">{message}</p> : null}
-      {action ? <div className="mt-2">{action}</div> : null}
+      <p className="text-sm font-semibold text-primary font-serif">{title}</p>
+      {message ? <p className="max-w-sm text-xs text-on-surface-variant">{message}</p> : null}
+      {action ? <div className="mt-3">{action}</div> : null}
     </div>
   );
 }
@@ -441,7 +361,7 @@ export function LoadingState({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-2.5 p-4">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-12 shimmer-skeleton rounded-lg border border-border/40" />
+        <div key={i} className="h-10 bg-surface-container animate-pulse rounded-[0.25rem] border border-outline-variant/50" />
       ))}
     </div>
   );
@@ -451,7 +371,7 @@ export function LoadingState({ rows = 5 }: { rows?: number }) {
 export function SuccessModal({
   open,
   onClose,
-  title = "Success!",
+  title = "Success",
   subtitle = "Action completed successfully",
   details,
   primaryAction,
@@ -474,29 +394,22 @@ export function SuccessModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-foreground/40 p-4 backdrop-blur-[4px] animate-in fade-in duration-200">
-      <div className="celebrate-pop relative w-full max-w-md overflow-hidden rounded-2xl border border-primary/25 bg-card p-6 shadow-2xl">
-        {/* Top Gold/Emerald Glow */}
-        <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-64 -translate-x-1/2 rounded-full bg-primary/20 blur-2xl" />
-
-        {/* Animated Checkmark Circle */}
-        <div className="relative mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/15 success-halo">
-          <svg className="h-8 w-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-primary/40 p-4 backdrop-blur-[2px] animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md overflow-hidden rounded-[0.25rem] border border-outline-variant bg-surface p-6 shadow-2xl">
         <div className="text-center">
-          <h3 className="text-xl font-bold tracking-tight text-foreground">{title}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#e5eedc] text-[#285430]">
+            <span className="material-symbols-outlined text-[24px]">check</span>
+          </div>
+          <h3 className="font-headline-sm text-xl text-primary">{title}</h3>
+          <p className="mt-1 text-xs text-on-surface-variant">{subtitle}</p>
         </div>
 
         {details && details.length > 0 && (
-          <div className="mt-5 rounded-xl border border-border/80 bg-secondary/50 p-3.5 space-y-2 text-xs">
+          <div className="mt-5 rounded-[0.25rem] border border-outline-variant bg-surface-container-low p-3.5 space-y-2 text-xs">
             {details.map((d, i) => (
               <div key={i} className="flex items-center justify-between">
-                <span className="text-muted-foreground">{d.label}</span>
-                <span className="font-semibold text-foreground text-right">{d.value}</span>
+                <span className="font-label-caps text-outline">{d.label}</span>
+                <span className="font-semibold text-primary text-right font-data-tabular">{d.value}</span>
               </div>
             ))}
           </div>
@@ -506,8 +419,8 @@ export function SuccessModal({
           {primaryAction && (
             <Btn
               variant="primary"
-              size="lg"
-              className="w-full shadow-md font-semibold text-sm"
+              size="md"
+              className="w-full"
               icon={primaryAction.icon}
               onClick={() => {
                 primaryAction.onClick();
@@ -531,10 +444,10 @@ export function SuccessModal({
             <Btn
               variant="ghost"
               size="sm"
-              className="w-full text-xs text-muted-foreground"
+              className="w-full text-xs text-outline"
               onClick={onClose}
             >
-              Close Window
+              Close
             </Btn>
           )}
         </div>
@@ -542,7 +455,6 @@ export function SuccessModal({
     </div>
   );
 }
-
 
 /* ------------------------------ data table ------------------------------ */
 export interface Column<T> {
@@ -600,50 +512,50 @@ export function DataTable<T>({
   const slice = filtered.slice((current - 1) * pageSize, current * pageSize);
 
   return (
-    <div className="card-surface rounded-2xl bg-white border border-[#eaedf3] shadow-2xs overflow-hidden">
+    <div className="bg-surface border border-outline-variant rounded-[0.25rem] overflow-hidden">
       {(searchKeys || toolbar) && (
-        <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-4 bg-gradient-to-b from-white to-[#fcfdfe]">
+        <div className="flex flex-wrap items-center gap-3 border-b border-outline-variant p-4 bg-surface-container-low">
           {searchKeys ? <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1); }} className="w-full sm:w-72" /> : null}
           <div className="flex flex-1 flex-wrap items-center gap-2">{toolbar}</div>
-          <span className="text-xs font-bold text-slate-400 tabular-nums">{filtered.length} record(s)</span>
+          <span className="font-label-caps text-label-caps text-outline tabular-nums">{filtered.length} records</span>
         </div>
       )}
       <div className="overflow-x-auto w-full">
-        <table className={cn("w-full border-collapse", dense ? "text-xs" : "text-sm")}>
+        <table className={cn("w-full border-collapse text-left", dense ? "text-xs" : "text-sm")}>
           <thead>
-            <tr className="border-b border-slate-200/80 bg-slate-50/80">
+            <tr className="editorial-border-b bg-surface-container-low">
               {columns.map((c) => (
                 <th
                   key={c.key}
                   style={c.width ? { width: c.width } : undefined}
                   onClick={() => c.sortable !== false && setSort((s) => (s?.key === c.key ? { key: c.key, dir: s.dir === 1 ? -1 : 1 } : { key: c.key, dir: 1 }))}
                   className={cn(
-                    dense ? "px-3.5 py-2.5 text-[10px]" : "px-4 py-3 text-[10.5px]",
-                    "font-extrabold uppercase tracking-wider text-slate-400 select-none whitespace-nowrap",
+                    dense ? "px-3.5 py-2.5 text-[10px]" : "px-4 py-3 text-[11px]",
+                    "font-label-caps text-on-surface-variant font-normal select-none whitespace-nowrap",
                     c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "text-left",
-                    c.sortable !== false && "cursor-pointer hover:text-purple-700 transition-colors",
+                    c.sortable !== false && "cursor-pointer hover:text-primary transition-colors",
                   )}
                 >
                   {c.label}
-                  {sort?.key === c.key ? <span className="ml-1 text-purple-700 font-extrabold">{sort.dir === 1 ? "↑" : "↓"}</span> : null}
+                  {sort?.key === c.key ? <span className="ml-1 text-primary font-bold">{sort.dir === 1 ? "↑" : "↓"}</span> : null}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100/90">
+          <tbody className="font-data-tabular text-data-tabular text-primary divide-y divide-outline-variant/30">
             {slice.map((row, i) => (
               <tr
                 key={rowKey ? rowKey(row, i) : ((row as { id?: string }).id ?? i)}
                 onClick={() => onRowClick?.(row)}
-                className={cn("transition-colors hover:bg-purple-50/40", onRowClick && "cursor-pointer")}
+                className={cn("transition-colors hover:bg-surface-bright editorial-border-b", onRowClick && "cursor-pointer")}
               >
                 {columns.map((c) => (
                   <td
                     key={c.key}
                     className={cn(
-                      dense ? "px-3.5 py-2 text-xs" : "px-4 py-3",
+                      dense ? "px-3.5 py-2.5" : "px-4 py-3.5",
                       c.align === "right" ? "text-right tabular-nums" : c.align === "center" ? "text-center" : "text-left",
-                      "whitespace-nowrap font-medium text-slate-700",
+                      "whitespace-nowrap",
                     )}
                   >
                     {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "—")}
@@ -656,25 +568,24 @@ export function DataTable<T>({
         {!slice.length ? (empty ?? <EmptyState title="No records found" message="Try changing the search text or filters." action={q ? <Btn size="sm" onClick={() => setQ("")}>Clear search</Btn> : undefined} />) : null}
       </div>
       {pages > 1 ? (
-        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-3 bg-slate-50/30">
-          <span className="text-xs font-bold text-slate-500">Page {current} of {pages}</span>
+        <div className="flex items-center justify-between gap-2 border-t border-outline-variant px-4 py-3 bg-surface-container-low">
+          <span className="font-label-caps text-outline text-xs">Page {current} of {pages}</span>
           <div className="flex gap-1.5">
-            <Btn size="sm" onClick={() => setPage(Math.max(1, current - 1))} disabled={current === 1} aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></Btn>
-            <Btn size="sm" onClick={() => setPage(Math.min(pages, current + 1))} disabled={current === pages} aria-label="Next page"><ChevronRight className="h-4 w-4" /></Btn>
+            <Btn size="sm" variant="outline" onClick={() => setPage(Math.max(1, current - 1))} disabled={current === 1} aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></Btn>
+            <Btn size="sm" variant="outline" onClick={() => setPage(Math.min(pages, current + 1))} disabled={current === pages} aria-label="Next page"><ChevronRight className="h-4 w-4" /></Btn>
           </div>
         </div>
       ) : null}
     </div>
-
   );
 }
 
 /* ------------------------------ misc ------------------------------ */
 export function KV({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex items-start justify-between gap-3 py-1.5 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium">{value}</span>
+    <div className="flex items-start justify-between gap-3 py-1.5 text-xs font-data-tabular">
+      <span className="text-on-surface-variant font-label-caps">{label}</span>
+      <span className="text-right font-medium text-primary">{value}</span>
     </div>
   );
 }
@@ -683,7 +594,7 @@ export function Tip({ label, children }: { label: string; children: ReactNode })
   return (
     <span className="group relative inline-flex">
       {children}
-      <span className="pointer-events-none absolute -top-8 left-1/2 z-40 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-[11px] text-background opacity-0 transition-opacity group-hover:opacity-100">
+      <span className="pointer-events-none absolute -top-8 left-1/2 z-40 -translate-x-1/2 whitespace-nowrap rounded-[0.25rem] bg-primary px-2 py-1 text-[11px] text-on-primary opacity-0 transition-opacity group-hover:opacity-100">
         {label}
       </span>
     </span>
@@ -691,7 +602,7 @@ export function Tip({ label, children }: { label: string; children: ReactNode })
 }
 
 export function PrintButton({ label = "Print" }: { label?: string }) {
-  return <Btn icon={Printer} onClick={() => window.print()} className="no-print">{label}</Btn>;
+  return <Btn icon={Printer} onClick={() => window.print()} className="no-print" variant="outline">{label}</Btn>;
 }
 
 export function Table({ children, className, ...props }: React.TableHTMLAttributes<HTMLTableElement>) {

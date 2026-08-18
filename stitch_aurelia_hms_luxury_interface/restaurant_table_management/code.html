@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LUMIÈRE POS - Floor Plan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1c19",
+                        "tertiary-fixed": "#ffdea5",
+                        "primary": "#170f0a",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "secondary-container": "#fed65b",
+                        "surface-tint": "#685c55",
+                        "primary-container": "#2d241e",
+                        "surface-container-low": "#f5f3ee",
+                        "tertiary-container": "#332300",
+                        "inverse-primary": "#d3c3ba",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#745c00",
+                        "on-secondary-fixed": "#241a00",
+                        "on-secondary-fixed-variant": "#574500",
+                        "surface": "#fbf9f4",
+                        "inverse-on-surface": "#f2f1ec",
+                        "surface-variant": "#e4e2dd",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "surface-container-highest": "#e4e2dd",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-container": "#f0eee9",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "on-tertiary-container": "#aa8843",
+                        "on-primary-fixed": "#221a14",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#190f00",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#fbf9f4",
+                        "on-surface-variant": "#4e4540",
+                        "primary-fixed": "#f0dfd6",
+                        "inverse-surface": "#30312e",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "on-error-container": "#93000a",
+                        "secondary": "#735c00",
+                        "on-primary-container": "#988a82",
+                        "outline": "#7f756f",
+                        "outline-variant": "#d1c4bd",
+                        "on-background": "#1b1c19",
+                        "surface-dim": "#dbdad5",
+                        "background": "#fbf9f4",
+                        "secondary-fixed": "#ffe088",
+                        "surface-container-high": "#eae8e3",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "density-compact": "8px",
+                        "margin-page": "40px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "density-comfortable": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "display-md": ["Playfair Display"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen antialiased flex overflow-hidden">
+<!-- SideNavBar (JSON) -->
+<nav class="hidden md:flex h-screen w-64 flex-col fixed left-0 top-0 bottom-0 z-40 pt-8 bg-surface-container dark:bg-surface-container-high border-r border-outline-variant/30">
+<div class="px-6 mb-8 flex flex-col items-center">
+<div class="w-16 h-16 rounded-full overflow-hidden mb-4 border border-outline-variant/50">
+<img alt="Hotel Logo" class="w-full h-full object-cover" data-alt="A minimalist line-art logo of a luxury hotel crest, featuring a stylized letter M, set against a pristine white background. The aesthetic is extremely refined, editorial, and high-end hospitality focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjH8dvYL5CkuxmdhfqJdK9BrP8xgmQzwX5TLdoyumfDaJ5vmdWiu7iIUjXjs1tKv4ZoFtj4l1WUE1nu28LaMFOeFBdS_NNASuAWR-acIvi8qfKgFS5V8uujXqpdyXoJk1Vz6A-dQIf4ucA7wMlLMjV23mrUdELijXMwMDeaGs90bWo5rHCGqkyxWDgbVGYra3LfGfbb-knjWmdgolftIMIc9PzMildO-rUgypKUxbvWxi2VX8b3M"/>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed mb-1">Main Dining</h2>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Lunch Service</span>
+<button class="mt-6 w-full py-3 bg-primary text-on-primary font-label-caps text-label-caps flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors duration-200">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                 New Order
+             </button>
+</div>
+<ul class="flex-1 flex flex-col gap-1 w-full">
+<li class="group cursor-pointer">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+<span>Service</span>
+</a>
+</li>
+<li class="group cursor-pointer">
+<a class="flex items-center gap-4 text-primary dark:text-primary-fixed font-bold bg-surface dark:bg-surface-bright rounded-l-full ml-4 py-3 pl-6 border-l-2 border-primary transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+<span>Floor Plan</span>
+</a>
+</li>
+<li class="group cursor-pointer">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span>Kitchen</span>
+</a>
+</li>
+<li class="group cursor-pointer">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span>Billing</span>
+</a>
+</li>
+</ul>
+<div class="pb-8 w-full border-t border-outline-variant/30 mt-auto pt-4">
+<ul class="flex flex-col gap-1 w-full">
+<li class="group cursor-pointer">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>Settings</span>
+</a>
+</li>
+<li class="group cursor-pointer">
+<a class="flex items-center gap-4 text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+<span>Support</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar (JSON) -->
+<header class="w-full h-16 bg-surface dark:bg-surface-container-low border-b border-outline-variant/30 dark:border-outline/20 flex justify-between items-center px-margin-page flex-shrink-0 z-30">
+<div class="flex items-center gap-4">
+<span class="font-display-md text-display-md tracking-tight text-primary dark:text-primary-fixed md:hidden">LUMIÈRE</span>
+<div class="hidden md:flex items-center bg-surface-container h-10 px-4 border border-outline-variant/50 w-64 cursor-text">
+<span class="material-symbols-outlined text-on-surface-variant mr-2 text-[18px]">search</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Search tables, guests...</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">hotel</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</header>
+<!-- Page Header & Actions -->
+<div class="px-margin-page py-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6 flex-shrink-0 bg-surface">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight mb-2">Restaurant Tables</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage seating and live floor status.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<button class="px-5 py-2.5 border border-primary text-primary font-label-caps text-label-caps hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">merge_type</span>
+                    Merge Tables
+                </button>
+<button class="px-5 py-2.5 border border-primary text-primary font-label-caps text-label-caps hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">person_add</span>
+                    Assign Table
+                </button>
+<button class="px-5 py-2.5 bg-primary text-on-primary font-label-caps text-label-caps hover:bg-primary/90 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                    New Reservation
+                </button>
+</div>
+</div>
+<!-- Legend / Filters -->
+<div class="px-margin-page pb-6 flex items-center gap-6 flex-shrink-0 bg-surface border-b border-outline-variant/30">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-surface-container border border-outline-variant"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Available</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-tertiary-fixed border border-tertiary-fixed-dim"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Occupied</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-secondary-container border border-secondary"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Reserved</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary border border-primary"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Billing</span>
+</div>
+</div>
+<!-- Floor Plan Canvas -->
+<div class="flex-1 overflow-auto bg-surface-container-low p-margin-page relative">
+<!-- Simulated Floor Plan Grid - using relative/absolute for a more "floor plan" feel -->
+<div class="relative w-full min-w-[800px] h-full min-h-[600px] border border-outline-variant/20 bg-surface">
+<!-- Table T01: Available (Ivory) -->
+<div class="absolute top-[10%] left-[10%] w-32 h-32 bg-surface-container border border-outline-variant/50 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors group">
+<span class="font-headline-sm text-headline-sm text-primary mb-1">T01</span>
+<div class="flex items-center gap-1 text-on-surface-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">group</span> 0/4
+                    </div>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity font-label-caps text-label-caps text-primary mt-2">Select</span>
+</div>
+<!-- Table T02: Occupied (Muted Gold) -->
+<div class="absolute top-[10%] left-[35%] w-32 h-32 bg-tertiary-fixed border border-tertiary-fixed-dim flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors shadow-[0_20px_40px_-15px_rgba(45,36,30,0.08)]">
+<span class="font-headline-sm text-headline-sm text-on-tertiary-fixed mb-1">T02</span>
+<div class="flex items-center gap-1 text-on-tertiary-fixed-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">group</span> 2/2
+                    </div>
+<div class="font-data-tabular text-data-tabular text-on-tertiary-fixed font-bold mt-1">$145.50</div>
+</div>
+<!-- Table T03: Reserved (Champagne / Secondary Container) -->
+<div class="absolute top-[10%] left-[60%] w-32 h-32 bg-secondary-container border border-secondary flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+<span class="font-headline-sm text-headline-sm text-on-secondary-container mb-1">T03</span>
+<div class="flex items-center gap-1 text-on-secondary-fixed-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 19:30
+                    </div>
+<div class="font-label-caps text-label-caps text-on-secondary-container mt-1">Smith (4)</div>
+</div>
+<!-- Table T04: Available -->
+<div class="absolute top-[10%] left-[85%] w-24 h-24 rounded-full bg-surface-container border border-outline-variant/50 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors group">
+<span class="font-headline-sm text-headline-sm text-primary">T04</span>
+<div class="flex items-center gap-1 text-on-surface-variant font-data-tabular text-data-tabular">
+                         0/2
+                    </div>
+</div>
+<!-- Table T05: Billing (Espresso) -->
+<div class="absolute top-[40%] left-[20%] w-40 h-32 bg-primary border border-primary flex flex-col items-center justify-center cursor-pointer shadow-[0_20px_40px_-15px_rgba(45,36,30,0.15)]">
+<span class="font-headline-sm text-headline-sm text-on-primary mb-1">T05</span>
+<div class="flex items-center gap-1 text-inverse-primary font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">receipt_long</span> Printing
+                    </div>
+<div class="font-data-tabular text-data-tabular text-on-primary font-bold mt-1">$320.00</div>
+</div>
+<!-- Table T06: Available (Large Round) -->
+<div class="absolute top-[40%] left-[55%] w-48 h-48 rounded-full bg-surface-container border border-outline-variant/50 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors group">
+<span class="font-display-md text-display-md text-primary mb-2">T06</span>
+<div class="flex items-center gap-1 text-on-surface-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[16px]">group</span> 0/8
+                    </div>
+</div>
+<!-- Table T07: Occupied -->
+<div class="absolute top-[75%] left-[10%] w-32 h-32 bg-tertiary-fixed border border-tertiary-fixed-dim flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors shadow-[0_20px_40px_-15px_rgba(45,36,30,0.08)]">
+<span class="font-headline-sm text-headline-sm text-on-tertiary-fixed mb-1">T07</span>
+<div class="flex items-center gap-1 text-on-tertiary-fixed-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">group</span> 4/4
+                    </div>
+<div class="font-data-tabular text-data-tabular text-on-tertiary-fixed font-bold mt-1">$85.00</div>
+</div>
+<!-- Table T08: Available -->
+<div class="absolute top-[75%] left-[35%] w-32 h-32 bg-surface-container border border-outline-variant/50 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors group">
+<span class="font-headline-sm text-headline-sm text-primary mb-1">T08</span>
+<div class="flex items-center gap-1 text-on-surface-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">group</span> 0/4
+                    </div>
+</div>
+<!-- Table T09: Occupied -->
+<div class="absolute top-[75%] left-[60%] w-32 h-32 bg-tertiary-fixed border border-tertiary-fixed-dim flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors shadow-[0_20px_40px_-15px_rgba(45,36,30,0.08)]">
+<span class="font-headline-sm text-headline-sm text-on-tertiary-fixed mb-1">T09</span>
+<div class="flex items-center gap-1 text-on-tertiary-fixed-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[14px]">group</span> 2/4
+                    </div>
+<div class="font-data-tabular text-data-tabular text-on-tertiary-fixed font-bold mt-1">$210.75</div>
+</div>
+<!-- Table T10: Reserved -->
+<div class="absolute top-[75%] left-[85%] w-24 h-24 rounded-full bg-secondary-container border border-secondary flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+<span class="font-headline-sm text-headline-sm text-on-secondary-container mb-1">T10</span>
+<div class="flex items-center gap-1 text-on-secondary-fixed-variant font-data-tabular text-data-tabular">
+<span class="material-symbols-outlined text-[12px]">schedule</span> 20:00
+                    </div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Room 204 - Aurelia HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#685c55",
+                        "on-primary-fixed": "#221a14",
+                        "inverse-primary": "#d3c3ba",
+                        "surface-container-low": "#f5f3ee",
+                        "tertiary-container": "#332300",
+                        "tertiary-fixed": "#ffdea5",
+                        "on-background": "#1b1c19",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eee9",
+                        "surface-bright": "#fbf9f4",
+                        "secondary": "#735c00",
+                        "background": "#fbf9f4",
+                        "inverse-surface": "#30312e",
+                        "on-surface": "#1b1c19",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#4e4540",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary-fixed": "#241a00",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#745c00",
+                        "primary": "#170f0a",
+                        "surface-container-high": "#eae8e3",
+                        "inverse-on-surface": "#f2f1ec",
+                        "outline": "#7f756f",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e4e2dd",
+                        "on-primary-container": "#988a82",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fed65b",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "surface": "#fbf9f4",
+                        "on-tertiary-container": "#aa8843",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "secondary-fixed-dim": "#e9c349",
+                        "surface-variant": "#e4e2dd",
+                        "secondary-fixed": "#ffe088",
+                        "tertiary": "#190f00",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#574500",
+                        "primary-fixed": "#f0dfd6",
+                        "on-tertiary-fixed": "#261900",
+                        "primary-container": "#2d241e",
+                        "outline-variant": "#d1c4bd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "density-compact": "8px",
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "density-comfortable": "16px",
+                        "gutter": "24px",
+                        "margin-page": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"],
+                        "display-md": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Playfair Display"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container dark:bg-surface-container-lowest flex flex-col h-full py-margin-page border-r border-outline-variant z-50">
+<div class="px-density-comfortable mb-8">
+<h1 class="font-display-md text-display-md text-primary dark:text-primary-fixed">Aurelia HMS</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Luxury ERP</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                        Overview
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                        Bookings
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact bg-secondary-container text-on-secondary-container dark:bg-secondary dark:text-on-secondary rounded-xl font-bold font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+                        Rooms
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                        Guests
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="cleaning_services">cleaning_services</span>
+                        Housekeeping
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="local_laundry_service">local_laundry_service</span>
+                        Laundry
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+                        Restaurant
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="point_of_sale">point_of_sale</span>
+                        POS
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="event_seat">event_seat</span>
+                        Banquets
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                        Reports
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+                        Staff
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-density-comfortable px-density-comfortable py-density-compact text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                        Settings
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col h-full bg-surface-bright">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-margin-page py-density-comfortable w-full sticky top-0 z-40 bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline-variant">
+<div class="flex items-center gap-density-comfortable">
+<h2 class="font-display-md text-display-md text-primary dark:text-primary-fixed tracking-tight">Aurelia Grand Hotel</h2>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="flex gap-density-comfortable">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors cursor-pointer active:opacity-80 transition-opacity font-label-caps text-label-caps flex items-center gap-unit">
+                        Help
+                    </button>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors cursor-pointer active:opacity-80 transition-opacity font-label-caps text-label-caps flex items-center gap-unit">
+                        Notifications
+                    </button>
+</div>
+<div class="flex gap-density-comfortable items-center">
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary transition-colors" data-icon="help">help</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary transition-colors" data-icon="notifications">notifications</span>
+<img alt="Manager Profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A sophisticated professional portrait of a hotel manager in a tailored dark suit, soft warm natural lighting, high-end editorial photography style, muted luxurious tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-5OVyRth3YiQomgzopydLjQxOVc-2DWMw46uDvTM4LgkTrhk3FQPBbYmP_Knr_EakBrvFjYd8aQauBPEQ7XtNWWUenYDrnky9vKvhARqnnVyRITdPNT5o--dgdLDseVDfWeFzWYHb2oujD__G7AKSp4nByy8jsuZuwh2nEZ4pm1XjzM0-43_6IRkiWe6botTndz6qluPd0WsQp5NMmBsnDQcP_-fi2U65S5GgSpaToCTGFE_hvQQ"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="flex-1 overflow-y-auto p-margin-page">
+<div class="max-w-container-max mx-auto space-y-gutter">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-outline-variant pb-density-comfortable">
+<div>
+<div class="flex items-center gap-density-comfortable mb-unit">
+<h1 class="font-display-lg text-display-lg text-primary">Room 204</h1>
+<span class="inline-flex items-center px-2 py-1 rounded border border-secondary-container bg-secondary-container/20 text-on-secondary-container font-label-caps text-label-caps">
+                                Occupied
+                            </span>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Premium King <span class="mx-2">·</span> Floor 2 <span class="mx-2">·</span> 420 sq ft</p>
+</div>
+<div class="flex gap-density-comfortable mt-density-comfortable md:mt-0">
+<button class="px-density-comfortable py-2 border border-primary text-primary font-label-caps text-label-caps rounded hover:bg-surface-container transition-colors">Change Status</button>
+<button class="px-density-comfortable py-2 bg-primary text-on-primary font-label-caps text-label-caps rounded hover:opacity-90 transition-opacity">Assign Guest</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Main Card: Current Guest -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg p-density-comfortable">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-density-comfortable">Current Guest</h3>
+<div class="flex items-center gap-gutter bg-surface-container-low p-density-comfortable rounded">
+<img alt="Rahul Mehta" class="w-16 h-16 rounded-full object-cover" data-alt="A portrait of an elegant hotel guest, soft warm lighting, high-end editorial photography, sophisticated neutral tones, calm and relaxed expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz7qCTL0ZaS_poQg5m6IyFgvxqlyqcBdD9cEtaPqQNwu1PWLP3xlgFOBH18WmocauBnkWyALtqr39L3fUsX5RxBmnFg1QgWn9XvE37eqphcAtWSUApEtYxJzBAQkOC3jZIu6eXnl4694HxVXjkjjgsNUk7DJb0dMZ5oTneKa2H1UZJaicN6kslzOrEluRfy4voOdqcHM4tjbWZXwBJzC6hCtiSn0wb1yjMGbEkDnATsepMyB1OQzg"/>
+<div>
+<h4 class="font-body-lg text-body-lg text-primary font-medium flex items-center gap-unit">
+                                    Rahul Mehta
+                                    <span class="bg-secondary text-on-secondary px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">VIP</span>
+</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Check-out: 18 Aug 2026</p>
+</div>
+<div class="ml-auto flex gap-density-comfortable">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container transition-colors text-primary">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+</button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container transition-colors text-primary">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</button>
+</div>
+</div>
+<div class="mt-density-comfortable">
+<button class="text-secondary font-label-caps text-label-caps hover:underline">View Full Booking Details →</button>
+</div>
+</div>
+<!-- Side Card: Room Details -->
+<div class="md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-lg p-density-comfortable">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-density-comfortable">Room Details</h3>
+<dl class="space-y-density-comfortable font-data-tabular text-data-tabular">
+<div class="flex justify-between border-b border-outline-variant pb-unit">
+<dt class="text-on-surface-variant">Bed Type</dt>
+<dd class="text-primary font-medium">King</dd>
+</div>
+<div class="flex justify-between border-b border-outline-variant pb-unit">
+<dt class="text-on-surface-variant">Max Occupancy</dt>
+<dd class="text-primary font-medium">2 Adults</dd>
+</div>
+<div class="flex justify-between border-b border-outline-variant pb-unit">
+<dt class="text-on-surface-variant">Base Rate</dt>
+<dd class="text-primary font-medium">₹12,000 / night</dd>
+</div>
+<div class="flex justify-between pt-unit">
+<dt class="text-on-surface-variant">Connectivity</dt>
+<dd class="text-primary font-medium">Interconnecting (205)</dd>
+</div>
+</dl>
+</div>
+<!-- Amenities Grid -->
+<div class="md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-lg p-density-comfortable">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-density-comfortable">Amenities</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-density-comfortable">
+<div class="flex flex-col items-center p-density-comfortable bg-surface-container-low rounded border border-surface-variant text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined mb-unit" data-icon="bed">bed</span>
+<span class="font-label-caps text-label-caps text-center">King Bed</span>
+</div>
+<div class="flex flex-col items-center p-density-comfortable bg-surface-container-low rounded border border-surface-variant text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined mb-unit" data-icon="wifi">wifi</span>
+<span class="font-label-caps text-label-caps text-center">Wi-Fi</span>
+</div>
+<div class="flex flex-col items-center p-density-comfortable bg-surface-container-low rounded border border-surface-variant text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined mb-unit" data-icon="tv">tv</span>
+<span class="font-label-caps text-label-caps text-center">Smart TV</span>
+</div>
+<div class="flex flex-col items-center p-density-comfortable bg-surface-container-low rounded border border-surface-variant text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined mb-unit" data-icon="kitchen">kitchen</span>
+<span class="font-label-caps text-label-caps text-center">Mini Bar</span>
+</div>
+<div class="flex flex-col items-center p-density-comfortable bg-surface-container-low rounded border border-surface-variant text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined mb-unit" data-icon="bathtub">bathtub</span>
+<span class="font-label-caps text-label-caps text-center">Bathtub</span>
+</div>
+<div class="flex flex-col items-center p-density-comfortable bg-surface-container-low rounded border border-surface-variant text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined mb-unit" data-icon="room_service">room_service</span>
+<span class="font-label-caps text-label-caps text-center">Room Service</span>
+</div>
+</div>
+</div>
+<!-- Room Activity Timeline -->
+<div class="md:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-lg p-density-comfortable">
+<div class="flex justify-between items-center mb-density-comfortable">
+<h3 class="font-headline-sm text-headline-sm text-primary">Room Activity</h3>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<div class="relative pl-6 border-l border-outline-variant space-y-density-comfortable ml-2">
+<div class="relative">
+<span class="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-secondary"></span>
+<p class="font-data-tabular text-data-tabular text-primary">Housekeeping Complete</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">Today, 10:30 AM · Maria S.</p>
+</div>
+<div class="relative">
+<span class="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-surface-variant border border-outline"></span>
+<p class="font-data-tabular text-data-tabular text-primary">Maintenance Logged: AC Filter</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">Yesterday, 14:15 · Tech Team</p>
+</div>
+<div class="relative">
+<span class="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-surface-variant border border-outline"></span>
+<p class="font-data-tabular text-data-tabular text-primary">Check-in: Rahul Mehta</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">12 Aug 2026, 15:45 · Front Desk</p>
+</div>
+</div>
+<div class="mt-density-comfortable flex gap-density-comfortable">
+<button class="flex-1 py-2 border border-outline-variant text-primary font-label-caps text-label-caps rounded hover:bg-surface-container transition-colors flex justify-center items-center gap-unit">
+<span class="material-symbols-outlined text-[16px]" data-icon="build">build</span> Maintenance
+                            </button>
+<button class="flex-1 py-2 border border-outline-variant text-primary font-label-caps text-label-caps rounded hover:bg-surface-container transition-colors flex justify-center items-center gap-unit">
+<span class="material-symbols-outlined text-[16px]" data-icon="cleaning_services">cleaning_services</span> Housekeeping
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

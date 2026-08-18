@@ -1,40 +1,55 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Bell, Check, CheckCheck, ChevronDown, ChevronLeft, ChevronRight, Command, LogOut, Menu, Plus, Search, Sparkles, Trash2, User, X,
+  Bell, Check, CheckCheck, ChevronDown, ChevronLeft, ChevronRight, Command, HelpCircle,
+  LogOut, Menu, Plus, Search, Trash2, User, X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { NAV } from "@/lib/nav";
 import {
   ROLE_ACCESS, dashboardMetrics, fmtDate, globalSearch, hydrate, setRole, today, useDB,
 } from "@/lib/store";
 import type { Role } from "@/lib/types";
-import { Badge, Btn, Modal, PageSkeleton, Select } from "@/components/kit";
+import { Badge, Btn, Modal } from "@/components/kit";
 import { cn } from "@/lib/utils";
 
+const NAV_ITEMS = [
+  { label: "Overview", to: "/", icon: "dashboard" },
+  { label: "Bookings", to: "/reservations/calendar", icon: "calendar_month", matchPrefix: ["/reservations", "/check-in", "/check-out", "/ez-dashboard", "/folios"] },
+  { label: "Rooms", to: "/rooms/grid", icon: "bed", matchPrefix: ["/rooms"] },
+  { label: "Guests", to: "/guests", icon: "group", matchPrefix: ["/guests", "/crm"] },
+  { label: "Housekeeping", to: "/housekeeping", icon: "cleaning_services", matchPrefix: ["/housekeeping"] },
+  { label: "Laundry", to: "/laundry/orders", icon: "local_laundry_service", matchPrefix: ["/laundry"] },
+  { label: "Restaurant", to: "/restaurant/tables", icon: "restaurant", matchPrefix: ["/restaurant"] },
+  { label: "POS", to: "/pos", icon: "point_of_sale", matchPrefix: ["/pos"] },
+  { label: "Banquets", to: "/banquet/events", icon: "event_seat", matchPrefix: ["/banquet"] },
+  { label: "Reports", to: "/reports/revenue", icon: "analytics", matchPrefix: ["/reports", "/finance"] },
+  { label: "Staff", to: "/hr/staff", icon: "badge", matchPrefix: ["/hr"] },
+  { label: "Settings", to: "/settings/hotel", icon: "settings", matchPrefix: ["/settings", "/channel-manager"] },
+];
+
 const ROLES: { role: Role; label: string; defaultRoute: string; icon: string; desc: string; badge: string }[] = [
-  { role: "Admin", label: "Administrator", defaultRoute: "/", icon: "👑", desc: "Full PMS, POS & ERP Control", badge: "Operations Overview" },
-  { role: "Hotel Manager", label: "Hotel Manager", defaultRoute: "/", icon: "🏨", desc: "Executive KPI & Property Overview", badge: "Executive Board" },
-  { role: "Receptionist", label: "Front Desk / Reception", defaultRoute: "/ez-dashboard", icon: "🛎️", desc: "EZ Room Matrix, Check-ins & Bookings", badge: "EZ Room Board" },
+  { role: "Admin", label: "Administrator", defaultRoute: "/", icon: "👑", desc: "Full PMS, POS & ERP Control", badge: "All Access" },
+  { role: "Hotel Manager", label: "Hotel Manager", defaultRoute: "/", icon: "🏨", desc: "Executive KPI & Property Overview", badge: "Executive" },
+  { role: "Receptionist", label: "Front Desk / Reception", defaultRoute: "/front-desk", icon: "🛎️", desc: "Front Desk, Check-ins & Bookings", badge: "Front Desk" },
   { role: "Restaurant Manager", label: "F&B / POS Manager", defaultRoute: "/restaurant/billing", icon: "🍽️", desc: "Cashier Desk, Orders & Menu", badge: "Billing Desk" },
   { role: "Waiter", label: "Captain / Waiter", defaultRoute: "/pos", icon: "📱", desc: "Point of Sale & Table Orders", badge: "POS Terminal" },
   { role: "Chef", label: "Kitchen Display (KDS)", defaultRoute: "/restaurant/kds", icon: "👨‍🍳", desc: "Kitchen Orders & Food Prep Screen", badge: "KDS Screen" },
-  { role: "Housekeeping", label: "Housekeeping Board", defaultRoute: "/housekeeping", icon: "🧹", desc: "Room Cleaning, Dirty Matrix & Tasks", badge: "HK Board" },
-  { role: "Accountant", label: "Finance & Accounts", defaultRoute: "/finance/ledger", icon: "💰", desc: "Income & Expense Ledger, P&L", badge: "Finance Ledger" },
-  { role: "HR", label: "HR / Staff Directory", defaultRoute: "/hr/staff", icon: "👥", desc: "Staff Directory, Payroll & Attendance", badge: "Staff Directory" },
+  { role: "Housekeeping", label: "Housekeeping Board", defaultRoute: "/housekeeping", icon: "🧹", desc: "Room Cleaning & Task Matrix", badge: "HK Board" },
+  { role: "Accountant", label: "Finance & Accounts", defaultRoute: "/finance/ledger", icon: "💰", desc: "Income & Expense Ledger, P&L", badge: "Finance" },
+  { role: "HR", label: "HR / Staff Directory", defaultRoute: "/hr/staff", icon: "👥", desc: "Staff Directory & Attendance", badge: "HR Staff" },
 ];
 
 const QUICK_ACTIONS = [
   { label: "New Reservation", to: "/reservations/new" },
-  { label: "⚡ EZ Room Dashboard", to: "/ez-dashboard" },
+  { label: "Front Desk Operations", to: "/front-desk" },
+  { label: "Booking Calendar", to: "/reservations/calendar" },
   { label: "Express Check-In", to: "/check-in" },
   { label: "Express Check-Out", to: "/check-out" },
-  { label: "Open Point of Sale (POS)", to: "/pos" },
-  { label: "Cashier & Billing Desk", to: "/restaurant/billing" },
-  { label: "Guest Directory", to: "/guests" },
+  { label: "Restaurant POS", to: "/pos" },
+  { label: "Restaurant Billing Desk", to: "/restaurant/billing" },
+  { label: "Housekeeping Board", to: "/housekeeping" },
   { label: "Room Matrix / Grid", to: "/rooms/grid" },
-  { label: "Housekeeping Tasks", to: "/housekeeping" },
-  { label: "Finance & Accounts Ledger", to: "/finance/ledger" },
+  { label: "Guest Directory", to: "/guests" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -43,11 +58,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     hydrate();
     setMounted(true);
   }, []);
+
   const db = useDB();
   const nav = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
   const [palette, setPalette] = useState(false);
   const [q, setQ] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
@@ -88,15 +103,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const role = db.settings.role;
   const currentRoleMeta = ROLES.find((r) => r.role === role) || ROLES[0]!;
-  const groups = useMemo(() => {
-    const access = ROLE_ACCESS[role];
-    return NAV.filter((g) => access === "*" || access.includes(g.key));
-  }, [role]);
 
   const handleRoleChange = (newRole: Role) => {
     setRole(newRole);
     const target = ROLES.find((r) => r.role === newRole);
-    toast.success(`Switched workspace to ${target?.label ?? newRole}`);
+    toast.success(`Switched to ${target?.label ?? newRole}`);
     setUserDropdownOpen(false);
     if (target?.defaultRoute) {
       nav({ to: target.defaultRoute as never });
@@ -110,7 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { id: "hk", tone: "warning", title: "Housekeeping", text: `${m.dirty} room(s) awaiting housekeeping`, to: "/housekeeping", active: m.dirty > 0 },
     { id: "front", tone: "info", title: "Front Desk", text: `${m.arrivals} arrivals and ${m.departures} departures today`, to: "/front-desk", active: m.arrivals > 0 || m.departures > 0 },
     { id: "folios", tone: "danger", title: "Folios & Billing", text: `${m.pendingBills} in-house folio(s) with pending balance`, to: "/folios", active: m.pendingBills > 0 },
-    { id: "kds", tone: "success", title: "Kitchen Display", text: `${db.orders.filter((o) => o.kds === "ready").length} order(s) ready for pickup in kitchen`, to: "/restaurant/kds", active: db.orders.filter((o) => o.kds === "ready").length > 0 },
+    { id: "kds", tone: "success", title: "Kitchen Display", text: `${db.orders.filter((o) => o.kds === "ready").length} order(s) ready in kitchen`, to: "/restaurant/kds", active: db.orders.filter((o) => o.kds === "ready").length > 0 },
   ];
 
   const activeNotifications = baseNotifications.filter(
@@ -121,328 +132,227 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const handleMarkAllRead = (e: React.MouseEvent) => {
     e.stopPropagation();
     setAllRead(true);
-    toast.success("All notifications marked as read");
+    toast.success("Notifications marked read");
   };
 
-  const handleClearAll = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setDismissedNotifs(baseNotifications.map((n) => n.id));
-    setAllRead(true);
-    toast.success("All notifications cleared");
-  };
-
-  const handleDismissOne = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setDismissedNotifs((prev) => [...prev, id]);
-  };
-
-  const handleNotificationClick = (to: string) => {
-    setNotifOpen(false);
-    nav({ to: to as never });
-  };
-
-  // Badges map for nav items
-  const navBadges: Record<string, number> = {
-    rooms: m.dirty > 0 ? m.dirty : 7,
-    restaurant: db.orders.length > 0 ? Math.min(db.orders.length, 12) : 12,
-    banquet: db.events.length > 0 ? Math.min(db.events.length, 3) : 3,
+  const isNavActive = (item: (typeof NAV_ITEMS)[number]) => {
+    if (item.to === "/") return pathname === "/";
+    if (pathname === item.to) return true;
+    return item.matchPrefix?.some((p) => pathname.startsWith(p)) ?? false;
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-slate-900 flex flex-col font-sans">
-      {/* Light Luxury Sidebar */}
-      <aside
+    <div className="min-h-screen bg-[#fbf9f4] text-[#1b1c19] flex antialiased selection:bg-[#fed65b] selection:text-[#745c00]">
+      {/* SideNavBar (Editorial Luxury Aesthetic) */}
+      <nav
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col bg-white text-slate-700 transition-all duration-300 ease-in-out lg:translate-x-0 no-print border-r border-[#eaedf4] shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05)]",
-          collapsed ? "w-20" : "w-64",
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          "flex flex-col h-screen fixed left-0 top-0 w-64 bg-[#f0eee9] border-r border-[#d1c4bd] py-8 px-4 z-40 transition-transform duration-200 no-print",
+          open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         {/* Brand Header */}
-        <div className="flex items-center justify-between border-b border-[#eaedf4] px-4 py-4.5 bg-gradient-to-b from-white to-[#fcfdfe]">
+        <div className="mb-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            {/* Gold Monogram Crest */}
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#fffdfa] via-[#fefbf3] to-[#faf5e8] border border-[#e6d09e] shadow-[0_2px_8px_-2px_rgba(212,175,55,0.25)] group-hover:border-[#c59b27] transition-all">
-              <span className="font-serif font-black text-[#c59b27] text-xl leading-none tracking-tight">M</span>
-              <div className="absolute inset-0.5 rounded-[10px] border border-[#e6d09e]/30 pointer-events-none" />
+            <div className="w-10 h-10 rounded-full bg-[#170f0a] flex items-center justify-center text-[#ffffff] font-serif text-lg overflow-hidden border border-[#d1c4bd] shrink-0">
+              <span className="font-serif font-bold text-[#fed65b]">M</span>
             </div>
-            {!collapsed && (
-              <div className="leading-tight">
-                <span className="block text-[17px] font-black tracking-wider text-slate-900 font-serif">MAYRA</span>
-                <span className="block text-[9px] font-extrabold uppercase tracking-[0.25em] text-[#b8860b]">HOTEL ERP</span>
-              </div>
-            )}
+            <div>
+              <h1 className="font-serif text-xl font-semibold text-[#170f0a] tracking-tight leading-none">
+                {db.settings.hotelName?.split(" ")[0] || "Aurelia"}
+              </h1>
+              <p className="font-label-caps text-[10px] text-[#4e4540] tracking-widest mt-1">LUXURY HMS</p>
+            </div>
           </Link>
-          
           <button
-            onClick={() => setCollapsed((c) => !c)}
-            className="hidden lg:flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 transition-all cursor-pointer"
-            aria-label="Collapse sidebar"
+            onClick={() => setOpen(false)}
+            className="md:hidden text-[#7f756f] hover:text-[#170f0a] p-1"
+            aria-label="Close navigation"
           >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </button>
-          
-          <button className="lg:hidden text-slate-400 hover:text-slate-800 p-1" aria-label="Close menu" onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Current Active Role Pill in Sidebar */}
-        {!collapsed && (
-          <div className="px-3.5 pt-3.5 pb-1">
-            <div className="rounded-xl border border-purple-100/80 bg-gradient-to-r from-purple-50/70 via-indigo-50/40 to-purple-50/70 p-2.5">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700">Active Role</span>
-                <button
-                  onClick={() => setUserDropdownOpen(true)}
-                  className="text-[10px] font-bold text-purple-700 hover:text-purple-900 bg-white px-2 py-0.5 rounded-md border border-purple-200 shadow-2xs hover:bg-purple-100/50 transition-colors cursor-pointer"
-                >
-                  Switch
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm">👑</span>
-                <span className="text-xs font-extrabold text-slate-900 truncate">{currentRoleMeta.label}</span>
+        {/* Primary Action Button */}
+        <button
+          onClick={() => nav({ to: "/reservations/new" as never })}
+          className="mb-6 w-full bg-[#170f0a] text-[#ffffff] py-2.5 px-4 rounded-[0.25rem] flex items-center justify-center gap-2 font-label-caps text-[11px] hover:bg-[#2d241e] transition-colors cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[16px]">add</span>
+          New Booking
+        </button>
+
+        {/* Nav Links */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide space-y-1">
+          {NAV_ITEMS.map((item) => {
+            const active = isNavActive(item);
+            return (
+              <Link
+                key={item.to}
+                to={item.to as never}
+                className={cn(
+                  "flex items-center gap-3.5 px-3.5 py-2.5 rounded-[0.25rem] transition-colors duration-150 font-sans text-xs",
+                  active
+                    ? "bg-[#e4e2dd] text-[#735c00] font-bold border-l-2 border-[#735c00]"
+                    : "text-[#4e4540] hover:text-[#170f0a] hover:bg-[#e4e2dd]/50 font-medium"
+                )}
+              >
+                <span className={cn("material-symbols-outlined text-[18px]", active && "icon-fill")}>
+                  {item.icon}
+                </span>
+                <span className="flex-1 tracking-wide">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Active Role Indicator at bottom of Sidebar */}
+        <div className="pt-3 mt-auto border-t border-[#d1c4bd]/70">
+          <button
+            onClick={() => setUserDropdownOpen(true)}
+            className="w-full flex items-center justify-between p-2 rounded-[0.25rem] hover:bg-[#e4e2dd]/60 transition-colors text-left cursor-pointer"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-sm">{currentRoleMeta.icon}</span>
+              <div className="min-w-0">
+                <span className="font-label-caps text-[9px] text-[#7f756f] block">WORKSPACE</span>
+                <span className="text-xs font-semibold text-[#170f0a] block truncate">{currentRoleMeta.label}</span>
               </div>
             </div>
-          </div>
-        )}
+            <span className="font-label-caps text-[9px] text-[#735c00] bg-[#fed65b]/30 px-1.5 py-0.5 rounded-[0.125rem]">
+              SWITCH
+            </span>
+          </button>
+        </div>
+      </nav>
 
-        {/* Navigation Groups */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-          {groups.map((g) => (
-            <NavGroupBlock
-              key={g.key}
-              group={g}
-              pathname={pathname}
-              collapsed={collapsed}
-              badgeCount={navBadges[g.key]}
-            />
-          ))}
-        </nav>
-
-        {/* Sidebar Footer Luxury Brand Card */}
-        {!collapsed && (
-          <div className="p-3 border-t border-[#eaedf4] bg-gradient-to-t from-slate-50/80 to-white">
-            <div className="relative overflow-hidden rounded-xl border border-amber-200/60 bg-gradient-to-br from-[#fffdfa] to-[#faf6ee] p-3 shadow-2xs">
-              <div className="flex items-center gap-2.5 mb-1">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#c59b27]/15 text-[#c59b27] font-serif font-black text-xs">
-                  M
-                </div>
-                <div>
-                  <span className="text-[11px] font-bold text-slate-900 block font-serif tracking-wide">MAYRA HOTEL</span>
-                </div>
-              </div>
-              <p className="text-[10px] font-medium text-slate-500 italic">Elegance. Comfort. Experience.</p>
-            </div>
-          </div>
-        )}
-      </aside>
-
-      {open ? <div className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-xs lg:hidden" onClick={() => setOpen(false)} /> : null}
+      {/* Mobile Drawer Overlay */}
+      {open ? <div className="fixed inset-0 z-30 bg-[#170f0a]/30 backdrop-blur-xs md:hidden" onClick={() => setOpen(false)} /> : null}
 
       {/* Main Workspace Area */}
-      <div className={cn("transition-all duration-300 ease-in-out", collapsed ? "lg:pl-20" : "lg:pl-64")}>
-        {/* Top Header / Command Center */}
-        <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#eaedf4] bg-white/95 px-4 py-3 backdrop-blur-md no-print sm:px-6 shadow-[0_1px_3px_0_rgba(15,23,42,0.02)]">
-          <div className="flex items-center gap-3 flex-1 sm:max-w-md">
-            <button className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden cursor-pointer" aria-label="Open menu" onClick={() => setOpen(true)}>
+      <div className="flex-1 flex flex-col min-w-0 md:ml-64">
+        {/* TopNavBar (Editorial Clean Header) */}
+        <header className="sticky top-0 z-30 h-16 px-6 sm:px-10 bg-[#fbf9f4]/95 border-b border-[#d1c4bd] backdrop-blur-xs flex items-center justify-between no-print">
+          <div className="flex items-center gap-4 flex-1">
+            <button
+              onClick={() => setOpen(true)}
+              className="md:hidden p-1.5 text-[#4e4540] hover:text-[#170f0a] rounded cursor-pointer"
+              aria-label="Open menu"
+            >
               <Menu className="h-5 w-5" />
             </button>
-            
-            <button
-              onClick={() => { setPalette(true); setTimeout(() => inputRef.current?.focus(), 30); }}
-              className="flex h-10 w-full items-center gap-2.5 rounded-xl border border-[#e2e8f0] bg-[#f8f9fc] px-3.5 text-left text-sm text-slate-500 hover:border-purple-300 hover:bg-white transition-all shadow-2xs cursor-pointer group"
-            >
-              <Search className="h-4 w-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
-              <span className="flex-1 truncate text-xs sm:text-sm font-medium">Search guests, bookings, rooms, orders…</span>
-              <kbd className="hidden items-center gap-0.5 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold text-slate-500 sm:inline-flex shadow-2xs">
-                <Command className="h-3 w-3" />K
+
+            <h2 className="hidden sm:block font-serif text-xl sm:text-2xl font-semibold text-[#170f0a] tracking-tight">
+              {db.settings.hotelName || "Aurelia Grand Hotel"}
+            </h2>
+
+            {/* Ghost Search Box */}
+            <div className="relative w-56 sm:w-72 sm:ml-6">
+              <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-[#7f756f] text-[18px]">
+                search
+              </span>
+              <button
+                onClick={() => { setPalette(true); setTimeout(() => inputRef.current?.focus(), 30); }}
+                className="w-full text-left bg-transparent border-b border-[#d1c4bd] hover:border-[#170f0a] pl-8 pr-8 py-1.5 font-sans text-xs text-[#7f756f] transition-colors cursor-pointer truncate"
+              >
+                Search guests, rooms, orders…
+              </button>
+              <kbd className="hidden sm:inline-block absolute right-1 top-1/2 -translate-y-1/2 font-label-caps text-[9px] text-[#7f756f] border border-[#d1c4bd] px-1 rounded bg-[#f5f3ee]">
+                ⌘K
               </kbd>
-            </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Hotel Name & Category Dropdown Tag */}
-            <div className="hidden xl:flex flex-col text-right leading-tight border-r border-slate-200/80 pr-4">
-              <span className="text-xs font-black tracking-tight text-slate-900 font-serif flex items-center justify-end gap-1">
-                {db.settings.hotelName} <ChevronDown className="h-3 w-3 text-slate-400" />
-              </span>
-              <span className="text-[10px] font-semibold text-slate-400">
-                Premium Business Hotel
-              </span>
-            </div>
-
-            {/* Date Tag */}
-            <div className="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
-              <span className="text-purple-600">📅</span>
-              <div className="leading-tight">
-                <span>{new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
-                <span className="text-[10px] font-semibold text-slate-400 block">{new Date().toLocaleDateString("en-IN", { weekday: "long" })}</span>
-              </div>
-            </div>
-
+          <div className="flex items-center gap-4 sm:gap-6">
             {/* Notification Bell */}
             <div className="relative" ref={notifRef}>
               <button
-                className="relative rounded-xl p-2.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/60 bg-white shadow-2xs transition-colors cursor-pointer"
-                aria-label="Notifications"
                 onClick={() => setNotifOpen((v) => !v)}
+                className="text-[#4e4540] hover:text-[#170f0a] transition-colors relative p-1 cursor-pointer"
+                aria-label="Notifications"
               >
-                <Bell className="h-4.5 w-4.5" />
+                <span className="material-symbols-outlined text-[22px]">notifications</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-rose-500 text-[9.5px] font-extrabold text-white ring-2 ring-white animate-pulse">
-                    {unreadCount}
-                  </span>
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-[#ba1a1a] rounded-full ring-1 ring-[#fbf9f4]" />
                 )}
               </button>
+
               {notifOpen ? (
-                <div className="absolute right-0 top-12 z-30 w-88 rounded-2xl border border-slate-100 bg-white p-3.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 px-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Notifications</p>
-                      <Badge tone={unreadCount > 0 ? "primary" : "neutral"}>
-                        {unreadCount > 0 ? `${unreadCount} New` : "0 New"}
-                      </Badge>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      {unreadCount > 0 && (
-                        <button
-                          onClick={handleMarkAllRead}
-                          className="flex items-center gap-1 text-[11px] font-bold text-purple-700 hover:text-purple-900 hover:bg-purple-50 px-2 py-1 rounded-lg transition-colors cursor-pointer"
-                          title="Mark all as read"
-                        >
-                          <CheckCheck className="h-3.5 w-3.5" />
-                          <span>Mark all read</span>
-                        </button>
-                      )}
+                <div className="absolute right-0 top-10 z-50 w-80 rounded-[0.25rem] border border-[#d1c4bd] bg-[#ffffff] p-4 shadow-xl animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-[#d1c4bd]">
+                    <span className="font-label-caps text-xs text-[#170f0a]">Notifications</span>
+                    {unreadCount > 0 && (
                       <button
-                        onClick={() => setNotifOpen(false)}
-                        className="h-6 w-6 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
-                        aria-label="Close notifications"
+                        onClick={handleMarkAllRead}
+                        className="font-label-caps text-[10px] text-[#735c00] hover:underline cursor-pointer"
                       >
-                        <X className="h-3.5 w-3.5" />
+                        Mark all read
                       </button>
-                    </div>
+                    )}
                   </div>
-
-                  <div className="divide-y divide-slate-50 mt-1 max-h-80 overflow-y-auto pr-0.5">
+                  <div className="divide-y divide-[#d1c4bd]/40 mt-1 max-h-72 overflow-y-auto">
                     {activeNotifications.length > 0 ? (
                       activeNotifications.map((n) => (
                         <div
                           key={n.id}
-                          onClick={() => handleNotificationClick(n.to)}
-                          className="group relative flex items-start justify-between gap-2.5 p-2.5 rounded-xl text-xs hover:bg-purple-50/50 transition-all cursor-pointer"
+                          onClick={() => { setNotifOpen(false); nav({ to: n.to as never }); }}
+                          className="p-2.5 hover:bg-[#f5f3ee] transition-colors cursor-pointer text-xs"
                         >
-                          <div className="flex items-start gap-2.5 min-w-0">
-                            <div className="mt-0.5 shrink-0">
-                              <Badge tone={n.tone}>•</Badge>
-                            </div>
-                            <div className="min-w-0">
-                              <span className="text-[10.5px] font-bold uppercase tracking-wider text-purple-700 block truncate">
-                                {n.title}
-                              </span>
-                              <span className="text-slate-700 font-medium block leading-snug">
-                                {n.text}
-                              </span>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={(e) => handleDismissOne(n.id, e)}
-                            className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-all shrink-0 cursor-pointer"
-                            title="Dismiss notification"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
+                          <div className="font-label-caps text-[10px] text-[#735c00]">{n.title}</div>
+                          <div className="text-[#170f0a] font-medium mt-0.5">{n.text}</div>
                         </div>
                       ))
                     ) : (
-                      <div className="py-8 text-center space-y-2">
-                        <div className="flex h-10 w-10 mx-auto items-center justify-center rounded-full bg-purple-50 text-purple-600 text-lg">
-                          ✨
-                        </div>
-                        <p className="text-xs font-bold text-slate-800">All caught up!</p>
-                        <p className="text-[11px] text-slate-400">No unread notifications at the moment.</p>
-                      </div>
+                      <p className="py-6 text-center text-xs text-[#7f756f]">No unread alerts</p>
                     )}
                   </div>
-
-                  {activeNotifications.length > 0 && (
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between px-1 mt-1">
-                      <button
-                        onClick={handleClearAll}
-                        className="text-[11px] font-semibold text-slate-400 hover:text-rose-600 transition-colors cursor-pointer flex items-center gap-1"
-                      >
-                        <Trash2 className="h-3 w-3" /> Clear all
-                      </button>
-                      <span className="text-[10px] text-slate-400">Click an alert to view</span>
-                    </div>
-                  )}
                 </div>
               ) : null}
             </div>
 
-            {/* + New Booking Primary CTA */}
-            <Btn
-              size="md"
-              variant="primary"
-              icon={Plus}
-              onClick={() => nav({ to: "/reservations/new" as never })}
-              className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white font-bold shadow-sm rounded-xl px-4 text-xs"
+            {/* Quick Help / Guide Button */}
+            <button
+              onClick={() => { toast.info("Aurelia HMS Hotel ERP", { description: "Use the top search or sidebar to navigate." }); }}
+              className="text-[#4e4540] hover:text-[#170f0a] transition-colors p-1 cursor-pointer"
+              aria-label="Help"
             >
-              <span className="hidden sm:inline">New Booking</span>
-            </Btn>
+              <span className="material-symbols-outlined text-[22px]">help</span>
+            </button>
 
-            {/* User Profile & Role Switcher */}
+            <div className="h-6 w-px bg-[#d1c4bd]" />
+
+            {/* Profile Dropdown */}
             <div className="relative" ref={userDropdownRef}>
               <button
                 onClick={() => setUserDropdownOpen((v) => !v)}
-                className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-slate-50 border border-slate-200/60 bg-white transition-all text-left cursor-pointer shadow-2xs"
+                className="flex items-center gap-2.5 hover:bg-[#f0eee9] px-2.5 py-1.5 rounded-[0.25rem] transition-colors cursor-pointer"
               >
-                <div className="relative">
-                  <div className="flex h-8.5 w-8.5 items-center justify-center rounded-lg bg-gradient-to-tr from-purple-700 to-indigo-600 text-white font-bold text-xs shadow-xs">
-                    {currentRoleMeta.icon}
-                  </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+                <div className="hidden sm:block text-right leading-tight">
+                  <span className="font-label-caps text-[10px] text-[#7f756f] block">{currentRoleMeta.label}</span>
+                  <span className="text-xs font-bold text-[#170f0a] block">{db.settings.user}</span>
                 </div>
-                <div className="hidden sm:block leading-tight pr-1">
-                  <div className="text-xs font-black text-slate-900 flex items-center gap-1">
-                    {db.settings.user}
-                    <ChevronDown className="h-3 w-3 text-slate-400" />
-                  </div>
-                  <div className="text-[10.5px] font-bold text-purple-700">{currentRoleMeta.label}</div>
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-[#d1c4bd] bg-[#2d241e] text-[#ffffff] flex items-center justify-center font-serif text-xs font-bold">
+                  {db.settings.user.charAt(0)}
                 </div>
               </button>
 
               {userDropdownOpen && (
-                <div className="absolute right-0 top-12 z-30 w-84 rounded-2xl border border-slate-100 bg-white p-3.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-                  <div className="pb-3 border-b border-slate-100 px-1 flex items-center justify-between">
+                <div className="absolute right-0 top-12 z-50 w-80 rounded-[0.25rem] border border-[#d1c4bd] bg-[#ffffff] p-4 shadow-xl animate-in fade-in duration-150">
+                  <div className="pb-3 border-b border-[#d1c4bd] flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-extrabold text-slate-900">{db.settings.user}</p>
-                      <p className="text-[11px] font-semibold text-purple-700">{currentRoleMeta.label} View</p>
+                      <p className="font-serif text-sm font-bold text-[#170f0a]">{db.settings.user}</p>
+                      <p className="font-label-caps text-[10px] text-[#735c00] mt-0.5">{currentRoleMeta.label}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10.5px] font-bold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
-                        Active
-                      </span>
-                      <button
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="h-6 w-6 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="p-1 text-[#7f756f] hover:text-[#170f0a] rounded cursor-pointer"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
 
-                  <div className="pt-2.5">
-                    <div className="flex items-center justify-between px-1 mb-2">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Switch Workspace Role</p>
-                      <span className="text-[10px] text-slate-400">Opens separate dashboard</span>
-                    </div>
-
-                    <div className="space-y-1 max-h-80 overflow-y-auto pr-1">
+                  <div className="pt-3">
+                    <p className="font-label-caps text-[10px] text-[#7f756f] mb-2">Switch Workspace Role</p>
+                    <div className="space-y-1 max-h-72 overflow-y-auto">
                       {ROLES.map((r) => {
                         const isActive = role === r.role;
                         return (
@@ -450,28 +360,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             key={r.role}
                             onClick={() => handleRoleChange(r.role)}
                             className={cn(
-                              "w-full flex items-center justify-between p-2 rounded-xl text-left transition-all group cursor-pointer",
+                              "w-full flex items-center justify-between p-2 rounded-[0.25rem] text-left transition-colors cursor-pointer text-xs",
                               isActive
-                                ? "bg-purple-50/90 border border-purple-200 text-purple-900 shadow-2xs font-bold"
-                                : "hover:bg-slate-50 border border-transparent text-slate-700",
+                                ? "bg-[#f0dfd6] text-[#170f0a] font-bold"
+                                : "hover:bg-[#f5f3ee] text-[#4e4540]"
                             )}
                           >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <span className="text-lg">{r.icon}</span>
-                              <div className="min-w-0">
-                                <span className={cn("text-xs block font-bold truncate", isActive ? "text-purple-900" : "text-slate-900")}>
-                                  {r.label}
-                                </span>
-                                <span className="text-[10.5px] text-slate-400 block truncate">{r.desc}</span>
-                              </div>
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span>{r.icon}</span>
+                              <span className="truncate">{r.label}</span>
                             </div>
-
-                            <span className={cn(
-                              "text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0 ml-2",
-                              isActive ? "bg-purple-600 text-white" : "bg-slate-100 text-slate-600 group-hover:bg-purple-100 group-hover:text-purple-700",
-                            )}>
-                              {r.badge}
-                            </span>
+                            <span className="font-label-caps text-[9px] text-[#7f756f]">{r.badge}</span>
                           </button>
                         );
                       })}
@@ -483,34 +382,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-7 max-w-[1680px] mx-auto w-full min-h-[calc(100vh-4.25rem)]">
-          {!mounted ? (
-            <PageSkeleton pathname={pathname} />
-          ) : (
-            <div key={pathname} className="animate-in fade-in duration-150">
-              {children}
-            </div>
-          )}
+        {/* Main Content Area */}
+        <main className="flex-1 p-6 sm:p-10 max-w-[1440px] w-full mx-auto">
+          {children}
         </main>
       </div>
 
-      {/* Command palette */}
+      {/* Command Palette */}
       <Modal open={palette} onClose={() => setPalette(false)} title="Search & Quick Navigation" wide>
         <input
-          ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} autoFocus
-          placeholder="Search guests, bookings, GRC, rooms, invoices, orders, employees, products…"
-          className="mb-3 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+          ref={inputRef}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          autoFocus
+          placeholder="Search guests, bookings, rooms, invoices, staff…"
+          className="mb-4 h-10 w-full rounded-[0.25rem] border border-[#d1c4bd] bg-[#ffffff] px-3.5 text-xs sm:text-sm outline-none focus:border-[#170f0a] focus:ring-1 focus:ring-[#170f0a]"
         />
         {q.length < 2 ? (
           <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">Quick Actions</p>
+            <p className="font-label-caps text-[10px] text-[#7f756f] mb-3">Quick Navigation</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {QUICK_ACTIONS.map((a) => (
                 <button
                   key={a.label}
                   onClick={() => { setPalette(false); nav({ to: a.to.split("?")[0]! as never }); }}
-                  className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-left text-xs font-semibold text-slate-700 hover:border-purple-300 hover:bg-purple-50/50 hover:text-purple-700 transition-colors cursor-pointer"
+                  className="rounded-[0.25rem] border border-[#d1c4bd] bg-[#fbf9f4] p-3 text-left text-xs font-medium text-[#170f0a] hover:bg-[#f0eee9] transition-colors cursor-pointer"
                 >
                   {a.label}
                 </button>
@@ -518,109 +414,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-[#d1c4bd]/40">
             {results.length ? results.map((r, i) => (
               <button
                 key={i}
                 onClick={() => { setPalette(false); setQ(""); nav({ to: r.to.split("?")[0]! as never }); }}
-                className="flex w-full items-center gap-3 p-2.5 text-left hover:bg-purple-50/50 rounded-xl transition-colors cursor-pointer"
+                className="flex w-full items-center gap-3 p-2.5 text-left hover:bg-[#f5f3ee] transition-colors cursor-pointer"
               >
                 <Badge tone="primary">{r.type}</Badge>
                 <span className="flex-1">
-                  <span className="block text-sm font-bold text-slate-900">{r.title}</span>
-                  <span className="block text-xs text-slate-500">{r.sub}</span>
+                  <span className="block text-xs font-bold text-[#170f0a]">{r.title}</span>
+                  <span className="block text-[11px] text-[#7f756f]">{r.sub}</span>
                 </span>
               </button>
-            )) : <p className="py-8 text-center text-sm text-slate-400">No matches for “{q}”.</p>}
+            )) : <p className="py-8 text-center text-xs text-[#7f756f]">No matches found.</p>}
           </div>
         )}
       </Modal>
-    </div>
-  );
-}
-
-function NavGroupBlock({
-  group, pathname, collapsed, badgeCount,
-}: {
-  group: (typeof NAV)[number]; pathname: string; collapsed?: boolean; badgeCount?: number;
-}) {
-  const active = group.items.some((i) => (i.to === "/" ? pathname === "/" : pathname.startsWith(i.to)));
-  const [open, setOpen] = useState(active);
-  useEffect(() => {
-    if (active) setOpen(true);
-  }, [active]);
-  const Icon = group.icon;
-
-  if (group.items.length === 1) {
-    const isSingleActive = pathname === group.items[0]!.to;
-    return (
-      <Link
-        to={group.items[0]!.to as never}
-        className={cn(
-          "mb-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-150 relative",
-          isSingleActive
-            ? "bg-purple-50 text-purple-900 font-extrabold shadow-2xs border border-purple-200/80"
-            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-          collapsed && "justify-center px-2",
-        )}
-      >
-        <Icon className={cn("h-4.5 w-4.5 shrink-0", isSingleActive ? "text-purple-700" : "text-slate-400")} />
-        {!collapsed && <span className="flex-1">{group.label}</span>}
-      </Link>
-    );
-  }
-
-
-  return (
-    <div className="mb-0.5">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className={cn(
-          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-150 cursor-pointer",
-          active ? "text-purple-900 font-bold bg-slate-50/60" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-          collapsed && "justify-center px-2",
-        )}
-      >
-        <Icon className={cn("h-4.5 w-4.5 shrink-0", active ? "text-purple-600" : "text-slate-400")} />
-        {!collapsed && (
-          <>
-            <span className="flex-1 text-left">{group.label}</span>
-            {badgeCount && badgeCount > 0 ? (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-extrabold text-white mr-1 shadow-2xs">
-                {badgeCount}
-              </span>
-            ) : null}
-            <ChevronDown className={cn("h-3.5 w-3.5 text-slate-400 transition-transform duration-200", open && "rotate-180")} />
-          </>
-        )}
-      </button>
-
-      {!collapsed && open && (
-        <div className="ml-5 border-l border-slate-200/80 pl-2.5 my-1 space-y-0.5">
-          {group.items.map((i) => {
-            const isActive = pathname === i.to || (i.to !== "/" && pathname.startsWith(i.to + "/"));
-            const isEZ = i.to === "/ez-dashboard";
-            return (
-              <Link
-                key={i.to} to={i.to as never}
-                className={cn(
-                  "flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
-                  isActive
-                    ? "bg-purple-50 text-purple-900 font-bold"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
-                )}
-              >
-                <span>{i.label}</span>
-                {isEZ && (
-                  <span className="rounded-full bg-purple-600 px-1.5 py-0.2 text-[9px] font-bold text-white uppercase tracking-wider">
-                    New
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }

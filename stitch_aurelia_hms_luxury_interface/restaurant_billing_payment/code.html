@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Restaurant Billing - Aurelia HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1c19",
+                        "tertiary-fixed": "#ffdea5",
+                        "primary": "#170f0a",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "secondary-container": "#fed65b",
+                        "surface-tint": "#685c55",
+                        "primary-container": "#2d241e",
+                        "surface-container-low": "#f5f3ee",
+                        "tertiary-container": "#332300",
+                        "inverse-primary": "#d3c3ba",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#745c00",
+                        "on-secondary-fixed": "#241a00",
+                        "on-secondary-fixed-variant": "#574500",
+                        "surface": "#fbf9f4",
+                        "inverse-on-surface": "#f2f1ec",
+                        "surface-variant": "#e4e2dd",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "surface-container-highest": "#e4e2dd",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-container": "#f0eee9",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "on-tertiary-container": "#aa8843",
+                        "on-primary-fixed": "#221a14",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#190f00",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#fbf9f4",
+                        "on-surface-variant": "#4e4540",
+                        "primary-fixed": "#f0dfd6",
+                        "inverse-surface": "#30312e",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "on-error-container": "#93000a",
+                        "secondary": "#735c00",
+                        "on-primary-container": "#988a82",
+                        "outline": "#7f756f",
+                        "outline-variant": "#d1c4bd",
+                        "on-background": "#1b1c19",
+                        "surface-dim": "#dbdad5",
+                        "background": "#fbf9f4",
+                        "secondary-fixed": "#ffe088",
+                        "surface-container-high": "#eae8e3",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "density-compact": "8px",
+                        "margin-page": "40px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "density-comfortable": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "display-md": ["Playfair Display"],
+                        "label-caps": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container-high h-screen w-64 flex flex-col fixed left-0 top-0 bottom-0 z-40 pt-8 hidden md:flex">
+<div class="px-6 mb-12">
+<h1 class="font-display-md text-display-md text-primary dark:text-primary-fixed">LUMIÈRE POS</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Main Dining</p>
+<p class="font-label-caps text-label-caps text-outline mt-1">Lunch Service</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+                        Service
+                    </a>
+</li>
+<li>
+<a class="flex items-center text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">layers</span>
+                        Floor Plan
+                    </a>
+</li>
+<li>
+<a class="flex items-center text-on-surface-variant dark:text-on-surface-variant py-3 pl-10 hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">grid_view</span>
+                        Kitchen
+                    </a>
+</li>
+<li>
+<a class="flex items-center text-primary dark:text-primary-fixed font-bold bg-surface dark:bg-surface-bright rounded-l-full ml-4 py-3 pl-6 border-l-2 border-primary hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-300 scale-95 duration-150 ease-in-out font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 1;">payments</span>
+                        Billing
+                    </a>
+</li>
+</ul>
+</div>
+<div class="p-6">
+<button class="w-full py-3 bg-primary text-on-primary rounded font-label-caps text-label-caps hover:bg-primary-container transition-colors">
+                New Order
+            </button>
+<ul class="mt-6 space-y-2 border-t border-outline-variant/30 pt-6">
+<li>
+<a class="flex items-center text-on-surface-variant py-2 pl-4 font-label-caps text-label-caps hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-4 text-[18px]">settings</span> Settings
+                    </a>
+</li>
+<li>
+<a class="flex items-center text-on-surface-variant py-2 pl-4 font-label-caps text-label-caps hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-4 text-[18px]">help_outline</span> Support
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col h-screen overflow-hidden bg-surface">
+<!-- TopNavBar (Mobile mainly, hidden on desktop if side nav is full, but keeping for structural consistency as requested) -->
+<header class="bg-surface dark:bg-surface-container-low w-full h-16 border-b border-outline-variant/30 dark:border-outline/20 flex justify-between items-center px-margin-page shrink-0 md:hidden">
+<div class="font-display-md-mobile text-display-md-mobile tracking-tight text-primary dark:text-primary-fixed">LUMIÈRE POS</div>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors duration-200">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors duration-200">hotel</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors duration-200">person</span>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-4 md:p-margin-page">
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between border-b border-outline-variant/30 pb-6">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary md:hidden">Restaurant Billing</h2>
+<h2 class="font-display-lg text-display-lg text-primary hidden md:block">Restaurant Billing</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Folio &amp; Settlement</p>
+</div>
+<div class="mt-4 md:mt-0 flex gap-4 text-right">
+<div class="text-left md:text-right">
+<p class="font-label-caps text-label-caps text-outline uppercase">Table</p>
+<p class="font-headline-sm text-headline-sm text-primary">T04</p>
+</div>
+<div class="text-left md:text-right">
+<p class="font-label-caps text-label-caps text-outline uppercase">Room</p>
+<p class="font-headline-sm text-headline-sm text-primary">204</p>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Billing Details & Itemized List -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Guest Info Card -->
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-surface-variant flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-outline">Guest Name</p>
+<p class="font-body-lg text-body-lg text-primary font-medium">Rahul Mehta</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-outline">Server</p>
+<p class="font-body-md text-body-md text-on-surface">Elena R.</p>
+</div>
+</div>
+<!-- Itemized List -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant w-1/2">Item</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant text-right">Qty</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant text-right">Rate</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant text-right hidden sm:table-cell">Tax</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<tr class="border-b border-outline-variant/50">
+<td class="py-4 px-4 text-primary">Truffle Risotto</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">2</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">₹1,200</td>
+<td class="py-4 px-4 text-right text-outline hidden sm:table-cell">5%</td>
+<td class="py-4 px-4 text-right text-primary font-medium">₹2,400</td>
+</tr>
+<tr class="border-b border-outline-variant/50">
+<td class="py-4 px-4 text-primary">Pan-Seared Scallops</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">1</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">₹1,850</td>
+<td class="py-4 px-4 text-right text-outline hidden sm:table-cell">5%</td>
+<td class="py-4 px-4 text-right text-primary font-medium">₹1,850</td>
+</tr>
+<tr class="border-b border-outline-variant/50">
+<td class="py-4 px-4 text-primary">Sparkling Water (Large)</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">1</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">₹350</td>
+<td class="py-4 px-4 text-right text-outline hidden sm:table-cell">18%</td>
+<td class="py-4 px-4 text-right text-primary font-medium">₹350</td>
+</tr>
+<tr>
+<td class="py-4 px-4 text-primary">Artisan Sourdough</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">1</td>
+<td class="py-4 px-4 text-right text-on-surface-variant">₹250</td>
+<td class="py-4 px-4 text-right text-outline hidden sm:table-cell">5%</td>
+<td class="py-4 px-4 text-right text-primary font-medium">₹250</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Summary & Payment Panel -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Summary Card -->
+<div class="bg-surface-container-low border border-outline-variant p-6 rounded flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-primary border-b border-outline-variant/50 pb-4 mb-4">Summary</h3>
+<div class="space-y-3 font-data-tabular text-data-tabular text-on-surface-variant mb-6">
+<div class="flex justify-between">
+<span>Subtotal</span>
+<span>₹4,850.00</span>
+</div>
+<div class="flex justify-between text-secondary">
+<span>Discount (10% Member)</span>
+<span>-₹485.00</span>
+</div>
+<div class="flex justify-between">
+<span>Service Charge (5%)</span>
+<span>₹218.25</span>
+</div>
+<div class="flex justify-between text-outline">
+<span>CGST (2.5%)</span>
+<span>₹114.58</span>
+</div>
+<div class="flex justify-between text-outline">
+<span>SGST (2.5%)</span>
+<span>₹114.58</span>
+</div>
+</div>
+<div class="mt-auto border-t border-outline-variant pt-4 flex justify-between items-end">
+<span class="font-label-caps text-label-caps text-primary uppercase">Grand Total</span>
+<span class="font-display-md text-display-md text-tertiary-container">₹4,812.41</span>
+</div>
+</div>
+<!-- Payment Options -->
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-surface-container-lowest border border-outline-variant hover:border-outline text-primary py-4 px-2 flex flex-col items-center justify-center rounded transition-colors group">
+<span class="material-symbols-outlined text-[24px] mb-2 text-outline group-hover:text-primary transition-colors">payments</span>
+<span class="font-label-caps text-label-caps">Cash</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:border-outline text-primary py-4 px-2 flex flex-col items-center justify-center rounded transition-colors group">
+<span class="material-symbols-outlined text-[24px] mb-2 text-outline group-hover:text-primary transition-colors">credit_card</span>
+<span class="font-label-caps text-label-caps">Card</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:border-outline text-primary py-4 px-2 flex flex-col items-center justify-center rounded transition-colors group">
+<span class="material-symbols-outlined text-[24px] mb-2 text-outline group-hover:text-primary transition-colors">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps">UPI</span>
+</button>
+<button class="bg-surface-container-low border border-tertiary-fixed-dim text-on-surface py-4 px-2 flex flex-col items-center justify-center rounded transition-colors hover:bg-tertiary-fixed/20 group relative overflow-hidden">
+<div class="absolute inset-0 bg-secondary-fixed opacity-10"></div>
+<span class="material-symbols-outlined text-[24px] mb-2 text-tertiary-container relative z-10">hotel</span>
+<span class="font-label-caps text-label-caps relative z-10">Charge Room</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<footer class="mt-12 pt-6 border-t border-outline-variant/30 flex flex-col sm:flex-row justify-between items-center gap-4 pb-8">
+<div class="flex gap-4 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none border border-outline text-primary py-2 px-6 rounded font-label-caps text-label-caps hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">print</span> Print Bill
+                    </button>
+<button class="flex-1 sm:flex-none border border-outline text-primary py-2 px-6 rounded font-label-caps text-label-caps hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">mail</span> Email
+                    </button>
+<button class="flex-1 sm:flex-none border border-outline text-primary py-2 px-6 rounded font-label-caps text-label-caps hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2 hidden sm:flex">
+<span class="material-symbols-outlined text-[18px]">call_split</span> Split Bill
+                    </button>
+</div>
+<button class="w-full sm:w-auto bg-primary text-on-primary py-3 px-8 rounded font-label-caps text-label-caps hover:bg-primary-container transition-colors shadow-lg shadow-[#2D241E]/10 flex items-center justify-center gap-2">
+                    Complete Payment <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</footer>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aurelia HMS - Laundry</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#dbdad5",
+                    "inverse-primary": "#d3c3ba",
+                    "primary-fixed": "#f0dfd6",
+                    "surface-variant": "#e4e2dd",
+                    "tertiary-fixed": "#ffdea5",
+                    "on-secondary-fixed": "#241a00",
+                    "on-surface": "#1b1c19",
+                    "on-surface-variant": "#4e4540",
+                    "on-tertiary-container": "#aa8843",
+                    "outline": "#7f756f",
+                    "tertiary-fixed-dim": "#e9c176",
+                    "on-secondary-fixed-variant": "#574500",
+                    "on-secondary-container": "#745c00",
+                    "background": "#fbf9f4",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#e9c349",
+                    "surface-container-low": "#f5f3ee",
+                    "primary-fixed-dim": "#d3c3ba",
+                    "tertiary": "#190f00",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#fbf9f4",
+                    "on-tertiary-fixed": "#261900",
+                    "surface-tint": "#685c55",
+                    "surface": "#fbf9f4",
+                    "on-primary-fixed-variant": "#4f453e",
+                    "error": "#ba1a1a",
+                    "surface-container": "#f0eee9",
+                    "on-primary": "#ffffff",
+                    "secondary": "#735c00",
+                    "secondary-fixed": "#ffe088",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#30312e",
+                    "on-primary-fixed": "#221a14",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#fed65b",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f2f1ec",
+                    "on-tertiary-fixed-variant": "#5d4201",
+                    "on-primary-container": "#988a82",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-container": "#332300",
+                    "surface-container-high": "#eae8e3",
+                    "primary-container": "#2d241e",
+                    "primary": "#170f0a",
+                    "on-background": "#1b1c19",
+                    "surface-container-highest": "#e4e2dd",
+                    "outline-variant": "#d1c4bd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "density-comfortable": "16px",
+                    "margin-page": "40px",
+                    "density-compact": "8px"
+            },
+            "fontFamily": {
+                    "display-md": [
+                            "Playfair Display"
+                    ],
+                    "headline-sm": [
+                            "Playfair Display"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "data-tabular": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Playfair Display"
+                    ],
+                    "display-md-mobile": [
+                            "Playfair Display"
+                    ]
+            },
+            "fontSize": {
+                    "display-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-sm": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "11px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.08em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "data-tabular": [
+                            "13px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-md-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- SideNavBar Shell Component -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-background flex-col py-margin-page gap-density-comfortable z-40">
+<div class="px-gutter mb-density-comfortable">
+<h1 class="font-display-md text-display-md text-primary tracking-tight">Aurelia HMS</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Grand Estate</p>
+</div>
+<ul class="flex flex-col w-full font-body-md text-body-md">
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">dashboard</span>
+                    Overview
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">calendar_month</span>
+                    Bookings
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">bed</span>
+                    Rooms
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">group</span>
+                    Guests
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">cleaning_services</span>
+                    Housekeeping
+                </a>
+</li>
+<!-- ACTIVE TAB: Laundry -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-primary font-bold border-r-2 border-primary bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400;">local_laundry_service</span>
+                    Laundry
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">restaurant</span>
+                    Restaurant
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">point_of_sale</span>
+                    POS
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">event_seat</span>
+                    Banquets
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">analytics</span>
+                    Reports
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">badge</span>
+                    Staff
+                </a>
+</li>
+<!-- Inactive -->
+<li class="w-full mt-auto">
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 300;">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- TopAppBar Shell Component -->
+<header class="hidden md:flex fixed top-0 right-0 w-[calc(100%-16rem)] z-50 bg-background/95 backdrop-blur-md border-b border-outline-variant h-16 px-gutter justify-between items-center">
+<!-- Search Bar -->
+<div class="flex items-center bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 w-80">
+<span class="material-symbols-outlined text-on-surface-variant mr-2 text-[20px]">search</span>
+<input class="bg-transparent border-none outline-none text-body-md font-body-md w-full placeholder:text-on-surface-variant focus:ring-0 p-0 text-on-surface" placeholder="Search guests, rooms..." type="text"/>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-opacity duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-opacity duration-200">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded font-label-caps uppercase tracking-widest hover:bg-primary-container hover:text-on-primary-container transition-colors">
+                Check In
+            </button>
+<div class="w-8 h-8 rounded-full bg-surface-variant ml-2 border border-outline-variant overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">person</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-16 min-h-screen">
+<div class="p-margin-page max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-2">Laundry</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage daily processing, batch tracking, and dispatch.</p>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded flex items-center gap-2 font-label-caps uppercase tracking-widest hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Laundry Batch
+                </button>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12 border-y border-outline-variant py-8">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Items Received</span>
+<span class="font-headline-sm text-headline-sm text-primary">850</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Washing</span>
+<span class="font-headline-sm text-headline-sm text-on-tertiary-container">120</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Drying</span>
+<span class="font-headline-sm text-headline-sm text-primary">200</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Ironing</span>
+<span class="font-headline-sm text-headline-sm text-primary">150</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Ready</span>
+<span class="font-headline-sm text-headline-sm text-primary">320</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Dispatched</span>
+<span class="font-headline-sm text-headline-sm text-primary">60</span>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-surface-bright border border-outline-variant rounded-DEFAULT overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-headline-sm text-headline-sm text-primary">Active Processing</h3>
+<div class="flex gap-2 text-on-surface-variant">
+<button class="p-2 hover:text-primary"><span class="material-symbols-outlined text-[20px]">filter_list</span></button>
+<button class="p-2 hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Batch ID</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Room / Dept</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Item Type</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Qty</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Received Time</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Current Stage</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Assigned Staff</th>
+<th class="py-density-comfortable px-6 font-label-caps text-label-caps text-on-surface-variant uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular text-on-surface divide-y divide-outline-variant/50">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-density-comfortable px-6 font-medium">#LB-4092</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">Room 304</td>
+<td class="py-density-comfortable px-6">Bedsheet, Pillow Cover</td>
+<td class="py-density-comfortable px-6 text-right">4</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">08:30 AM</td>
+<td class="py-density-comfortable px-6">Washing</td>
+<td class="py-density-comfortable px-6">Maria S.</td>
+<td class="py-density-comfortable px-6">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-caps text-[10px] uppercase">In Progress</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-density-comfortable px-6 font-medium">#LB-4093</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">Restaurant</td>
+<td class="py-density-comfortable px-6">Table Linen</td>
+<td class="py-density-comfortable px-6 text-right">45</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">09:15 AM</td>
+<td class="py-density-comfortable px-6">Ironing</td>
+<td class="py-density-comfortable px-6">David K.</td>
+<td class="py-density-comfortable px-6">
+<span class="inline-flex items-center px-2 py-1 rounded bg-tertiary-fixed-dim/30 text-on-tertiary-container font-label-caps text-[10px] uppercase">Processing</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-density-comfortable px-6 font-medium">#LB-4094</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">Room 412</td>
+<td class="py-density-comfortable px-6">Towel, Bath Mat</td>
+<td class="py-density-comfortable px-6 text-right">6</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">09:45 AM</td>
+<td class="py-density-comfortable px-6">Drying</td>
+<td class="py-density-comfortable px-6">Elena R.</td>
+<td class="py-density-comfortable px-6">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-caps text-[10px] uppercase">In Progress</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-density-comfortable px-6 font-medium">#LB-4095</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">Front Desk</td>
+<td class="py-density-comfortable px-6">Uniform</td>
+<td class="py-density-comfortable px-6 text-right">2</td>
+<td class="py-density-comfortable px-6 text-on-surface-variant">10:00 AM</td>
+<td class="py-density-comfortable px-6">Ready</td>
+<td class="py-density-comfortable px-6">James W.</td>
+<td class="py-density-comfortable px-6">
+<span class="inline-flex items-center px-2 py-1 rounded border border-outline-variant text-primary font-label-caps text-[10px] uppercase">Completed</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</body></html>

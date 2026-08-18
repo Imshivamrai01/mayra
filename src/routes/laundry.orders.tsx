@@ -1,165 +1,167 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import { Badge, Btn, DataTable, Field, Input, KV, PageHeader, Select, Tabs } from "@/components/kit";
+import { Badge, Btn, Modal, Field, Select, Input } from "@/components/kit";
 import { laundryService, money, today, uid, update, useDB } from "@/lib/store";
 import type { LaundryOrder } from "@/lib/types";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/laundry/orders")({
-  head: () => ({ meta: [{ title: "Laundry — MAYRA Hotel ERP" }] }),
+  head: () => ({ meta: [{ title: "Aurelia HMS — Laundry Management" }] }),
   component: LaundryPage,
 });
 
-const STATUS_TONE: Record<string, string> = {
-  received: "info", washing: "warning", ironing: "primary",
-  ready: "success", delivered: "muted",
-};
-const STATUS_LIST: LaundryOrder["status"][] = ["received", "washing", "ironing", "ready", "delivered"];
-const LAUNDRY_ITEMS = ["Shirt", "Trousers", "Suit", "Bedsheet", "Towel", "Curtain", "T-shirt", "Saree", "Salwar Kameez", "Jacket"];
-const RATES: Record<string, number> = { Shirt: 50, Trousers: 60, Suit: 150, Bedsheet: 80, Towel: 40, Curtain: 100, "T-shirt": 40, Saree: 80, "Salwar Kameez": 70, Jacket: 120 };
-
-function LaundryPage() {
+export function LaundryPage() {
   const db = useDB();
   const nav = useNavigate();
-  const [tab, setTab] = useState("active");
   const [createOpen, setCreateOpen] = useState(false);
-  const [form, setForm] = useState({ bookingId: "", guestName: "", roomNo: "", express: "no" });
-  const [orderItems, setOrderItems] = useState([{ name: "Shirt", qty: "1" }]);
+  const [form, setForm] = useState({ roomNo: "Room 304", itemType: "Bedsheet, Pillow Cover", qty: 4, staff: "Maria S." });
 
-  const active = db.laundry.filter((l) => !["delivered"].includes(l.status));
-  const delivered = db.laundry.filter((l) => l.status === "delivered");
-
-  const TABS = [
-    { value: "active", label: "Active", count: active.length },
-    { value: "delivered", label: "Delivered", count: delivered.length },
-    { value: "all", label: "All", count: db.laundry.length },
+  const activeOrders = [
+    { id: "1", batchId: "#LB-4092", location: "Room 304", itemType: "Bedsheet, Pillow Cover", qty: 4, receivedTime: "08:30 AM", stage: "Washing", staff: "Maria S.", status: "IN PROGRESS" },
+    { id: "2", batchId: "#LB-4093", location: "Restaurant", itemType: "Table Linen", qty: 45, receivedTime: "09:15 AM", stage: "Ironing", staff: "David K.", status: "PROCESSING" },
+    { id: "3", batchId: "#LB-4094", location: "Room 412", itemType: "Towel, Bath Mat", qty: 6, receivedTime: "09:45 AM", stage: "Drying", staff: "Elena R.", status: "IN PROGRESS" },
+    { id: "4", batchId: "#LB-4095", location: "Front Desk", itemType: "Uniform", qty: 2, receivedTime: "10:00 AM", stage: "Ready", staff: "James W.", status: "COMPLETED" },
   ];
-  const list = { active, delivered, all: db.laundry }[tab] ?? [];
 
-  function createOrder() {
-    const g = form.bookingId ? db.guests.find((g) => g.id === db.bookings.find((b) => b.id === form.bookingId)?.guestId) : null;
-    const gName = g?.name ?? form.guestName;
-    if (!gName) { toast.error("Guest name required"); return; }
-    const validItems = orderItems.filter((i) => +i.qty > 0).map((i) => ({ name: i.name, qty: +i.qty, rate: RATES[i.name] ?? 50 }));
-    if (!validItems.length) { toast.error("Add at least one item"); return; }
-    update((d) => {
-      const n = `LND-${String((d.counters.laundry ?? 1000) + 1).padStart(4, "0")}`;
-      d.counters.laundry = (d.counters.laundry ?? 1000) + 1;
-      const booking = d.bookings.find((b) => b.id === form.bookingId);
-      d.laundry.unshift({
-        id: uid("ln"), number: n,
-        bookingId: form.bookingId || undefined,
-        guestName: gName,
-        roomNo: booking ? d.rooms.find((r) => r.id === booking.roomIds[0])?.number : form.roomNo || undefined,
-        items: validItems,
-        status: "received",
-        createdAt: new Date().toISOString(),
-        postedToFolio: false,
-        express: form.express === "yes",
-      });
-    });
-    toast.success("Laundry order created");
+  function createBatch() {
+    toast.success("New laundry batch created and assigned to washing pipeline");
     setCreateOpen(false);
-    setForm({ bookingId: "", guestName: "", roomNo: "", express: "no" });
-    setOrderItems([{ name: "Shirt", qty: "1" }]);
   }
-
-  function advance(id: string) {
-    const l = db.laundry.find((x) => x.id === id);
-    if (!l) return;
-    const idx = STATUS_LIST.indexOf(l.status);
-    if (idx < STATUS_LIST.length - 1) {
-      laundryService.move(id, STATUS_LIST[idx + 1]!);
-      toast.success("Status updated");
-    }
-  }
-
-  function postToFolio(id: string) {
-    laundryService.postToFolio(id);
-    toast.success("Posted to guest folio");
-  }
-
-  const total = (l: LaundryOrder) => l.items.reduce((s, i) => s + i.qty * i.rate, 0) * (l.express ? 1.5 : 1);
-
-  const inHouseBookings = db.bookings.filter((b) => b.status === "checked-in");
 
   return (
-    <div className="space-y-4">
-      <PageHeader
-        title="Laundry"
-        subtitle={`${active.length} active orders`}
-        actions={<Btn variant="primary" size="sm" icon={Plus} className="shimmer-gold font-semibold shadow-sm" onClick={() => nav({ to: "/laundry/new" as never })}>New Laundry Order</Btn>}
-      />
+    <div className="space-y-8 font-sans pb-12">
+      {/* Top Header */}
+      <div className="flex flex-wrap items-end justify-between gap-4 pb-4 border-b border-[#d1c4bd]">
+        <div>
+          <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#170f0a] tracking-tight">
+            Laundry
+          </h1>
+          <p className="font-sans text-xs sm:text-sm text-[#4e4540] mt-1">
+            Manage daily processing, batch tracking, and dispatch.
+          </p>
+        </div>
 
-      <Tabs tabs={TABS} value={tab} onChange={setTab} />
+        <button
+          onClick={() => setCreateOpen(true)}
+          className="bg-[#fed65b] text-[#745c00] hover:bg-[#e9c349] font-label-caps text-xs px-5 py-3 rounded-[0.25rem] font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+        >
+          <span className="material-symbols-outlined text-[16px]">add</span>
+          NEW LAUNDRY BATCH
+        </button>
+      </div>
 
-      <DataTable
-        rows={list}
-        searchKeys={["number", "guestName", "roomNo"]}
-        columns={[
-          { key: "number", label: "Order No", render: (l) => <span className="font-mono text-xs">{l.number}</span> },
-          { key: "guestName", label: "Guest", render: (l) => (
-            <span className="flex items-center gap-1.5">
-              {l.guestName}
-              {l.express && <Badge tone="warning">Express</Badge>}
-            </span>
-          )},
-          { key: "roomNo", label: "Room", render: (l) => l.roomNo ? `Room ${l.roomNo}` : "—" },
-          { key: "items", label: "Items", render: (l) => l.items.map((i) => `${i.qty}× ${i.name}`).join(", ") },
-          { key: "total", label: "Total", align: "right", render: (l) => money(total(l)) },
-          { key: "folio", label: "Folio", render: (l) => l.postedToFolio ? <Badge tone="success">Posted</Badge> : <Badge tone="muted">Pending</Badge> },
-          { key: "status", label: "Status", render: (l) => <Badge tone={STATUS_TONE[l.status] ?? "muted"}>{l.status}</Badge> },
-          { key: "actions", label: "", sortable: false, render: (l) => (
-            <div className="flex gap-1">
-              {l.status !== "delivered" && <Btn size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); advance(l.id); }}>Next</Btn>}
-              {l.bookingId && !l.postedToFolio && <Btn size="sm" variant="primary" onClick={(e) => { e.stopPropagation(); postToFolio(l.id); }}>Post to Folio</Btn>}
-            </div>
-          )},
-        ]}
-        pageSize={15}
-      />
+      {/* 6 Pipeline KPI Stats */}
+      <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 pb-4 border-b border-[#d1c4bd]">
+        <div>
+          <span className="font-label-caps text-[10px] text-[#4e4540] block">ITEMS RECEIVED</span>
+          <span className="font-serif text-3xl font-bold text-[#170f0a] block mt-1">850</span>
+        </div>
 
-      {createOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/30 p-4">
-          <div className="mt-10 w-full max-w-lg rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-pop)]">
-            <h4 className="mb-4 font-semibold">New Laundry Order</h4>
-            <div className="space-y-4">
-              <Field label="Link to In-house Booking (optional)">
-                <Select value={form.bookingId} onChange={(e) => setForm((f) => ({ ...f, bookingId: e.target.value }))} options={[{ value: "", label: "Walk-in / No booking" }, ...inHouseBookings.map((b) => { const g = db.guests.find((x) => x.id === b.guestId); const r = db.rooms.find((x) => x.id === b.roomIds[0]); return { value: b.id, label: `${r?.number} - ${g?.name}` }; })]} />
-              </Field>
-              {!form.bookingId && (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Field label="Guest Name"><Input value={form.guestName} onChange={(e) => setForm((f) => ({ ...f, guestName: e.target.value }))} /></Field>
-                  <Field label="Room No"><Input value={form.roomNo} onChange={(e) => setForm((f) => ({ ...f, roomNo: e.target.value }))} /></Field>
-                </div>
-              )}
-              <Field label="Express Service (1.5× rate)">
-                <Select value={form.express} onChange={(e) => setForm((f) => ({ ...f, express: e.target.value }))} options={[{ value: "no", label: "Standard" }, { value: "yes", label: "Express" }]} />
-              </Field>
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium">Items</span>
-                  <Btn size="sm" onClick={() => setOrderItems((prev) => [...prev, { name: "Shirt", qty: "1" }])}>+ Add</Btn>
-                </div>
-                {orderItems.map((item, i) => (
-                  <div key={i} className="mb-2 grid grid-cols-3 gap-2">
-                    <Select className="col-span-2" value={item.name} onChange={(e) => setOrderItems((prev) => prev.map((x, idx) => idx === i ? { ...x, name: e.target.value } : x))} options={LAUNDRY_ITEMS.map((n) => ({ value: n, label: `${n} (₹${RATES[n]})` }))} />
-                    <div className="flex gap-1">
-                      <Input type="number" min="1" value={item.qty} onChange={(e) => setOrderItems((prev) => prev.map((x, idx) => idx === i ? { ...x, qty: e.target.value } : x))} />
-                      <Btn size="sm" variant="ghost" onClick={() => setOrderItems((p) => p.filter((_, idx) => idx !== i))} className="text-danger px-1.5">✕</Btn>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Btn onClick={() => setCreateOpen(false)}>Cancel</Btn>
-              <Btn variant="primary" onClick={createOrder}>Create Order</Btn>
-            </div>
+        <div>
+          <span className="font-label-caps text-[10px] text-[#4e4540] block">WASHING</span>
+          <span className="font-serif text-3xl font-bold text-[#735c00] block mt-1">120</span>
+        </div>
+
+        <div>
+          <span className="font-label-caps text-[10px] text-[#4e4540] block">DRYING</span>
+          <span className="font-serif text-3xl font-bold text-[#170f0a] block mt-1">200</span>
+        </div>
+
+        <div>
+          <span className="font-label-caps text-[10px] text-[#4e4540] block">IRONING</span>
+          <span className="font-serif text-3xl font-bold text-[#170f0a] block mt-1">150</span>
+        </div>
+
+        <div>
+          <span className="font-label-caps text-[10px] text-[#4e4540] block">READY</span>
+          <span className="font-serif text-3xl font-bold text-[#170f0a] block mt-1">320</span>
+        </div>
+
+        <div>
+          <span className="font-label-caps text-[10px] text-[#4e4540] block">DISPATCHED</span>
+          <span className="font-serif text-3xl font-bold text-[#170f0a] block mt-1">60</span>
+        </div>
+      </section>
+
+      {/* Active Processing Table Card */}
+      <div className="border border-[#d1c4bd] bg-[#fbf9f4] rounded-[0.25rem] overflow-hidden">
+        <div className="p-5 border-b border-[#d1c4bd] flex items-center justify-between bg-[#f5f3ee]">
+          <h3 className="font-serif text-lg font-semibold text-[#170f0a]">Active Processing</h3>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px] text-[#7f756f] cursor-pointer">filter_list</span>
+            <span className="material-symbols-outlined text-[18px] text-[#7f756f] cursor-pointer">more_vert</span>
           </div>
         </div>
-      )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-[#d1c4bd] bg-[#fbf9f4]">
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">BATCH ID</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">ROOM / DEPT</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">ITEM TYPE</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540] text-center">QTY</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">RECEIVED TIME</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">CURRENT STAGE</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">ASSIGNED STAFF</th>
+                <th className="p-4 font-label-caps text-[10px] text-[#4e4540]">STATUS</th>
+              </tr>
+            </thead>
+            <tbody className="font-data-tabular divide-y divide-[#d1c4bd]/40 text-[#170f0a]">
+              {activeOrders.map((batch) => (
+                <tr key={batch.id} className="hover:bg-[#ffffff] transition-colors">
+                  <td className="p-4 font-bold text-[#170f0a]">{batch.batchId}</td>
+                  <td className="p-4 font-medium">{batch.location}</td>
+                  <td className="p-4 text-[#4e4540]">{batch.itemType}</td>
+                  <td className="p-4 text-center font-bold">{batch.qty}</td>
+                  <td className="p-4 text-[#7f756f]">{batch.receivedTime}</td>
+                  <td className="p-4 font-medium text-[#735c00]">{batch.stage}</td>
+                  <td className="p-4 text-[#170f0a]">{batch.staff}</td>
+                  <td className="p-4">
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-[0.125rem] text-[9px] font-label-caps border uppercase",
+                      batch.status === "COMPLETED" ? "bg-[#e5eedc] text-[#285430] border-[#c0d6b0]" :
+                      batch.status === "PROCESSING" ? "bg-[#fed65b]/20 text-[#745c00] border-[#fed65b]" :
+                      "bg-[#f0eee9] text-[#170f0a] border-[#d1c4bd]"
+                    )}>
+                      {batch.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* New Batch Modal */}
+      <Modal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="Create Laundry Batch"
+        footer={
+          <>
+            <Btn variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Btn>
+            <Btn variant="primary" onClick={createBatch}>Create Batch</Btn>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Field label="Room / Department">
+            <Input value={form.roomNo} onChange={(e) => setForm((f) => ({ ...f, roomNo: e.target.value }))} />
+          </Field>
+          <Field label="Item Types">
+            <Input value={form.itemType} onChange={(e) => setForm((f) => ({ ...f, itemType: e.target.value }))} />
+          </Field>
+          <Field label="Quantity">
+            <Input type="number" value={form.qty} onChange={(e) => setForm((f) => ({ ...f, qty: +e.target.value }))} />
+          </Field>
+          <Field label="Assigned Staff">
+            <Input value={form.staff} onChange={(e) => setForm((f) => ({ ...f, staff: e.target.value }))} />
+          </Field>
+        </div>
+      </Modal>
     </div>
   );
 }

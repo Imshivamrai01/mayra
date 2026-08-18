@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Housekeeping Dashboard - Aurelia HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbdad5",
+                        "inverse-primary": "#d3c3ba",
+                        "primary-fixed": "#f0dfd6",
+                        "surface-variant": "#e4e2dd",
+                        "tertiary-fixed": "#ffdea5",
+                        "on-secondary-fixed": "#241a00",
+                        "on-surface": "#1b1c19",
+                        "on-surface-variant": "#4e4540",
+                        "on-tertiary-container": "#aa8843",
+                        "outline": "#7f756f",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "on-secondary-fixed-variant": "#574500",
+                        "on-secondary-container": "#745c00",
+                        "background": "#fbf9f4",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#e9c349",
+                        "surface-container-low": "#f5f3ee",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "tertiary": "#190f00",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fbf9f4",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-tint": "#685c55",
+                        "surface": "#fbf9f4",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eee9",
+                        "on-primary": "#ffffff",
+                        "secondary": "#735c00",
+                        "secondary-fixed": "#ffe088",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#30312e",
+                        "on-primary-fixed": "#221a14",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#fed65b",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f2f1ec",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "on-primary-container": "#988a82",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#332300",
+                        "surface-container-high": "#eae8e3",
+                        "primary-container": "#2d241e",
+                        "primary": "#170f0a",
+                        "on-background": "#1b1c19",
+                        "surface-container-highest": "#e4e2dd",
+                        "outline-variant": "#d1c4bd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "density-comfortable": "16px",
+                        "margin-page": "40px",
+                        "density-compact": "8px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen selection:bg-surface-dim">
+<!-- Shared Component: SideNavBar -->
+<nav class="bg-background dark:bg-background h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant dark:border-outline flex flex-col py-margin-page gap-density-comfortable hidden md:flex z-40">
+<!-- Brand/Avatar Header -->
+<div class="px-gutter mb-8">
+<div class="text-headline-sm font-display-md text-primary dark:text-primary-fixed tracking-tight mb-1">Aurelia HMS</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Grand Estate</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex flex-col flex-grow">
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="calendar_month">calendar_month</span>
+<span>Bookings</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="bed">bed</span>
+<span>Rooms</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="group">group</span>
+<span>Guests</span>
+</a>
+<!-- Active: Housekeeping -->
+<a class="flex items-center px-gutter py-3 text-primary font-bold border-r-2 border-primary bg-surface-container-low hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 scale-[0.98] transition-all fill" data-icon="cleaning_services" data-weight="fill">cleaning_services</span>
+<span>Housekeeping</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="local_laundry_service">local_laundry_service</span>
+<span>Laundry</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="restaurant">restaurant</span>
+<span>Restaurant</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="point_of_sale">point_of_sale</span>
+<span>POS</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="event_seat">event_seat</span>
+<span>Banquets</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="badge">badge</span>
+<span>Staff</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 group-hover:scale-[0.98] transition-all" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</nav>
+<!-- Shared Component: TopAppBar -->
+<header class="bg-background/95 dark:bg-background/95 backdrop-blur-md fixed top-0 right-0 w-[calc(100%-16rem)] z-50 flex justify-between items-center h-16 px-gutter border-b border-outline-variant dark:border-outline hidden md:flex text-primary dark:text-primary-fixed font-body-md text-body-md">
+<!-- Search Bar (on_left) -->
+<div class="flex items-center flex-1">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg" data-icon="search">search</span>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant focus:border-primary focus:ring-0 pl-8 py-1 font-body-md text-on-surface placeholder-on-surface-variant/50 transition-colors" placeholder="Search..." type="text"/>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-6">
+<div class="flex gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-opacity duration-200 hover:opacity-80"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-primary transition-opacity duration-200 hover:opacity-80"><span class="material-symbols-outlined" data-icon="apps">apps</span></button>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 font-label-caps text-label-caps uppercase tracking-wider hover:bg-primary-container hover:text-on-primary-container transition-colors">Check In</button>
+<div class="w-8 h-8 rounded-full bg-surface-dim overflow-hidden border border-outline-variant">
+<!-- Fallback user icon since no image provided -->
+<span class="material-symbols-outlined text-on-surface-variant w-full h-full flex items-center justify-center text-lg" data-icon="person">person</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="md:ml-64 pt-24 px-margin-page pb-margin-page max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-10">
+<div>
+<h1 class="font-display-md text-display-md text-primary tracking-tight mb-2">Housekeeping Dashboard</h1>
+<p class="font-body-md text-on-surface-variant">Tuesday, October 24th, 2023  •  Shift: Morning</p>
+</div>
+<div class="flex gap-4">
+<button class="border border-outline-variant text-primary px-4 py-2 font-label-caps text-label-caps hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="print">print</span> Print Roster
+                </button>
+<button class="bg-primary text-on-primary px-4 py-2 font-label-caps text-label-caps hover:bg-primary/90 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span> Assign Tasks
+                </button>
+</div>
+</div>
+<!-- KPI Section -->
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-density-comfortable mb-12">
+<!-- KPI Card 1 -->
+<div class="bg-surface-container-low border-t-2 border-outline-variant p-4 flex flex-col justify-between h-28">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Rooms to Clean</span>
+<div class="font-display-md text-display-md text-primary">42</div>
+</div>
+<!-- KPI Card 2 -->
+<div class="bg-surface-container-low border-t-2 border-secondary-container p-4 flex flex-col justify-between h-28">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">In Progress</span>
+<div class="font-display-md text-display-md text-secondary-container">12</div>
+</div>
+<!-- KPI Card 3 -->
+<div class="bg-surface-container-low border-t-2 border-outline-variant p-4 flex flex-col justify-between h-28">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Clean</span>
+<div class="font-display-md text-display-md text-primary">28</div>
+</div>
+<!-- KPI Card 4 -->
+<div class="bg-surface-container-low border-t-2 border-outline-variant p-4 flex flex-col justify-between h-28">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Inspected</span>
+<div class="font-display-md text-display-md text-primary">15</div>
+</div>
+<!-- KPI Card 5 -->
+<div class="bg-surface-container-low border-t-2 border-error p-4 flex flex-col justify-between h-28">
+<span class="font-label-caps text-label-caps text-error uppercase">Priority Rooms</span>
+<div class="font-display-md text-display-md text-error">5</div>
+</div>
+<!-- KPI Card 6 -->
+<div class="bg-surface-container-low border-t-2 border-outline-variant p-4 flex flex-col justify-between h-28">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">DND Rooms</span>
+<div class="font-display-md text-display-md text-primary">8</div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Room Status Board (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-10">
+<!-- Floor 1 -->
+<section>
+<div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
+<h2 class="font-headline-sm text-headline-sm text-primary">Floor 1</h2>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">4/12 Completed</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-density-comfortable">
+<!-- Room Card 101 - Dirty -->
+<div class="bg-surface border border-outline-variant p-4 flex flex-col gap-4 hover:bg-surface-container-lowest transition-colors relative group">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-display-md text-[24px] leading-none text-primary block mb-1">101</span>
+<span class="font-body-md text-body-md text-on-surface">Smith, J.</span>
+</div>
+<span class="bg-error-container text-on-error-container px-2 py-1 font-label-caps text-label-caps rounded-sm uppercase">Dirty</span>
+</div>
+<div class="flex justify-between items-end border-t border-surface-variant pt-3 mt-auto">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase">Departure</span>
+<span class="font-data-tabular text-data-tabular text-on-surface">11:00 AM</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span class="font-body-md text-[13px]">Maria G.</span>
+</div>
+</div>
+</div>
+<!-- Room Card 102 - Clean -->
+<div class="bg-surface border border-outline-variant p-4 flex flex-col gap-4 hover:bg-surface-container-lowest transition-colors relative group">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-display-md text-[24px] leading-none text-primary block mb-1">102</span>
+<span class="font-body-md text-body-md text-on-surface-variant italic">Vacant</span>
+</div>
+<span class="bg-surface-container-high text-on-surface px-2 py-1 font-label-caps text-label-caps rounded-sm uppercase">Clean</span>
+</div>
+<div class="flex justify-between items-end border-t border-surface-variant pt-3 mt-auto">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase">Departure</span>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">-</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span class="font-body-md text-[13px]">Elena R.</span>
+</div>
+</div>
+</div>
+<!-- Room Card 103 - Cleaning -->
+<div class="bg-surface border border-secondary-container p-4 flex flex-col gap-4 relative group shadow-[0_0_15px_rgba(45,36,30,0.05)]">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-display-md text-[24px] leading-none text-primary block mb-1">103</span>
+<span class="font-body-md text-body-md text-on-surface">Jones, M. <span class="text-on-surface-variant text-[12px] ml-1">(Stayover)</span></span>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 font-label-caps text-label-caps rounded-sm uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] animate-spin" data-icon="autorenew">autorenew</span>
+                                    Cleaning
+                                </span>
+</div>
+<div class="flex justify-between items-end border-t border-surface-variant pt-3 mt-auto">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase">Departure</span>
+<span class="font-data-tabular text-data-tabular text-on-surface">Tomorrow</span>
+</div>
+<div class="flex items-center gap-2 text-primary font-medium">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span class="font-body-md text-[13px]">Maria G.</span>
+</div>
+</div>
+</div>
+<!-- Room Card 104 - Inspected -->
+<div class="bg-surface-dim border border-outline-variant p-4 flex flex-col gap-4 opacity-75 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-display-md text-[24px] leading-none text-primary block mb-1">104</span>
+<span class="font-body-md text-body-md text-on-surface">Doe, A.</span>
+</div>
+<span class="border border-outline text-on-surface px-2 py-1 font-label-caps text-label-caps rounded-sm uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                                    Inspected
+                                </span>
+</div>
+<div class="flex justify-between items-end border-t border-outline-variant pt-3 mt-auto">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase">Departure</span>
+<span class="font-data-tabular text-data-tabular text-on-surface">12:00 PM</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span class="font-body-md text-[13px]">Elena R.</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Floor 2 -->
+<section>
+<div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
+<h2 class="font-headline-sm text-headline-sm text-primary">Floor 2</h2>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">1/10 Completed</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-density-comfortable">
+<!-- Room Card 201 - DND -->
+<div class="bg-surface border border-outline-variant p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-display-md text-[24px] leading-none text-primary block mb-1">201</span>
+<span class="font-body-md text-body-md text-on-surface">Williams, K.</span>
+</div>
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 font-label-caps text-label-caps rounded-sm uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="do_not_disturb_on">do_not_disturb_on</span>
+                                    DND
+                                </span>
+</div>
+<div class="flex justify-between items-end border-t border-surface-variant pt-3 mt-auto">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase">Departure</span>
+<span class="font-data-tabular text-data-tabular text-on-surface">10:30 AM</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant opacity-50">
+<span class="font-body-md text-[13px] italic">Unassigned</span>
+</div>
+</div>
+</div>
+<!-- Room Card 202 - Priority Dirty -->
+<div class="bg-error-container/20 border border-error/50 p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-display-md text-[24px] leading-none text-primary block">202</span>
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="priority_high">priority_high</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface">VIP Guest</span>
+</div>
+<span class="bg-error-container text-on-error-container px-2 py-1 font-label-caps text-label-caps rounded-sm uppercase">Dirty</span>
+</div>
+<div class="flex justify-between items-end border-t border-error/20 pt-3 mt-auto">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-[10px] text-error uppercase">Early Arrival</span>
+<span class="font-data-tabular text-data-tabular text-primary">12:00 PM</span>
+</div>
+<div class="flex items-center gap-2 text-primary font-medium">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span class="font-body-md text-[13px]">Sarah T.</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Side Panel (4 cols) -->
+<aside class="lg:col-span-4 h-full">
+<div class="bg-surface-container-low border border-outline-variant p-6 sticky top-24">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-6 border-b border-outline-variant pb-3">Today's Summary</h3>
+<!-- Linen Usage -->
+<div class="mb-8">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-4">Linen Usage</h4>
+<div class="flex flex-col gap-4">
+<div>
+<div class="flex justify-between font-body-md text-[13px] mb-1">
+<span class="text-on-surface">Bath Towels</span>
+<span class="font-data-tabular text-on-surface-variant">450 / 500</span>
+</div>
+<div class="w-full h-1 bg-surface-variant">
+<div class="h-full bg-primary" style="width: 90%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-md text-[13px] mb-1">
+<span class="text-on-surface">King Sheets</span>
+<span class="font-data-tabular text-on-surface-variant">180 / 250</span>
+</div>
+<div class="w-full h-1 bg-surface-variant">
+<div class="h-full bg-primary" style="width: 72%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-md text-[13px] mb-1">
+<span class="text-on-surface">Robes</span>
+<span class="font-data-tabular text-on-surface-variant">45 / 80</span>
+</div>
+<div class="w-full h-1 bg-surface-variant">
+<div class="h-full bg-secondary-container" style="width: 56%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Supply Levels -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-4">Cart Supply Levels</h4>
+<ul class="flex flex-col gap-3 font-body-md text-[13px]">
+<li class="flex items-center justify-between py-2 border-b border-outline-variant/50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="soap">soap</span>
+<span class="text-on-surface">Luxury Toiletries</span>
+</div>
+<span class="bg-surface-dim text-on-surface px-2 py-0.5 rounded-sm font-data-tabular text-[11px]">80%</span>
+</li>
+<li class="flex items-center justify-between py-2 border-b border-outline-variant/50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="water_drop">water_drop</span>
+<span class="text-on-surface">Cleaning Solvents</span>
+</div>
+<span class="bg-surface-dim text-on-surface px-2 py-0.5 rounded-sm font-data-tabular text-[11px]">65%</span>
+</li>
+<li class="flex items-center justify-between py-2">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="coffee_maker">coffee_maker</span>
+<span class="text-on-surface">In-Room Coffee Pods</span>
+</div>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded-sm font-data-tabular text-[11px]">15%</span>
+</li>
+</ul>
+</div>
+<button class="w-full mt-8 border border-outline-variant text-primary py-2 font-label-caps text-label-caps hover:bg-surface-container-low transition-colors">
+                        Request Restock
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+</body></html>

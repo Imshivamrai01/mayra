@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Housekeeping Tasks - Aurelia HMS</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbdad5",
+                        "inverse-primary": "#d3c3ba",
+                        "primary-fixed": "#f0dfd6",
+                        "surface-variant": "#e4e2dd",
+                        "tertiary-fixed": "#ffdea5",
+                        "on-secondary-fixed": "#241a00",
+                        "on-surface": "#1b1c19",
+                        "on-surface-variant": "#4e4540",
+                        "on-tertiary-container": "#aa8843",
+                        "outline": "#7f756f",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "on-secondary-fixed-variant": "#574500",
+                        "on-secondary-container": "#745c00",
+                        "background": "#fbf9f4",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#e9c349",
+                        "surface-container-low": "#f5f3ee",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "tertiary": "#190f00",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fbf9f4",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-tint": "#685c55",
+                        "surface": "#fbf9f4",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eee9",
+                        "on-primary": "#ffffff",
+                        "secondary": "#735c00",
+                        "secondary-fixed": "#ffe088",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#30312e",
+                        "on-primary-fixed": "#221a14",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#fed65b",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f2f1ec",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "on-primary-container": "#988a82",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#332300",
+                        "surface-container-high": "#eae8e3",
+                        "primary-container": "#2d241e",
+                        "primary": "#170f0a",
+                        "on-background": "#1b1c19",
+                        "surface-container-highest": "#e4e2dd",
+                        "outline-variant": "#d1c4bd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "density-comfortable": "16px",
+                        "margin-page": "40px",
+                        "density-compact": "8px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["Playfair Display"],
+                        "headline-sm": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+            overflow-x: auto;
+            padding-bottom: 24px;
+        }
+        .kanban-column {
+            min-width: 300px;
+        }
+        
+        /* Ambient shadows for floating temporary elements as per style guide */
+        .ambient-shadow {
+            box-shadow: 0 20px 40px -10px rgba(45, 36, 30, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant bg-background flex flex-col py-margin-page gap-density-comfortable z-50">
+<div class="px-gutter mb-8">
+<div class="font-display-md text-primary tracking-tight">Aurelia HMS</div>
+<div class="text-on-surface-variant font-label-caps uppercase mt-1">Grand Estate</div>
+</div>
+<div class="flex flex-col flex-grow">
+<!-- Navigation Items -->
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">dashboard</span>
+<span class="font-body-md">Overview</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">calendar_month</span>
+<span class="font-body-md">Bookings</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">bed</span>
+<span class="font-body-md">Rooms</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">group</span>
+<span class="font-body-md">Guests</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center px-gutter py-3 text-primary font-bold border-r-2 border-primary bg-surface-container-low transition-all scale-[0.98]" href="#">
+<span class="material-symbols-outlined mr-4 text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">cleaning_services</span>
+<span class="font-body-md">Housekeeping</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">local_laundry_service</span>
+<span class="font-body-md">Laundry</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">restaurant</span>
+<span class="font-body-md">Restaurant</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">point_of_sale</span>
+<span class="font-body-md">POS</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">event_seat</span>
+<span class="font-body-md">Banquets</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">analytics</span>
+<span class="font-body-md">Reports</span>
+</a>
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">badge</span>
+<span class="font-body-md">Staff</span>
+</a>
+</div>
+<div class="mt-auto">
+<a class="flex items-center px-gutter py-3 text-on-surface-variant font-medium hover:bg-surface-container hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined mr-4 text-on-surface-variant group-hover:text-primary">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="ml-64 flex-1 flex flex-col h-screen overflow-hidden bg-background">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-background/95 backdrop-blur-md border-b border-outline-variant flex justify-between items-center h-16 px-gutter">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-primary">Housekeeping Tasks</span>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search Ghost Input -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-0 bottom-2 text-on-surface-variant" style="font-size: 20px;">search</span>
+<input class="pl-7 pb-1 bg-transparent border-0 border-b border-outline-variant text-body-md text-primary placeholder-on-surface-variant focus:ring-0 focus:border-outline focus:border-b transition-colors w-64" placeholder="Search tasks, rooms..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-opacity duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:text-primary transition-opacity duration-200">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A small circular profile picture of a professional hotel staff member in a neat uniform against a neutral bright background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTdjQgM8k-7dA3ZtZ_mdsArK88hiXLunBu7b70_HIzE17BH4_rVWV8Q46d-yaG1ruk8q92LqwjdtppAozVR3gm9gem_BQ86nxz79HvIos5BoA6Kbjo0WBtwL57XcJT7qGanfUFvcHYYm-Oe1fk0jVH2p-h_GBq8xu-xO4tO_hko9bnoSQaqg4gbAtQ3Tq9HK4sjD10YUgMbQ54Au-yh4sPNsOBvLSvUivBv9ATEbMpuf4difX748M"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-auto mt-16 p-margin-page">
+<!-- Page Header & Actions -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h1 class="font-display-lg text-primary mb-2">Housekeeping Board</h1>
+<p class="font-body-lg text-on-surface-variant">Manage daily room cleaning and operational tasks.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-2 border border-primary text-primary font-body-md font-medium rounded hover:bg-surface-container transition-colors">
+                        Change Priority
+                    </button>
+<button class="px-6 py-2 bg-primary text-on-primary font-body-md font-medium rounded hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
+                        Assign Task
+                    </button>
+</div>
+</div>
+<!-- Kanban Board -->
+<div class="kanban-board h-full min-h-[600px]">
+<!-- Pending Column -->
+<div class="kanban-column flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h2 class="font-headline-sm text-primary">Pending</h2>
+<span class="font-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">3</span>
+</div>
+<!-- Task Card -->
+<div class="bg-surface border border-outline-variant p-4 rounded flex flex-col gap-3 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-display-md text-primary text-2xl">204</span>
+<span class="font-label-caps text-on-surface-variant uppercase mt-1">Premium King</span>
+</div>
+<span class="font-label-caps text-surface-tint border border-outline-variant px-2 py-1 rounded">Medium</span>
+</div>
+<div class="border-t border-outline-variant/50 pt-3">
+<p class="font-body-md text-primary font-medium mb-1">Full Service + Extra Towels</p>
+<p class="font-body-md text-on-surface-variant text-sm">Guest: Rahul Mehta</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-outline-variant/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">person</span>
+<span class="font-data-tabular text-on-surface-variant">Unassigned</span>
+</div>
+<span class="font-data-tabular text-on-surface-variant text-xs">Waiting</span>
+</div>
+</div>
+</div>
+<!-- Assigned Column -->
+<div class="kanban-column flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h2 class="font-headline-sm text-primary">Assigned</h2>
+<span class="font-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">2</span>
+</div>
+<!-- Task Card -->
+<div class="bg-surface border border-outline-variant p-4 rounded flex flex-col gap-3 hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-display-md text-primary text-2xl">312</span>
+<span class="font-label-caps text-on-surface-variant uppercase mt-1">Deluxe Suite</span>
+</div>
+<span class="font-label-caps text-error border border-error/30 px-2 py-1 rounded bg-error-container/20">High</span>
+</div>
+<div class="border-t border-outline-variant/50 pt-3">
+<p class="font-body-md text-primary font-medium mb-1">Turn Down Service</p>
+<p class="font-body-md text-on-surface-variant text-sm">Guest: E. Sterling</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-outline-variant/50">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 rounded-full bg-surface-tint text-on-primary flex items-center justify-center font-label-caps text-[9px]">MS</div>
+<span class="font-data-tabular text-primary">M. Silva</span>
+</div>
+<span class="font-data-tabular text-on-surface-variant text-xs">Assigned 10m ago</span>
+</div>
+</div>
+</div>
+<!-- Cleaning Column -->
+<div class="kanban-column flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h2 class="font-headline-sm text-primary">Cleaning</h2>
+<span class="font-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">1</span>
+</div>
+<!-- Task Card Active -->
+<div class="bg-surface-container-low border-l-4 border-l-secondary border-y border-r border-outline-variant p-4 rounded-r shadow-sm flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-display-md text-primary text-2xl">108</span>
+<span class="font-label-caps text-on-surface-variant uppercase mt-1">Standard Double</span>
+</div>
+<span class="font-label-caps text-surface-tint border border-outline-variant px-2 py-1 rounded">Low</span>
+</div>
+<div class="border-t border-outline-variant/50 pt-3">
+<p class="font-body-md text-primary font-medium mb-1">Departure Clean</p>
+<p class="font-body-md text-on-surface-variant text-sm">Checkout complete</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-outline-variant/50">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 rounded-full bg-surface-tint text-on-primary flex items-center justify-center font-label-caps text-[9px]">JD</div>
+<span class="font-data-tabular text-primary">J. Doe</span>
+</div>
+<span class="font-data-tabular text-secondary text-xs font-medium">In Progress: 25m</span>
+</div>
+</div>
+</div>
+<!-- Inspection Column -->
+<div class="kanban-column flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h2 class="font-headline-sm text-primary">Inspection</h2>
+<span class="font-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">0</span>
+</div>
+<!-- Empty State -->
+<div class="flex flex-col items-center justify-center h-32 border border-dashed border-outline-variant rounded text-on-surface-variant">
+<span class="material-symbols-outlined mb-2 opacity-50">fact_check</span>
+<span class="font-body-md text-sm">No rooms pending inspection</span>
+</div>
+</div>
+<!-- Completed Column -->
+<div class="kanban-column flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h2 class="font-headline-sm text-primary">Completed</h2>
+<span class="font-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">12</span>
+</div>
+<!-- Task Card Completed -->
+<div class="bg-surface opacity-70 border border-outline-variant p-4 rounded flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-display-md text-primary text-2xl line-through decoration-outline">401</span>
+<span class="font-label-caps text-on-surface-variant uppercase mt-1">Penthouse</span>
+</div>
+</div>
+<div class="border-t border-outline-variant/50 pt-3">
+<p class="font-body-md text-primary font-medium mb-1">VIP Arrival Prep</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-outline-variant/50">
+<span class="font-data-tabular text-on-surface-variant text-xs">Completed 1h ago</span>
+<span class="material-symbols-outlined text-surface-tint" style="font-size: 18px;">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -181,7 +181,7 @@ function GuestsPage() {
       <PageHeader
         title="Guests"
         subtitle="Guest profiles and CRM"
-        actions={<Btn variant="primary" size="sm" icon={Plus} className="shimmer-gold font-semibold shadow-sm" onClick={() => nav({ to: "/guests/new" as never })}>New Guest</Btn>}
+        actions={<Btn variant="primary" size="sm" icon={Plus} onClick={() => nav({ to: "/guests/new" as never })}>New Guest</Btn>}
       />
       <Tabs tabs={TABS} value={tab} onChange={setTab} />
       <DataTable

@@ -221,6 +221,17 @@ export function isRoomFree(roomId: ID, checkIn: string, checkOut: string, data: 
   return !conflict && !!room && !["maintenance", "blocked"].includes(room.status);
 }
 
+export function getRoomCurrentStatus(room: Room, data: DB = db, dateStr: string = today()): RoomStatus {
+  if (["dirty", "cleaning", "maintenance", "blocked"].includes(room.status)) {
+    return room.status;
+  }
+  const inHouse = data.bookings.find(
+    (b) => b.roomIds.includes(room.id) && b.status === "checked-in" && b.checkIn <= dateStr && b.checkOut > dateStr
+  );
+  if (inHouse) return "occupied";
+  return room.status === "occupied" ? "occupied" : "available";
+}
+
 /* ----------------------------- services ----------------------------- */
 export const roomService = {
   setStatus(roomId: ID, status: RoomStatus) {

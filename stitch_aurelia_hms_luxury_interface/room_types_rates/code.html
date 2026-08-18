@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Room Types - Aurelia HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Playfair+Display:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#685c55",
+                        "on-primary-fixed": "#221a14",
+                        "inverse-primary": "#d3c3ba",
+                        "surface-container-low": "#f5f3ee",
+                        "tertiary-container": "#332300",
+                        "tertiary-fixed": "#ffdea5",
+                        "on-background": "#1b1c19",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eee9",
+                        "surface-bright": "#fbf9f4",
+                        "secondary": "#735c00",
+                        "background": "#fbf9f4",
+                        "inverse-surface": "#30312e",
+                        "on-surface": "#1b1c19",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#4e4540",
+                        "surface-dim": "#dbdad5",
+                        "on-secondary-fixed": "#241a00",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#745c00",
+                        "primary": "#170f0a",
+                        "surface-container-high": "#eae8e3",
+                        "inverse-on-surface": "#f2f1ec",
+                        "outline": "#7f756f",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e4e2dd",
+                        "on-primary-container": "#988a82",
+                        "primary-fixed-dim": "#d3c3ba",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fed65b",
+                        "on-tertiary-fixed-variant": "#5d4201",
+                        "surface": "#fbf9f4",
+                        "on-tertiary-container": "#aa8843",
+                        "on-primary-fixed-variant": "#4f453e",
+                        "tertiary-fixed-dim": "#e9c176",
+                        "secondary-fixed-dim": "#e9c349",
+                        "surface-variant": "#e4e2dd",
+                        "secondary-fixed": "#ffe088",
+                        "tertiary": "#190f00",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#574500",
+                        "primary-fixed": "#f0dfd6",
+                        "on-tertiary-fixed": "#261900",
+                        "primary-container": "#2d241e",
+                        "outline-variant": "#d1c4bd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "density-compact": "8px",
+                        "container-max": "1440px",
+                        "unit": "4px",
+                        "density-comfortable": "16px",
+                        "gutter": "24px",
+                        "margin-page": "40px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Playfair Display"],
+                        "display-md-mobile": ["Playfair Display"],
+                        "display-md": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Playfair Display"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-md-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-md": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "label-caps": ["11px", { "lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "700" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #fbf9f4; /* surface */
+            color: #1b1c19; /* on-surface */
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-surface">
+<!-- SideNavBar Component -->
+<aside class="bg-surface-container dark:bg-surface-container-lowest flex flex-col h-full py-margin-page border-r border-outline-variant h-screen w-64 fixed left-0 top-0 z-50">
+<div class="px-density-comfortable mb-8">
+<h1 class="font-display-md text-display-md text-primary dark:text-primary-fixed mb-1">Aurelia HMS</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Luxury ERP</p>
+</div>
+<nav class="flex-1 overflow-y-auto">
+<ul class="space-y-1 px-density-compact">
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                        Overview
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_month</span>
+                        Bookings
+                    </a>
+</li>
+<li>
+<a class="bg-secondary-container text-on-secondary-container dark:bg-secondary dark:text-on-secondary rounded-xl font-bold flex items-center gap-density-comfortable px-density-comfortable py-density-compact font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bed</span>
+                        Rooms
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+                        Guests
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">cleaning_services</span>
+                        Housekeeping
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">local_laundry_service</span>
+                        Laundry
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+                        Restaurant
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">point_of_sale</span>
+                        POS
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">event_seat</span>
+                        Banquets
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">assessment</span>
+                        Reports
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">badge</span>
+                        Staff
+                    </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all flex items-center gap-density-comfortable px-density-comfortable py-density-compact rounded-DEFAULT font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+                        Settings
+                    </a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar Component -->
+<header class="bg-surface dark:bg-surface-container-low flex justify-between items-center px-margin-page py-density-comfortable w-full sticky top-0 z-40 border-b border-outline-variant dark:border-outline-variant">
+<div class="flex items-center gap-gutter">
+<span class="font-display-md text-display-md text-primary dark:text-primary-fixed tracking-tight">Aurelia Grand Hotel</span>
+</div>
+<div class="flex items-center gap-gutter">
+<nav class="flex items-center gap-density-comfortable font-label-caps text-label-caps">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors cursor-pointer active:opacity-80" href="#">Help</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary-container transition-colors cursor-pointer active:opacity-80" href="#">Notifications</a>
+</nav>
+<div class="flex items-center gap-density-compact text-on-surface-variant">
+<button class="hover:text-secondary transition-colors cursor-pointer active:opacity-80 p-1">
+<span class="material-symbols-outlined text-xl">help</span>
+</button>
+<button class="hover:text-secondary transition-colors cursor-pointer active:opacity-80 p-1">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-margin-page flex-1 max-w-container-max mx-auto w-full">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-gutter">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-2">Room Types</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage inventory categories and base configurations.</p>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-DEFAULT font-label-caps text-label-caps hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                    Create Room Type
+                </button>
+</div>
+<!-- Table View -->
+<div class="bg-surface-bright border border-outline-variant rounded-DEFAULT mb-margin-page overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Room Type</th>
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Total Rooms</th>
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Base Rate</th>
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Weekend Rate</th>
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Occupancy</th>
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Amenities</th>
+<th class="py-density-comfortable px-density-comfortable font-label-caps text-label-caps text-on-surface-variant font-normal">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="py-density-comfortable px-density-comfortable text-primary">Deluxe King</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">45</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$450</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$550</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">2 Adults</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">King Bed, City View</td>
+<td class="py-density-comfortable px-density-comfortable">
+<span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant rounded-DEFAULT font-label-caps text-label-caps text-[9px]">Active</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="py-density-comfortable px-density-comfortable text-primary">Deluxe Twin</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">30</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$450</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$550</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">2 Adults, 1 Child</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">2 Twin Beds, City View</td>
+<td class="py-density-comfortable px-density-comfortable">
+<span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant rounded-DEFAULT font-label-caps text-label-caps text-[9px]">Active</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="py-density-comfortable px-density-comfortable text-primary">Premium King</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">25</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$650</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$750</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">2 Adults</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">King Bed, Ocean View, Balcony</td>
+<td class="py-density-comfortable px-density-comfortable">
+<span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant rounded-DEFAULT font-label-caps text-label-caps text-[9px]">Active</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="py-density-comfortable px-density-comfortable text-primary">Executive Suite</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">12</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$1,200</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$1,400</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">3 Adults</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">Living Area, Lounge Access</td>
+<td class="py-density-comfortable px-density-comfortable">
+<span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant rounded-DEFAULT font-label-caps text-label-caps text-[9px]">Active</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-density-comfortable px-density-comfortable text-primary">Presidential Suite</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">2</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$4,500</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface">$5,000</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">4 Adults</td>
+<td class="py-density-comfortable px-density-comfortable text-on-surface-variant">Panoramic Views, Butler Service</td>
+<td class="py-density-comfortable px-density-comfortable">
+<span class="px-2 py-1 bg-surface-container border border-outline-variant text-on-surface-variant rounded-DEFAULT font-label-caps text-label-caps text-[9px]">Active</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Rate Management Area -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-surface-bright border border-outline-variant p-gutter rounded-DEFAULT">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-density-comfortable">Seasonal Adjustments</h3>
+<div class="space-y-density-comfortable">
+<div class="flex justify-between items-center border-b border-outline-variant pb-density-compact">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Summer Peak</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Jun 1 - Aug 31</p>
+</div>
+<span class="font-data-tabular text-data-tabular text-primary">+20%</span>
+</div>
+<div class="flex justify-between items-center border-b border-outline-variant pb-density-compact">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Winter Holiday</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Dec 20 - Jan 5</p>
+</div>
+<span class="font-data-tabular text-data-tabular text-primary">+35%</span>
+</div>
+<div class="flex justify-between items-center">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Off-Season</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Nov 1 - Dec 15</p>
+</div>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">-15%</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-bright border border-outline-variant p-gutter rounded-DEFAULT">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-density-comfortable">Special Packages</h3>
+<div class="space-y-density-comfortable">
+<div class="flex justify-between items-center border-b border-outline-variant pb-density-compact">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Romance Package</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Champagne, Late Checkout</p>
+</div>
+<span class="font-data-tabular text-data-tabular text-primary">+$150/stay</span>
+</div>
+<div class="flex justify-between items-center border-b border-outline-variant pb-density-compact">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Business Bundle</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Breakfast, Premium WiFi</p>
+</div>
+<span class="font-data-tabular text-data-tabular text-primary">+$45/night</span>
+</div>
+<button class="w-full mt-density-comfortable border border-primary text-primary py-2 rounded-DEFAULT font-label-caps text-label-caps hover:bg-surface-container transition-colors">
+                            Manage Packages
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
